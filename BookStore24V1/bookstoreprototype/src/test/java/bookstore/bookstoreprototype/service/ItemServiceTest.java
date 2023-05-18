@@ -75,6 +75,7 @@ public class ItemServiceTest {
         List<Item> items = itemService.findItems();
 
         //then
+        assertEquals(2, items.size());
     }
 
     @Test
