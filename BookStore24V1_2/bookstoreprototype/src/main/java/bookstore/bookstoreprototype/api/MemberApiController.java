@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,6 +36,22 @@ public class MemberApiController {
     @GetMapping("/api/v1/members")
     public List<Member> membersV1() {
         return memberService.findMembers();
+    }
+
+    /**
+     * 조회 V2 : 응답 값으로 엔티티가 아닌 별도의 DTO 사용,
+     * Result클래스로 컬렉션을 감싸서 반환
+     */
+    @GetMapping("/api/v2/members")
+    public Result memberV2() {
+
+        List<Member> findMembers = memberService.findMembers();
+        // 엔티티 -> DTO 변환
+        List<MemberDto> collect = findMembers.stream()
+                .map(m -> new MemberDto(m.getName()))
+                .collect(Collectors.toList());
+
+        return new Result(collect.size(), collect);
     }
 
     /**
@@ -76,6 +93,19 @@ public class MemberApiController {
         memberService.update(id, request.getName());
         Member findMember = memberService.findOne(id);
         return new UpdateMemberResponse(findMember.getId(), findMember.getName());
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class Result<T> {
+        private int count;  // Result 클래스로 컬렉션을 감싸서 이렇게 향후 필요한 필드를 추가할 수 있다.
+        private T data;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class MemberDto {
+        private String name;
     }
 
     @Data
