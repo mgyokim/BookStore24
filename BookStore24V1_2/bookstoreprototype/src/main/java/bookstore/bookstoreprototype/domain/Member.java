@@ -1,5 +1,6 @@
 package bookstore.bookstoreprototype.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,9 +20,11 @@ public class Member {
 
     private String name;
 
+    @JsonIgnore
     @Embedded
     private Address address;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "member")
     private List<Order> orders = new ArrayList<>(); // 컬렉션은 필드에서 초기화 할 것
 
