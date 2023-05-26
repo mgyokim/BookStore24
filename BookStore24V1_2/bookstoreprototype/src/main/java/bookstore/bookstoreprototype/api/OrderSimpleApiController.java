@@ -5,6 +5,8 @@ import bookstore.bookstoreprototype.domain.Order;
 import bookstore.bookstoreprototype.domain.OrderStatus;
 import bookstore.bookstoreprototype.repository.OrderRepository;
 import bookstore.bookstoreprototype.repository.OrderSearch;
+import bookstore.bookstoreprototype.repository.order.simplequery.OrderSimpleQueryDto;
+import bookstore.bookstoreprototype.repository.order.simplequery.OrderSimpleQueryRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 public class OrderSimpleApiController {
 
     private final OrderRepository orderRepository;
+    private final OrderSimpleQueryRepository orderSimpleQueryRepository;
 
     /**
      * V1. 엔티티 직접 노출
@@ -70,6 +73,16 @@ public class OrderSimpleApiController {
                 .collect(Collectors.toList());
 
         return result;
+    }
+
+    /**
+     * V4. JPA에서 DTO로 바로 조회
+     * - 쿼리 1번 호출
+     * - select 절에서 원하는 데이터만 선택해서 조회
+     */
+    @GetMapping("/api/v4/simple-orders")
+    public List<OrderSimpleQueryDto> ordersV4() {
+        return orderSimpleQueryRepository.findOrderDtos();
     }
 
     @Data
