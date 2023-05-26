@@ -115,4 +115,14 @@ public class OrderRepository {
 //                .setMaxResults(100) // 컬렉션 패치 조인 사용하면 페이징 불가. 하이버네이트는 경고 로그를 남기면서 모든 데이터를 DB에서 읽어오고, 메모리에서 페이징해버림(매우 위험)
                 .getResultList();
     }
+
+    public List<Order> findAllWithMemberDelivery(int offset, int limit) {
+        return em.createQuery(
+                        "select o from Order o" +
+                                " join fetch o.member m" +
+                                " join fetch o.delivery d", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
 }
