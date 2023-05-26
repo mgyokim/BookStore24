@@ -86,7 +86,7 @@ public class OrderSimpleApiController {
     }
 
     @Data
-    private class SimpleOrderDto {
+    static class SimpleOrderDto {
         private Long orderId;
         private String name;
         private LocalDateTime orderDate;    // 주문시간
