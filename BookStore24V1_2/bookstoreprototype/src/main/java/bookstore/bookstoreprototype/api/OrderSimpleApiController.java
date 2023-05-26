@@ -43,7 +43,7 @@ public class OrderSimpleApiController {
 
     /**
      * V2. 엔티티를 조회해서 DTO로 변환(fetch join 사용X)
-     * - 단점 : 지연로딩으로 쿼리 N번 호
+     * - 단점 : 지연로딩으로 쿼리 N번 호출
      */
     @GetMapping("/api/v2/simple-orders")
     public List<SimpleOrderDto> ordersV2() {
