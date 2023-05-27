@@ -6,6 +6,8 @@ import bookstore.bookstoreprototype.domain.OrderItem;
 import bookstore.bookstoreprototype.domain.OrderStatus;
 import bookstore.bookstoreprototype.repository.OrderRepository;
 import bookstore.bookstoreprototype.repository.OrderSearch;
+import bookstore.bookstoreprototype.repository.order.query.OrderQueryDto;
+import bookstore.bookstoreprototype.repository.order.query.OrderQueryRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +28,7 @@ import java.util.stream.Collectors;
  * - 트랜잭션 안에서 지연 로딩 필요
  *
  * V3. 엔티티를 조회해서 DTO로 변환(fetch join 사용O)
- * - 페이징 시에는 N 부분을 포기해야함(대신에 batch fetch size? 옵션을 주면 N -> 1 쿼리로 변경가능)
+ * - 페이징 시에는 N 부분을 포기해야함(-> V3.1 페이징가능하도록 - ToOne 관계는 fetch join + 이외는 batch fetch size? 옵션을 주면 N -> 1 쿼리로 변경가능)
  *
  * V4. JPA에서 DTO로 바로 조회, 컬렉션 N 조회 (1 + N Query)
  * - 페이징 가능
@@ -43,6 +45,7 @@ import java.util.stream.Collectors;
 public class OrderApiController {
 
     private final OrderRepository orderRepository;
+    private final OrderQueryRepository orderQueryRepository;    // v4에 추가
 
     /**
      * V1. 엔티티 직접 노출
@@ -107,6 +110,15 @@ public class OrderApiController {
                 .collect(Collectors.toList());
 
         return result;
+    }
+
+    /**
+     * V4. JPA에서 DTO로 바로 조회, 컬렉션 N 조회 (1 + N Query)
+     * - 페이징 가능
+     */
+    @GetMapping("/api/v4/orders")
+    public List<OrderQueryDto> ordersV4() {
+        return orderQueryRepository.findOrderQueryDtos();
     }
 
 
