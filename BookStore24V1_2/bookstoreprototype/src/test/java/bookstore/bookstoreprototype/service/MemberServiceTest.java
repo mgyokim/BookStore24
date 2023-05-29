@@ -39,7 +39,7 @@ public class MemberServiceTest {
 
         //then
         em.flush(); // 쿼리 확인용
-        assertEquals(member, memberRepository.findOne(savedId));
+        assertEquals(member, memberRepository.findById(savedId));
     }
 
     @Test(expected = IllegalStateException.class)
