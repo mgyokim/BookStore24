@@ -36,4 +36,8 @@ out/
 ### VS Code ###
 .vscode/
 
+### DS Store ###
 .DS_Store
+
+### application.yml ###
+application.yml
