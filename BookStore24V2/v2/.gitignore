@@ -40,4 +40,6 @@ out/
 .DS_Store
 
 ### application.yml ###
+application.properties
 application.yml
+application-oauth.yml
