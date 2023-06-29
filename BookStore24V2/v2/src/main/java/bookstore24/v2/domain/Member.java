@@ -1,5 +1,6 @@
 package bookstore24.v2.domain;
 
+import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -19,8 +20,7 @@ public class Member extends BaseEntity {
     @Column(name = "member_id")
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private ProviderType provider;    // 회원가입 유형[google, kakao, naver, local]
+    private String provider;    // 회원가입 유형[google, kakao, naver, local]
 
     private String providerId;  // OAuth 공급자 아이디
 
@@ -50,4 +50,13 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member")
     private List<Sell> sells = new ArrayList<>();
 
+    @Builder
+    public Member(String provider, String providerId, String loginId, String loginPassword, String email, String role) {
+        this.provider = provider;
+        this.providerId = providerId;
+        this.loginId = loginId;
+        this.loginPassword = loginPassword;
+        this.email = email;
+        this.role = role;
+    }
 }
