@@ -20,22 +20,26 @@ public class Member extends BaseEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private LoginType loginType;    // google, kakao, naver, local
+    private ProviderType provider;    // 회원가입 유형[google, kakao, naver, local]
 
-    private String email;
+    private String providerId;  // OAuth 공급자 아이디
 
-    private String loginId;
+    private String loginId; // 로그인 아이디 (OAuth 자동 회원가입의 경우 {provider + "_" + providerId})
 
-    private String loginPassword;
+    private String loginPassword;   // 로그인 비밀번호
 
-    private String nickName;
+    private String email;   // 이메일
+
+    private String role;    // 회원 등급
+
+    private String nickName;    // 닉네임
 
     @Enumerated(EnumType.STRING)
-    private Residence residence;   // seoul, incheon, gyeonggi
+    private Residence residence;   // 거주지 [seoul, incheon, gyeonggi]
 
-    private String profileImg;
+    private String profileImg;  // 프로필 사진
 
-    private boolean deleted = Boolean.FALSE;
+    private boolean deleted = Boolean.FALSE;    // 삭제 여부
 
     @OneToMany(mappedBy = "member")
     private List<ReviewComment> reviewComments = new ArrayList<>();
