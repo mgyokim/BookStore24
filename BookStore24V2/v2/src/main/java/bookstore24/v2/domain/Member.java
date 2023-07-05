@@ -2,6 +2,8 @@ package bookstore24.v2.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -11,8 +13,10 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @SQLDelete(sql = "UPDATE Member SET deleted = true WHERE id=?")
 @Where(clause = "deleted = false")
+@NoArgsConstructor
 public class Member extends BaseEntity {
 
     @Id
@@ -59,4 +63,22 @@ public class Member extends BaseEntity {
         this.email = email;
         this.role = role;
     }
+
+
+    public void registrationRole(String role) {
+        this.role = role;
+    }
+
+    public void registrationLoginPassword(String loginPassword) {
+        this.loginPassword = loginPassword;
+    }
+
+    public void registrationLoginId(String loginId) {
+        this.loginId = loginId;
+    }
+
+    public void registrationEmail(String email) {
+        this.email = email;
+    }
+
 }
