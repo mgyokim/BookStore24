@@ -1,6 +1,9 @@
 package bookstore24.v2.controller;
 
+import bookstore24.v2.config.oauth.OAuthToken;
 import bookstore24.v2.repository.MemberRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -49,6 +52,23 @@ public class LoginApiController {
                 kakaoTokenRequest,  // HttpBody 에 들어갈 데이터와, HttpHeader 값을 한번에 넣어줌
                 String.class    // 응답받을 타입을 String 으로 지정
         );
+
+        // ObjectMapper
+        ObjectMapper objectMapper = new ObjectMapper();
+        OAuthToken oAuthToken = null;
+
+        try {
+            oAuthToken = objectMapper.readValue(response.getBody(), OAuthToken.class);  // Json 데이터를 자바로 처리하기 위해 자바 오브젝트로 바꿈.
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("카카오 access_token : " + oAuthToken.getAccess_token());
+        System.out.println("카카오 token_type : "  + oAuthToken.getToken_type());
+        System.out.println("카카오 refresh_token : " + oAuthToken.getRefresh_token());
+        System.out.println("카카오 expires_in : " + oAuthToken.getExpires_in());
+        System.out.println("카카오 scope : " + oAuthToken.getScope());
+        System.out.println("카카오 refresh_token_expires_in : " + oAuthToken.getRefresh_token_expires_in());
 
         return "카카오 인증 완료 : 토큰 요청에 대한 응답 : " + response;
     }
