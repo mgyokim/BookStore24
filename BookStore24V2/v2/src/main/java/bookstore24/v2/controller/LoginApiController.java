@@ -1,10 +1,14 @@
 package bookstore24.v2.controller;
 
 import bookstore24.v2.config.oauth.OAuthToken;
+import bookstore24.v2.config.oauth.profile.KakaoProfile;
+import bookstore24.v2.domain.Member;
 import bookstore24.v2.repository.MemberRepository;
+import bookstore24.v2.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -21,11 +25,16 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class LoginApiController {
 
+    private final MemberService memberService;
     private final MemberRepository memberRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Value("${cos.key}")
+    private String cosKey;
+
     @GetMapping("/auth/kakao/callback")
-    public @ResponseBody String kakoCallback(String code) {
+    public @ResponseBody
+    String kakoCallback(String code) {
 
         // POST 방식으로 key=value 데이터를 요청(카카오쪽으로)
         // 사용 라이브러리 - RestTemplate
@@ -55,7 +64,7 @@ public class LoginApiController {
 
         // ObjectMapper
         ObjectMapper objectMapper = new ObjectMapper();
-        OAuthToken oAuthToken = null;
+        OAuthToken oAuthToken = null;   // 카카오 토큰 응답 데이터를 통째로 저장할 곳
 
         try {
             oAuthToken = objectMapper.readValue(response.getBody(), OAuthToken.class);  // Json 데이터를 자바로 처리하기 위해 자바 오브젝트로 바꿈.
@@ -63,14 +72,81 @@ public class LoginApiController {
             e.printStackTrace();
         }
 
-        System.out.println("카카오 access_token : " + oAuthToken.getAccess_token());
-        System.out.println("카카오 token_type : "  + oAuthToken.getToken_type());
-        System.out.println("카카오 refresh_token : " + oAuthToken.getRefresh_token());
-        System.out.println("카카오 expires_in : " + oAuthToken.getExpires_in());
-        System.out.println("카카오 scope : " + oAuthToken.getScope());
-        System.out.println("카카오 refresh_token_expires_in : " + oAuthToken.getRefresh_token_expires_in());
+        // 카카오 토큰 응답 데이터를 각 변수에 저장
+        String kakao_access_token = oAuthToken.getAccess_token();
+        String kakao_token_type = oAuthToken.getToken_type();
+        String kakao_expires_in = oAuthToken.getExpires_in();
+        String kakao_refresh_token = oAuthToken.getRefresh_token();
+        String kakao_scope = oAuthToken.getScope();
+        String kakao_refresh_token_expires_in = oAuthToken.getRefresh_token_expires_in();
 
-        return "카카오 인증 완료 : 토큰 요청에 대한 응답 : " + response;
+        /**
+         * sout 배포전 삭제 할 것.
+         */
+        System.out.println("카카오 access_token : " + kakao_access_token);
+        System.out.println("카카오 token_type : " + kakao_token_type);
+        System.out.println("카카오 refresh_token : " + kakao_expires_in);
+        System.out.println("카카오 expires_in : " + kakao_refresh_token);
+        System.out.println("카카오 scope : " + kakao_scope);
+        System.out.println("카카오 refresh_token_expires_in : " + kakao_refresh_token_expires_in);
+
+
+        /**
+         * 발급받은 AccessToken 을 이용하여 카카오 프로필 정보 요청하기
+         */
+        RestTemplate restTemplate2 = new RestTemplate();
+
+        // HttpHeader 오브젝트 생성
+        HttpHeaders httpHeaders2 = new HttpHeaders();
+        httpHeaders2.add("Authorization", "Bearer " + kakao_access_token);   // 발급받았던 AccessToken을 프로필 정보 요청에 사용
+        httpHeaders2.add("Content-Type", "application/x-www-form-urlencoded");  // 내가 지금 전달할 데이터가 key=value 형태임을 알려주는 것.
+
+        // HttpHeader 와 HttpBody 를 하나의 HttpEntity 오브젝트에 담기 -> 이렇게 해주는 이유는 아래의 restTemplate.exchange() 가 파라미터로 HttpEntity 를 받게 되있기 때문.
+        HttpEntity<MultiValueMap<String, String>> kakaoProfileRequest = new HttpEntity<>(httpHeaders2);
+
+        // Http 요청하기 - POST 방식으로 - 그리고 reponse2 변수로 응답받음
+        ResponseEntity<String> response2 = restTemplate2.exchange(
+                "https://kapi.kakao.com/v2/user/me",    // 카카오 문서상의 프로필 정보 요청 주소
+                HttpMethod.POST,    // 카카오
+                kakaoProfileRequest,
+                String.class
+        );
+
+        // ObjectMapper
+        ObjectMapper objectMapper2 = new ObjectMapper();
+        KakaoProfile kakaoProfile = null;
+
+        try {
+            kakaoProfile = objectMapper2.readValue(response2.getBody(), KakaoProfile.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        // MemberEntity : provider, providerId, loginId, loginPassword, email, role
+        System.out.println("provider : " + "kakao");
+        System.out.println("providerId : " + kakaoProfile.getId());
+        System.out.println("loginId : " + "kakao" + "_" + kakaoProfile.getId());
+        System.out.println("loginPassword : " + cosKey);
+        System.out.println("email : " + kakaoProfile.getKakao_account().getEmail());
+        System.out.println("role : " + "ROLE_USER");
+
+        Member kakaoUser = Member.builder()
+                .provider("kakao")
+                .providerId(String.valueOf(kakaoProfile.getId()))
+                .loginId("kakao" + "_" + kakaoProfile.getId())
+                .loginPassword(cosKey)
+                .email(kakaoProfile.getKakao_account().getEmail())
+                .role("ROLE_USER")
+                .build();
+
+        // 비가입자만 체크해서 회원가입 처리
+        Member originMember = memberService.findMemberByLoginId(kakaoUser.getLoginId());
+
+        if (originMember == null) {
+            memberService.joinMember(kakaoUser);
+        }
+
+        return "카카오 인증 완료 : 토큰 요청에 대한 응답 : " + kakao_access_token;
     }
 }
 

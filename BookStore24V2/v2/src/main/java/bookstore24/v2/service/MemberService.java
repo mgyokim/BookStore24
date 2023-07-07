@@ -15,6 +15,7 @@ public class MemberService {
     private final CustomBCryptPasswordEncoder customBCryptPasswordEncoder;
     private final MemberRepository memberRepository;
 
+    // 회원 가입
     @Transactional
     public void joinMember(Member member) {
         String rawPassword = member.getLoginPassword(); // 원문
@@ -23,5 +24,9 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-//    public Member find
+    // LoginId로 회원 조회
+    public Member findMemberByLoginId(String loginId) {
+        Member member = memberRepository.findByLoginId(loginId);
+        return member;
+    }
 }
