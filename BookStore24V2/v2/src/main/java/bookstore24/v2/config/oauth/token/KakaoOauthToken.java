@@ -1,9 +1,9 @@
-package bookstore24.v2.config.oauth;
+package bookstore24.v2.config.oauth.token;
 
 import lombok.Data;
 
 @Data
-public class OAuthToken {   // 카카오
+public class KakaoOauthToken {   // 카카오
     private String access_token;
     private String token_type;
     private String refresh_token;
