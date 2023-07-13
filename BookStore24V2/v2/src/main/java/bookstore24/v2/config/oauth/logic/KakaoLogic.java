@@ -12,6 +12,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -22,6 +26,8 @@ import org.springframework.web.client.RestTemplate;
 public class KakaoLogic {
 
     private final MemberService memberService;
+
+    private final AuthenticationManager authenticationManager;
 
     @Value("${cos.key}")
     private String cosKey;
@@ -171,5 +177,18 @@ public class KakaoLogic {
 
         // sout 배포전 삭제할 것.
         System.out.println("[카카오]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 완료---------------------------------------------------");
+    }
+
+    /**
+     * 자동 로그인 처리
+     */
+    public void kakaoLogin(Member kakaoUser) {
+        // sout 배포전 삭제할 것.
+        System.out.println("[카카오]자동 로그인 시작---------------------------------------------------");
+
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(kakaoUser.getLoginId(), cosKey));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        System.out.println("[카카오]자동 로그인 완료---------------------------------------------------");
     }
 }
