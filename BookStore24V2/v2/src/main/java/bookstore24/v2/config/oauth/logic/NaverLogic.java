@@ -3,6 +3,7 @@ package bookstore24.v2.config.oauth.logic;
 import bookstore24.v2.config.oauth.profile.NaverProfile;
 import bookstore24.v2.config.oauth.token.NaverOauthToken;
 import bookstore24.v2.domain.Member;
+import bookstore24.v2.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,8 @@ public class NaverLogic {
 
     @Value(("${spring.security.oauth2.client.registration.naver.client-secret}"))
     private String clientSecret;
+
+    private final MemberService memberService;
 
     /**
      * 네이버 인가 코드 받기 (LoginApiController.naverLogin() 에서 처리)
@@ -159,6 +162,24 @@ public class NaverLogic {
     /**
      * 미가입자만 체크해서 자동 회원가입
      */
+
+    public void joinCheck(Member naverUser) {
+
+        // sout 배포전 삭제할 것.
+        System.out.println("[네이버]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 시작---------------------------------------------------");
+
+        Member originMember = memberService.findMemberByLoginId(naverUser.getLoginId());
+
+        if (originMember == null) {
+            memberService.joinMember(naverUser);
+            System.out.println("네이버 로그인이 최초입니다. 자동 회원가입되었습니다.");
+        } else {
+            System.out.println("네이버 로그인을 한적이 있습니다. 이미 회원가입 되어있습니다.");
+        }
+
+        // sout 배포전 삭제할 것.
+        System.out.println("[네이버]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 완료---------------------------------------------------");
+    }
 
     /**
      * 자동 로그인 처리
