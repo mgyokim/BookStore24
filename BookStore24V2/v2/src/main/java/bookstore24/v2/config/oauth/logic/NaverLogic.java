@@ -30,7 +30,7 @@ public class NaverLogic {
     private String clientSecret;
 
     /**
-     * 네이버 인가 코드 받기 (LoginApiController.kakaoLogin() 에서 처리)
+     * 네이버 인가 코드 받기 (LoginApiController.naverLogin() 에서 처리)
      */
     // 요청 URL
     // https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=B3RGNtinEp3Va8fysxkN&redirect_uri=http://bookstore24.shop/auth/naver/callback&state='test'
@@ -95,7 +95,7 @@ public class NaverLogic {
     public Member accessTokenToProfile(NaverOauthToken naverOauthToken) {
 
         // sout 배포전 삭제할 것.
-        System.out.println("[카카오]AccessToken 을 이용하여 카카오 프로필 정보 요청 시작-------------------------------------------------");
+        System.out.println("[네이버]AccessToken 을 이용하여 카카오 프로필 정보 요청 시작-------------------------------------------------");
 
         // 카카오 토큰 응답 데이터를 각 변수에 저장
         String naver_access_token = naverOauthToken.getAccess_token();
@@ -117,8 +117,8 @@ public class NaverLogic {
 
         // Http 요청하기 - POST 방식으로 - 그리고 reponse 변수로 응답받음
         ResponseEntity<String> response = restTemplate.exchange(
-                "https://openapi.naver.com/v1/nid/me",    // 카카오 문서상의 프로필 정보 요청 주소
-                HttpMethod.GET,    // 카카오
+                "https://openapi.naver.com/v1/nid/me",    // 네이버 문서상의 프로필 정보 요청 주소
+                HttpMethod.GET,    // 네이버
                 naverProfileRequest,
                 String.class
         );
@@ -134,9 +134,9 @@ public class NaverLogic {
         }
 
         // sout 배포전 삭제할 것.
-        System.out.println("provider : " + "kakao");
+        System.out.println("provider : " + "naver");
         System.out.println("providerId : " + naverProfile.getResponse().getId());
-        System.out.println("loginId : " + "kakao" + "_" + naverProfile.getResponse().getId());
+        System.out.println("loginId : " + "naver" + "_" + naverProfile.getResponse().getId());
         System.out.println("loginPassword : " + cosKey);
         System.out.println("email : " + naverProfile.getResponse().getEmail());
         System.out.println("role : " + "ROLE_USER");
@@ -144,14 +144,14 @@ public class NaverLogic {
         Member naverUser = Member.builder()
                 .provider("naver")
                 .providerId(String.valueOf(naverProfile.getResponse().getId()))
-                .loginId("kakao" + "_" + naverProfile.getResponse().getId())
+                .loginId("naver" + "_" + naverProfile.getResponse().getId())
                 .loginPassword(cosKey)
                 .email(naverProfile.getResponse().getEmail())
                 .role("ROLE_USER")
                 .build();
 
         // sout 배포전 삭제할 것.
-        System.out.println("[카카오]AccessToken 을 이용하여 카카오 프로필 정보 요청 완료-------------------------------------------------");
+        System.out.println("[네이버]AccessToken 을 이용하여 카카오 프로필 정보 요청 완료-------------------------------------------------");
 
         return naverUser;
     }
