@@ -12,6 +12,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -21,6 +25,10 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class NaverLogic {
 
+    private final MemberService memberService;
+
+    private final AuthenticationManager authenticationManager;
+
     @Value("${cos.key}")
     private String cosKey;
 
@@ -29,8 +37,6 @@ public class NaverLogic {
 
     @Value(("${spring.security.oauth2.client.registration.naver.client-secret}"))
     private String clientSecret;
-
-    private final MemberService memberService;
 
     /**
      * 네이버 인가 코드 받기 (LoginApiController.naverLogin() 에서 처리)
@@ -46,7 +52,7 @@ public class NaverLogic {
         // sout 배포전 삭제할 것.
         System.out.println("[네이버]발급받은 인가 코드로 토큰 요청 시작-----------------------------------------------------------------");
 
-        // POST 방식으로 key=value 데이터를 요청(카카오쪽으로)
+        // POST 방식으로 key=value 데이터를 요청(네이버쪽으로)
         // 사용 라이브러리 - RestTemplate
         RestTemplate restTemplate = new RestTemplate();
 
@@ -75,7 +81,7 @@ public class NaverLogic {
 
         // ObjectMapper
         ObjectMapper objectMapper = new ObjectMapper();
-        NaverOauthToken naverOauthToken = null;   // 카카오 토큰 응답 데이터를 통째로 저장할 곳
+        NaverOauthToken naverOauthToken = null;   // 네이 토큰 응답 데이터를 통째로 저장할 곳
 
         try {
             naverOauthToken = objectMapper.readValue(response.getBody(), NaverOauthToken.class);  // Json 데이터를 자바로 처리하기 위해 자바 오브젝트로 바꿈.
@@ -91,16 +97,16 @@ public class NaverLogic {
     }
 
     /**
-     * 발급받은 AccessToken 을 이용하여 카카오 프로필 정보 요청하기
+     * 발급받은 AccessToken 을 이용하여 네이버 프로필 정보 요청하기
      * @return
      */
 
     public Member accessTokenToProfile(NaverOauthToken naverOauthToken) {
 
         // sout 배포전 삭제할 것.
-        System.out.println("[네이버]AccessToken 을 이용하여 카카오 프로필 정보 요청 시작-------------------------------------------------");
+        System.out.println("[네이버]AccessToken 을 이용하여 네이버 프로필 정보 요청 시작-------------------------------------------------");
 
-        // 카카오 토큰 응답 데이터를 각 변수에 저장
+        // 네이버 토큰 응답 데이터를 각 변수에 저장
         String naver_access_token = naverOauthToken.getAccess_token();
         String naver_token_type = naverOauthToken.getToken_type();
         String naver_expires_in = naverOauthToken.getExpires_in();
@@ -154,7 +160,7 @@ public class NaverLogic {
                 .build();
 
         // sout 배포전 삭제할 것.
-        System.out.println("[네이버]AccessToken 을 이용하여 카카오 프로필 정보 요청 완료-------------------------------------------------");
+        System.out.println("[네이버]AccessToken 을 이용하여 네이 프로필 정보 요청 완료-------------------------------------------------");
 
         return naverUser;
     }
@@ -184,4 +190,15 @@ public class NaverLogic {
     /**
      * 자동 로그인 처리
      */
+
+    public void naverAutoLogin(Member naverUser) {
+        // sout 배포전 삭제할 것.
+        System.out.println("[네이버]자동 로그인 시작---------------------------------------------------");
+
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(naverUser.getLoginId(), cosKey));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // sout 배포전 삭제할 것.
+        System.out.println("[네이버]자동 로그인 완료---------------------------------------------------");
+    }
 }
