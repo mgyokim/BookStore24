@@ -28,7 +28,7 @@ public class LoginApiController {
         // 해당 회원의 회원가입 여부 체크후 비회원만 회원가입 처리
         kakaoLogic.joinCheck(member);
         // 해당 회원 로그인 처리
-        kakaoLogic.kakaoLogin(member);
+        kakaoLogic.kakaoAutoLogin(member);
 
         // 회원의 LoginId 반환
         return member.getLoginId();

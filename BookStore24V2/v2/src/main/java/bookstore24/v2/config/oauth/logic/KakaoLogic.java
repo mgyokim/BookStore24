@@ -185,7 +185,7 @@ public class KakaoLogic {
     /**
      * 자동 로그인 처리
      */
-    public void kakaoLogin(Member kakaoUser) {
+    public void kakaoAutoLogin(Member kakaoUser) {
         // sout 배포전 삭제할 것.
         System.out.println("[카카오]자동 로그인 시작---------------------------------------------------");
 
