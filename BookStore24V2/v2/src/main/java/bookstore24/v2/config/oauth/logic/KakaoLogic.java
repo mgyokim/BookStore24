@@ -32,6 +32,9 @@ public class KakaoLogic {
     @Value("${cos.key}")
     private String cosKey;
 
+    @Value(("${spring.security.oauth2.client.registration.kakao.client-id}"))
+    private String clientId;
+
     /**
      * 카카오 인가 코드 받기 (LoginApiController.kakaoLogin() 에서 처리)
      */
@@ -58,7 +61,7 @@ public class KakaoLogic {
         // HttpBody 오브젝트 생성
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
-        params.add("client_id", "e435f34295d28879dfabc32de2bd7546");
+        params.add("client_id", clientId);
         params.add("redirect_uri", "http://bookstore24.shop/auth/kakao/callback");
         params.add("code", code);
 
