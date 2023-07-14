@@ -1,6 +1,8 @@
 package bookstore24.v2.config.oauth.logic;
 
+import bookstore24.v2.config.oauth.profile.NaverProfile;
 import bookstore24.v2.config.oauth.token.NaverOauthToken;
+import bookstore24.v2.domain.Member;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -87,7 +89,72 @@ public class NaverLogic {
 
     /**
      * 발급받은 AccessToken 을 이용하여 카카오 프로필 정보 요청하기
+     * @return
      */
+
+    public Member accessTokenToProfile(NaverOauthToken naverOauthToken) {
+
+        // sout 배포전 삭제할 것.
+        System.out.println("[카카오]AccessToken 을 이용하여 카카오 프로필 정보 요청 시작-------------------------------------------------");
+
+        // 카카오 토큰 응답 데이터를 각 변수에 저장
+        String naver_access_token = naverOauthToken.getAccess_token();
+        String naver_token_type = naverOauthToken.getToken_type();
+        String naver_expires_in = naverOauthToken.getExpires_in();
+        String naver_refresh_token = naverOauthToken.getRefresh_token();
+        String naver_scope = naverOauthToken.getScope();
+        String naver_refresh_token_expires_in = naverOauthToken.getRefresh_token_expires_in();
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        // HttpHeader 오브젝트 생성
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization", "Bearer " + naver_access_token);   // 발급받았던 AccessToken을 프로필 정보 요청에 사용
+        httpHeaders.add("Content-Type", "application/x-www-form-urlencoded");  // 내가 지금 전달할 데이터가 key=value 형태임을 알려주는 것.
+
+        // HttpHeader 와 HttpBody 를 하나의 HttpEntity 오브젝트에 담기 -> 이렇게 해주는 이유는 아래의 restTemplate.exchange() 가 파라미터로 HttpEntity 를 받게 되있기 때문.
+        HttpEntity<MultiValueMap<String, String>> naverProfileRequest = new HttpEntity<>(httpHeaders);
+
+        // Http 요청하기 - POST 방식으로 - 그리고 reponse 변수로 응답받음
+        ResponseEntity<String> response = restTemplate.exchange(
+                "https://openapi.naver.com/v1/nid/me",    // 카카오 문서상의 프로필 정보 요청 주소
+                HttpMethod.GET,    // 카카오
+                naverProfileRequest,
+                String.class
+        );
+
+        // ObjectMapper
+        ObjectMapper objectMapper = new ObjectMapper();
+        NaverProfile naverProfile = null;
+
+        try {
+            naverProfile = objectMapper.readValue(response.getBody(), NaverProfile.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        // sout 배포전 삭제할 것.
+        System.out.println("provider : " + "kakao");
+        System.out.println("providerId : " + naverProfile.getResponse().getId());
+        System.out.println("loginId : " + "kakao" + "_" + naverProfile.getResponse().getId());
+        System.out.println("loginPassword : " + cosKey);
+        System.out.println("email : " + naverProfile.getResponse().getEmail());
+        System.out.println("role : " + "ROLE_USER");
+
+        Member naverUser = Member.builder()
+                .provider("naver")
+                .providerId(String.valueOf(naverProfile.getResponse().getId()))
+                .loginId("kakao" + "_" + naverProfile.getResponse().getId())
+                .loginPassword(cosKey)
+                .email(naverProfile.getResponse().getEmail())
+                .role("ROLE_USER")
+                .build();
+
+        // sout 배포전 삭제할 것.
+        System.out.println("[카카오]AccessToken 을 이용하여 카카오 프로필 정보 요청 완료-------------------------------------------------");
+
+        return naverUser;
+    }
 
     /**
      * 미가입자만 체크해서 자동 회원가입

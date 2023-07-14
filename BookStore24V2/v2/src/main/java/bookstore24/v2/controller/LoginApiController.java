@@ -42,6 +42,7 @@ public class LoginApiController {
         NaverOauthToken naverOauthToken = naverLogic.codeToToken(code);
 
         // 발급받은 액세스토큰으로 프로필 정보 요청
+        Member member = naverLogic.accessTokenToProfile(naverOauthToken);
 
         // 해당 회원의 회원가입 여부 체크후 비회원만 회원가입 처리
 
@@ -49,7 +50,7 @@ public class LoginApiController {
 
         // 회원의 LoginId 반환
 
-        return "네이버 토큰 반환 값 : " + naverOauthToken;
+        return "네이버 회원 프로필 : " + member;
     }
 }
 
