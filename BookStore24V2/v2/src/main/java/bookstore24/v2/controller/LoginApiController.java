@@ -39,6 +39,7 @@ public class LoginApiController {
     String naverLogin(String code) {
 
         // 발급받은 인가 코드로 토큰 요청
+        NaverOauthToken naverOauthToken = naverLogic.codeToToken(code);
 
         // 발급받은 액세스토큰으로 프로필 정보 요청
 
@@ -48,7 +49,7 @@ public class LoginApiController {
 
         // 회원의 LoginId 반환
 
-        return "네이버 인증 완료 : 코드값 : " + code;
+        return "네이버 토큰 반환 값 : " + naverOauthToken;
     }
 }
 
