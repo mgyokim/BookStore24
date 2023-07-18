@@ -53,4 +53,23 @@ public class LoginApiController {
         // 회원의 LoginId 반환
         return member.getLoginId();
     }
+
+    @GetMapping("auth/google/callback")
+    public @ResponseBody
+    String googleLogin(String code) {
+
+        // 발급받은 인가 코드로 토큰 요청
+
+
+        // 발급받은 액세스토큰으로 프로필 정보 요청
+
+        // 해당 회원의 회원가입 여부 체크후 비회원만 회원가입 처리
+
+        // 해당 회원 로그인 처리
+
+        // 회원의 LoginId 반환
+
+        return code;
+    }
 }
+
