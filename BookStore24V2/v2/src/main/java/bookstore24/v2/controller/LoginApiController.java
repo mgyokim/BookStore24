@@ -1,7 +1,9 @@
 package bookstore24.v2.controller;
 
+import bookstore24.v2.config.oauth.logic.GoogleLogic;
 import bookstore24.v2.config.oauth.logic.KakaoLogic;
 import bookstore24.v2.config.oauth.logic.NaverLogic;
+import bookstore24.v2.config.oauth.token.GoogleOauthToken;
 import bookstore24.v2.config.oauth.token.KakaoOauthToken;
 import bookstore24.v2.config.oauth.token.NaverOauthToken;
 import bookstore24.v2.domain.Member;
@@ -16,6 +18,7 @@ public class LoginApiController {
 
     private final KakaoLogic kakaoLogic;
     private final NaverLogic naverLogic;
+    private final GoogleLogic googleLogic;
 
     @GetMapping("/auth/kakao/callback")
     public @ResponseBody
@@ -59,7 +62,7 @@ public class LoginApiController {
     String googleLogin(String code) {
 
         // 발급받은 인가 코드로 토큰 요청
-
+        GoogleOauthToken googleOauthToken = googleLogic.codeToToken(code);
 
         // 발급받은 액세스토큰으로 프로필 정보 요청
 
