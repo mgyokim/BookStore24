@@ -65,6 +65,7 @@ public class LoginApiController {
         GoogleOauthToken googleOauthToken = googleLogic.codeToToken(code);
 
         // 발급받은 액세스토큰으로 프로필 정보 요청
+        Member response = googleLogic.accessTokenToProfile(googleOauthToken);
 
         // 해당 회원의 회원가입 여부 체크후 비회원만 회원가입 처리
 
