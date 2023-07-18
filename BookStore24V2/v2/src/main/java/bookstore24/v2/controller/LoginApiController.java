@@ -48,10 +48,9 @@ public class LoginApiController {
         naverLogic.joinCheck(member);
 
         // 해당 회원 로그인 처리
-        kakaoLogic.kakaoAutoLogin(member);
+        naverLogic.naverAutoLogin(member);
 
         // 회원의 LoginId 반환
         return member.getLoginId();
     }
 }
-
