@@ -71,10 +71,10 @@ public class LoginApiController {
         googleLogic.joinCheck(member);
 
         // 해당 회원 로그인 처리
+        googleLogic.googleAutoLogin(member);
 
         // 회원의 LoginId 반환
-
-        return code;
+        return member.getLoginId();
     }
 }
 

@@ -13,6 +13,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -185,5 +188,20 @@ public class GoogleLogic {
 
         // sout 배포전 삭제할 것.
         System.out.println("[구글]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 완료---------------------------------------------------");
+    }
+
+    /**
+     * 자동 로그인 처리
+     */
+
+    public void googleAutoLogin(Member googleUser) {
+        // sout 배포전 삭제할 것.
+        System.out.println("[구글]자동 로그인 시작---------------------------------------------------");
+
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(googleUser.getLoginId(), cosKey));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // sout 배포전 삭제할 것.
+        System.out.println("[구글]자동 로그인 완료---------------------------------------------------");
     }
 }
