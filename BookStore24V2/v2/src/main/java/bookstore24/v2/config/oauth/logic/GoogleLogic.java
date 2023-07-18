@@ -164,4 +164,26 @@ public class GoogleLogic {
 
         return googleUser;
     }
+
+    /**
+     * 미가입자만 체크해서 자동 회원가입
+     */
+
+    public void joinCheck(Member googleUser) {
+
+        // sout 배포전 삭제할 것.
+        System.out.println("[구글]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 시작---------------------------------------------------");
+
+        Member originMember = memberService.findMemberByLoginId(googleUser.getLoginId());
+
+        if (originMember == null) {
+            memberService.joinMember(googleUser);
+            System.out.println("구글 로그인이 최초입니다. 자동 회원가입되었습니다.");
+        } else {
+            System.out.println("구글 로그인을 한적이 있습니다. 이미 회원가입 되어있습니다.");
+        }
+
+        // sout 배포전 삭제할 것.
+        System.out.println("[구글]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 완료---------------------------------------------------");
+    }
 }
