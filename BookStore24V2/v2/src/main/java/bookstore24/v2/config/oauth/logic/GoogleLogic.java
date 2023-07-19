@@ -7,6 +7,7 @@ import bookstore24.v2.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +24,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class GoogleLogic {
 
     private final MemberService memberService;
@@ -49,8 +51,7 @@ public class GoogleLogic {
      */
     public GoogleOauthToken codeToToken(String code) {
 
-        // sout 배포전 삭제할 것.
-        System.out.println("[구글]발급받은 인가 코드로 토큰 요청 시작-----------------------------------------------------------------");
+        log.info("[구글]발급받은 인가 코드로 토큰 요청 시작-----------------------------------------------------------------");
 
         // POST 방식으로 key=value 데이터를 요청(구글쪽으로)
         // 사용 라이브러리 - RestTemplate
@@ -89,9 +90,8 @@ public class GoogleLogic {
             e.printStackTrace();
         }
 
-        // sout 배포전 삭제할 것.
-        System.out.println("구글 토큰 : " + googleOauthToken);
-        System.out.println("[구글]발급받은 인가 코드로 토큰 요청 완료-----------------------------------------------------------------");
+        log.info("구글 토큰 : " + googleOauthToken);
+        log.info("[구글]발급받은 인가 코드로 토큰 요청 완료-----------------------------------------------------------------");
 
         return googleOauthToken;
     }
@@ -104,8 +104,7 @@ public class GoogleLogic {
 
     public Member accessTokenToProfile(GoogleOauthToken googleOauthToken) {
 
-        // sout 배포전 삭제할 것.
-        System.out.println("[구글]AccessToken 을 이용하여 구글 프로필 정보 요청 시작-------------------------------------------------");
+        log.info("[구글]AccessToken 을 이용하여 구글 프로필 정보 요청 시작-------------------------------------------------");
 
         // 구글 토큰 응답 데이터를 각 변수에 저장
         String google_access_token = googleOauthToken.getAccess_token();
@@ -133,8 +132,6 @@ public class GoogleLogic {
                 String.class
         );
 
-        System.out.println(response);
-
         // ObjectMapper
         ObjectMapper objectMapper = new ObjectMapper();
         GoogleProfile googleProfile = null;
@@ -145,13 +142,12 @@ public class GoogleLogic {
             e.printStackTrace();
         }
 
-        // sout 배포전 삭제할 것.
-        System.out.println("provider : " + "google");
-        System.out.println("providerId : " + googleProfile.getId());
-        System.out.println("loginId : " + "google" + "_" + googleProfile.getId());
-        System.out.println("loginPassword : " + cosKey);
-        System.out.println("email : " + googleProfile.getEmail());
-        System.out.println("role : " + "ROLE_USER");
+        log.info("provider : " + "google");
+        log.info("providerId : " + googleProfile.getId());
+        log.info("loginId : " + "google" + "_" + googleProfile.getId());
+        log.info("loginPassword : " + cosKey);
+        log.info("email : " + googleProfile.getEmail());
+        log.info("role : " + "ROLE_USER");
 
         Member googleUser = Member.builder()
                 .provider("google")
@@ -162,8 +158,7 @@ public class GoogleLogic {
                 .role("ROLE_USER")
                 .build();
 
-        // sout 배포전 삭제할 것.
-        System.out.println("[구글]AccessToken 을 이용하여 구글 프로필 정보 요청 완료-------------------------------------------------");
+        log.info("[구글]AccessToken 을 이용하여 구글 프로필 정보 요청 완료-------------------------------------------------");
 
         return googleUser;
     }
@@ -174,20 +169,18 @@ public class GoogleLogic {
 
     public void joinCheck(Member googleUser) {
 
-        // sout 배포전 삭제할 것.
-        System.out.println("[구글]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 시작---------------------------------------------------");
+        log.info("[구글]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 시작---------------------------------------------------");
 
         Member originMember = memberService.findMemberByLoginId(googleUser.getLoginId());
 
         if (originMember == null) {
             memberService.joinMember(googleUser);
-            System.out.println("구글 로그인이 최초입니다. 자동 회원가입되었습니다.");
+            log.info("구글 로그인이 최초입니다. 자동 회원가입되었습니다.");
         } else {
-            System.out.println("구글 로그인을 한적이 있습니다. 이미 회원가입 되어있습니다.");
+            log.info("구글 로그인을 한적이 있습니다. 이미 회원가입 되어있습니다.");
         }
 
-        // sout 배포전 삭제할 것.
-        System.out.println("[구글]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 완료---------------------------------------------------");
+        log.info("[구글]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 완료---------------------------------------------------");
     }
 
     /**
@@ -195,13 +188,11 @@ public class GoogleLogic {
      */
 
     public void googleAutoLogin(Member googleUser) {
-        // sout 배포전 삭제할 것.
-        System.out.println("[구글]자동 로그인 시작---------------------------------------------------");
+        log.info("[구글]자동 로그인 시작---------------------------------------------------");
 
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(googleUser.getLoginId(), cosKey));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // sout 배포전 삭제할 것.
-        System.out.println("[구글]자동 로그인 완료---------------------------------------------------");
+        log.info("[구글]자동 로그인 완료---------------------------------------------------");
     }
 }

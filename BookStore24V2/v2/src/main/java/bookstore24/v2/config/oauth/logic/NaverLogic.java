@@ -7,6 +7,7 @@ import bookstore24.v2.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +24,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class NaverLogic {
 
     private final MemberService memberService;
@@ -49,8 +51,7 @@ public class NaverLogic {
      */
     public NaverOauthToken codeToToken(String code) {
 
-        // sout 배포전 삭제할 것.
-        System.out.println("[네이버]발급받은 인가 코드로 토큰 요청 시작-----------------------------------------------------------------");
+        log.info("[네이버]발급받은 인가 코드로 토큰 요청 시작-----------------------------------------------------------------");
 
         // POST 방식으로 key=value 데이터를 요청(네이버쪽으로)
         // 사용 라이브러리 - RestTemplate
@@ -89,9 +90,8 @@ public class NaverLogic {
             e.printStackTrace();
         }
 
-        // sout 배포전 삭제할 것.
-        System.out.println("네이버 토큰 : " + naverOauthToken);
-        System.out.println("[네이버]발급받은 인가 코드로 토큰 요청 완료-----------------------------------------------------------------");
+        log.info("네이버 토큰 : " + naverOauthToken);
+        log.info("[네이버]발급받은 인가 코드로 토큰 요청 완료-----------------------------------------------------------------");
 
         return naverOauthToken;
     }
@@ -103,8 +103,7 @@ public class NaverLogic {
 
     public Member accessTokenToProfile(NaverOauthToken naverOauthToken) {
 
-        // sout 배포전 삭제할 것.
-        System.out.println("[네이버]AccessToken 을 이용하여 네이버 프로필 정보 요청 시작-------------------------------------------------");
+        log.info("[네이버]AccessToken 을 이용하여 네이버 프로필 정보 요청 시작-------------------------------------------------");
 
         // 네이버 토큰 응답 데이터를 각 변수에 저장
         String naver_access_token = naverOauthToken.getAccess_token();
@@ -142,13 +141,12 @@ public class NaverLogic {
             e.printStackTrace();
         }
 
-        // sout 배포전 삭제할 것.
-        System.out.println("provider : " + "naver");
-        System.out.println("providerId : " + naverProfile.getResponse().getId());
-        System.out.println("loginId : " + "naver" + "_" + naverProfile.getResponse().getId());
-        System.out.println("loginPassword : " + cosKey);
-        System.out.println("email : " + naverProfile.getResponse().getEmail());
-        System.out.println("role : " + "ROLE_USER");
+        log.info("provider : " + "naver");
+        log.info("providerId : " + naverProfile.getResponse().getId());
+        log.info("loginId : " + "naver" + "_" + naverProfile.getResponse().getId());
+        log.info("loginPassword : " + cosKey);
+        log.info("email : " + naverProfile.getResponse().getEmail());
+        log.info("role : " + "ROLE_USER");
 
         Member naverUser = Member.builder()
                 .provider("naver")
@@ -159,8 +157,7 @@ public class NaverLogic {
                 .role("ROLE_USER")
                 .build();
 
-        // sout 배포전 삭제할 것.
-        System.out.println("[네이버]AccessToken 을 이용하여 네이 프로필 정보 요청 완료-------------------------------------------------");
+        log.info("[네이버]AccessToken 을 이용하여 네이 프로필 정보 요청 완료-------------------------------------------------");
 
         return naverUser;
     }
@@ -171,20 +168,18 @@ public class NaverLogic {
 
     public void joinCheck(Member naverUser) {
 
-        // sout 배포전 삭제할 것.
-        System.out.println("[네이버]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 시작---------------------------------------------------");
+        log.info("[네이버]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 시작---------------------------------------------------");
 
         Member originMember = memberService.findMemberByLoginId(naverUser.getLoginId());
 
         if (originMember == null) {
             memberService.joinMember(naverUser);
-            System.out.println("네이버 로그인이 최초입니다. 자동 회원가입되었습니다.");
+            log.info("네이버 로그인이 최초입니다. 자동 회원가입되었습니다.");
         } else {
-            System.out.println("네이버 로그인을 한적이 있습니다. 이미 회원가입 되어있습니다.");
+            log.info("네이버 로그인을 한적이 있습니다. 이미 회원가입 되어있습니다.");
         }
 
-        // sout 배포전 삭제할 것.
-        System.out.println("[네이버]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 완료---------------------------------------------------");
+        log.info("[네이버]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 완료---------------------------------------------------");
     }
 
     /**
@@ -192,13 +187,11 @@ public class NaverLogic {
      */
 
     public void naverAutoLogin(Member naverUser) {
-        // sout 배포전 삭제할 것.
-        System.out.println("[네이버]자동 로그인 시작---------------------------------------------------");
+        log.info("[네이버]자동 로그인 시작---------------------------------------------------");
 
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(naverUser.getLoginId(), cosKey));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // sout 배포전 삭제할 것.
-        System.out.println("[네이버]자동 로그인 완료---------------------------------------------------");
+        log.info("[네이버]자동 로그인 완료---------------------------------------------------");
     }
 }

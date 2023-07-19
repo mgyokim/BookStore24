@@ -1,12 +1,13 @@
 package bookstore24.v2.config.oauth.logic;
 
-import bookstore24.v2.config.oauth.token.KakaoOauthToken;
 import bookstore24.v2.config.oauth.profile.KakaoProfile;
+import bookstore24.v2.config.oauth.token.KakaoOauthToken;
 import bookstore24.v2.domain.Member;
 import bookstore24.v2.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +24,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class KakaoLogic {
 
     private final MemberService memberService;
@@ -47,8 +49,7 @@ public class KakaoLogic {
      */
     public KakaoOauthToken codeToToken(String code) {
 
-        // sout 배포전 삭제할 것.
-        System.out.println("[카카오]발급받은 인가 코드로 토큰 요청 시작-----------------------------------------------------------------");
+        log.info("[카카오]발급받은 인가 코드로 토큰 요청 시작-----------------------------------------------------------------");
 
         // POST 방식으로 key=value 데이터를 요청(카카오쪽으로)
         // 사용 라이브러리 - RestTemplate
@@ -86,9 +87,8 @@ public class KakaoLogic {
             e.printStackTrace();
         }
 
-        // sout 배포전 삭제할 것.
-        System.out.println("카카오 토큰 : " + kakaoOauthToken);
-        System.out.println("[카카오]발급받은 인가 코드로 토큰 요청 완료-----------------------------------------------------------------");
+        log.info("카카오 토큰 : " + kakaoOauthToken);
+        log.info("[카카오]발급받은 인가 코드로 토큰 요청 완료-----------------------------------------------------------------");
 
         return kakaoOauthToken;
     }
@@ -99,8 +99,7 @@ public class KakaoLogic {
 
     public Member accessTokenToProfile(KakaoOauthToken kakaoOauthToken) {
 
-        // sout 배포전 삭제할 것.
-        System.out.println("[카카오]AccessToken 을 이용하여 카카오 프로필 정보 요청 시작-------------------------------------------------");
+        log.info("[카카오]AccessToken 을 이용하여 카카오 프로필 정보 요청 시작-------------------------------------------------");
 
         // 카카오 토큰 응답 데이터를 각 변수에 저장
         String kakao_access_token = kakaoOauthToken.getAccess_token();
@@ -138,13 +137,12 @@ public class KakaoLogic {
             e.printStackTrace();
         }
 
-        // sout 배포전 삭제할 것.
-        System.out.println("provider : " + "kakao");
-        System.out.println("providerId : " + kakaoProfile.getId());
-        System.out.println("loginId : " + "kakao" + "_" + kakaoProfile.getId());
-        System.out.println("loginPassword : " + cosKey);
-        System.out.println("email : " + kakaoProfile.getKakao_account().getEmail());
-        System.out.println("role : " + "ROLE_USER");
+        log.info("provider : " + "kakao");
+        log.info("providerId : " + kakaoProfile.getId());
+        log.info("loginId : " + "kakao" + "_" + kakaoProfile.getId());
+        log.info("loginPassword : " + cosKey);
+        log.info("email : " + kakaoProfile.getKakao_account().getEmail());
+        log.info("role : " + "ROLE_USER");
 
         Member kakaoUser = Member.builder()
                 .provider("kakao")
@@ -155,8 +153,7 @@ public class KakaoLogic {
                 .role("ROLE_USER")
                 .build();
 
-        // sout 배포전 삭제할 것.
-        System.out.println("[카카오]AccessToken 을 이용하여 카카오 프로필 정보 요청 완료-------------------------------------------------");
+        log.info("[카카오]AccessToken 을 이용하여 카카오 프로필 정보 요청 완료-------------------------------------------------");
 
         return kakaoUser;
     }
@@ -166,32 +163,29 @@ public class KakaoLogic {
      */
     public void joinCheck(Member kakaoUser) {
 
-        // sout 배포전 삭제할 것.
-        System.out.println("[카카오]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 시작---------------------------------------------------");
+        log.info("[카카오]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 시작---------------------------------------------------");
 
         Member originMember = memberService.findMemberByLoginId(kakaoUser.getLoginId());
 
         if (originMember == null) {
             memberService.joinMember(kakaoUser);
-            System.out.println("카카오 로그인이 최초입니다. 자동 회원가입되었습니다.");
+            log.info("카카오 로그인이 최초입니다. 자동 회원가입되었습니다.");
         } else {
-            System.out.println("카카오 로그인을 한적이 있습니다. 이미 회원가입 되어있습니다.");
+            log.info("카카오 로그인을 한적이 있습니다. 이미 회원가입 되어있습니다.");
         }
 
-        // sout 배포전 삭제할 것.
-        System.out.println("[카카오]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 완료---------------------------------------------------");
+        log.info("[카카오]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 완료---------------------------------------------------");
     }
 
     /**
      * 자동 로그인 처리
      */
     public void kakaoAutoLogin(Member kakaoUser) {
-        // sout 배포전 삭제할 것.
-        System.out.println("[카카오]자동 로그인 시작---------------------------------------------------");
+        log.info("[카카오]자동 로그인 시작---------------------------------------------------");
 
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(kakaoUser.getLoginId(), cosKey));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        System.out.println("[카카오]자동 로그인 완료---------------------------------------------------");
+        log.info("[카카오]자동 로그인 완료---------------------------------------------------");
     }
 }
