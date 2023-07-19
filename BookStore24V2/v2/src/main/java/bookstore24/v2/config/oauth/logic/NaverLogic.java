@@ -40,6 +40,12 @@ public class NaverLogic {
     @Value(("${spring.security.oauth2.client.registration.naver.client-secret}"))
     private String clientSecret;
 
+    final String NAVER_REDIRECT_URI = "http://bookstore24.shop/auth/naver/callback";
+
+    final String NAVER_TOKEN_REQUEST_URI = "https://nid.naver.com/oauth2.0/token";
+
+    final String NAVER_PROFILE_REQUEST_URI = "https://openapi.naver.com/v1/nid/me";
+
     /**
      * 네이버 인가 코드 받기 (LoginApiController.naverLogin() 에서 처리)
      */
@@ -74,7 +80,7 @@ public class NaverLogic {
 
         // Http 요청하기 - POST 방식으로 - 그리고 response 변수로 응답받음
         ResponseEntity<String> response = restTemplate.exchange(
-                "https://nid.naver.com/oauth2.0/token",  // 토큰 발급 요청 주소
+                NAVER_TOKEN_REQUEST_URI,  // 토큰 발급 요청 주소
                 HttpMethod.POST,    // 토큰 발급 요청 메서드는 네이버 문서상의 POST
                 naverTokenRequest,  // HttpBody 에 들어갈 데이터와, HttpHeader 값을 한번에 넣어줌
                 String.class    // 응답받을 타입을 String 으로 지정
@@ -125,7 +131,7 @@ public class NaverLogic {
 
         // Http 요청하기 - POST 방식으로 - 그리고 reponse 변수로 응답받음
         ResponseEntity<String> response = restTemplate.exchange(
-                "https://openapi.naver.com/v1/nid/me",    // 네이버 문서상의 프로필 정보 요청 주소
+                NAVER_PROFILE_REQUEST_URI,    // 네이버 문서상의 프로필 정보 요청 주소
                 HttpMethod.GET,    // 네이버
                 naverProfileRequest,
                 String.class

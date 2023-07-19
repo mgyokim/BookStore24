@@ -40,6 +40,12 @@ public class GoogleLogic {
     @Value(("${spring.security.oauth2.client.registration.google.client-secret}"))
     private String clientSecret;
 
+    final String GOOGLE_REDIRECT_URI = "http://bookstore24.shop/auth/google/callback";
+
+    final String GOOGLE_TOKEN_REQUEST_URI = "https://oauth2.googleapis.com/token";
+
+    final String GOOGLE_PROFILE_REQUEST_URI = "https://www.googleapis.com/oauth2/v1/userinfo";
+
     /**
      * 구글 인가 코드 받기 (LoginApiController.googleLogin() 에서 처리)
      */
@@ -66,7 +72,7 @@ public class GoogleLogic {
         params.add("code", code);
         params.add("client_id", clientId);
         params.add("client_secret", clientSecret);
-        params.add("redirect_uri", "http://bookstore24.shop/auth/google/callback");
+        params.add("redirect_uri", GOOGLE_REDIRECT_URI);
         params.add("grant_type", "authorization_code");
 
         // HttpHeader 와 HttpBody 를 하나의 HttpEntity 오브젝트에 담기 -> 이렇게 해주는 이유는 아래의 restTemplate.exchange() 가 파라미터로 HttpEntity 를 받게 되있기 때문.
@@ -74,7 +80,7 @@ public class GoogleLogic {
 
         // Http 요청하기 - POST 방식으로 - 그리고 response 변수로 응답받음
         ResponseEntity<String> response = restTemplate.exchange(
-                "https://oauth2.googleapis.com/token",  // 토큰 발급 요청 주소
+                GOOGLE_TOKEN_REQUEST_URI,  // 토큰 발급 요청 주소
                 HttpMethod.POST,    // 토큰 발급 요청 메서드는 구글문서상의 POST
                 googleTokenRequest,  // HttpBody 에 들어갈 데이터와, HttpHeader 값을 한번에 넣어줌
                 String.class    // 응답받을 타입을 String 으로 지정
@@ -126,7 +132,7 @@ public class GoogleLogic {
 
         // Http 요청하기 - POST 방식으로 - 그리고 reponse 변수로 응답받음
         ResponseEntity<String> response = restTemplate.exchange(
-                "https://www.googleapis.com/oauth2/v1/userinfo",    // 구글 문서상의 프로필 정보 요청 주소
+                GOOGLE_PROFILE_REQUEST_URI,    // 구글 문서상의 프로필 정보 요청 주소
                 HttpMethod.GET,    // 구글
                 googleProfileRequest,
                 String.class

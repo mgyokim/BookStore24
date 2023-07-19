@@ -37,6 +37,12 @@ public class KakaoLogic {
     @Value(("${spring.security.oauth2.client.registration.kakao.client-id}"))
     private String clientId;
 
+    final String KAKAO_REDIRECT_URI = "http://bookstore24.shop/auth/kakao/callback";
+
+    final String KAKAO_TOKEN_REQUEST_URI = "https://kauth.kakao.com/oauth/token";
+
+    final String KAKAO_PROFILE_REQUEST_URI = "https://kapi.kakao.com/v2/user/me";
+
     /**
      * 카카오 인가 코드 받기 (LoginApiController.kakaoLogin() 에서 처리)
      */
@@ -63,7 +69,7 @@ public class KakaoLogic {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", clientId);
-        params.add("redirect_uri", "http://bookstore24.shop/auth/kakao/callback");
+        params.add("redirect_uri", KAKAO_REDIRECT_URI);
         params.add("code", code);
 
         // HttpHeader 와 HttpBody 를 하나의 HttpEntity 오브젝트에 담기 -> 이렇게 해주는 이유는 아래의 restTemplate.exchange() 가 파라미터로 HttpEntity 를 받게 되있기 때문.
@@ -71,7 +77,7 @@ public class KakaoLogic {
 
         // Http 요청하기 - POST 방식으로 - 그리고 response 변수로 응답받음
         ResponseEntity<String> response = restTemplate.exchange(
-                "https://kauth.kakao.com/oauth/token",  // 토큰 발급 요청 주소
+                KAKAO_TOKEN_REQUEST_URI,  // 토큰 발급 요청 주소
                 HttpMethod.POST,    // 토큰 발급 요청 메서드는 카카오 문서상의 POST
                 kakaoTokenRequest,  // HttpBody 에 들어갈 데이터와, HttpHeader 값을 한번에 넣어줌
                 String.class    // 응답받을 타입을 String 으로 지정
@@ -121,7 +127,7 @@ public class KakaoLogic {
 
         // Http 요청하기 - POST 방식으로 - 그리고 reponse2 변수로 응답받음
         ResponseEntity<String> response2 = restTemplate2.exchange(
-                "https://kapi.kakao.com/v2/user/me",    // 카카오 문서상의 프로필 정보 요청 주소
+                KAKAO_PROFILE_REQUEST_URI,    // 카카오 문서상의 프로필 정보 요청 주소
                 HttpMethod.POST,    // 카카오
                 kakaoProfileRequest,
                 String.class
