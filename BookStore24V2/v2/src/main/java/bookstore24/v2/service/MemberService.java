@@ -1,6 +1,5 @@
 package bookstore24.v2.service;
 
-import bookstore24.v2.config.CustomBCryptPasswordEncoder;
 import bookstore24.v2.domain.Member;
 import bookstore24.v2.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;

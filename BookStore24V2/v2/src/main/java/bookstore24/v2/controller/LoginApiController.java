@@ -1,11 +1,11 @@
 package bookstore24.v2.controller;
 
-import bookstore24.v2.config.oauth.logic.GoogleLogic;
-import bookstore24.v2.config.oauth.logic.KakaoLogic;
-import bookstore24.v2.config.oauth.logic.NaverLogic;
-import bookstore24.v2.config.oauth.token.GoogleOauthToken;
-import bookstore24.v2.config.oauth.token.KakaoOauthToken;
-import bookstore24.v2.config.oauth.token.NaverOauthToken;
+import bookstore24.v2.oauth.logic.GoogleLogic;
+import bookstore24.v2.oauth.logic.KakaoLogic;
+import bookstore24.v2.oauth.logic.NaverLogic;
+import bookstore24.v2.oauth.token.GoogleOauthToken;
+import bookstore24.v2.oauth.token.KakaoOauthToken;
+import bookstore24.v2.oauth.token.NaverOauthToken;
 import bookstore24.v2.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

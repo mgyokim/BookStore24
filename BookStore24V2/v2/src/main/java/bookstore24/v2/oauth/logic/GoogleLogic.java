@@ -1,7 +1,7 @@
-package bookstore24.v2.config.oauth.logic;
+package bookstore24.v2.oauth.logic;
 
-import bookstore24.v2.config.oauth.profile.GoogleProfile;
-import bookstore24.v2.config.oauth.token.GoogleOauthToken;
+import bookstore24.v2.oauth.profile.GoogleProfile;
+import bookstore24.v2.oauth.token.GoogleOauthToken;
 import bookstore24.v2.domain.Member;
 import bookstore24.v2.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;

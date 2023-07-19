@@ -1,12 +1,13 @@
-package bookstore24.v2.config.oauth.provider;
+package bookstore24.v2.oauth.provider;
 
 import java.util.Map;
 
-public class GoogleUserInfo implements OAuth2UserInfo {
+// {id=1171131212343, email=abcd@naver.com, name=홍길동}
+public class NaverUserInfo implements OAuth2UserInfo {
 
     private Map<String, Object> attributes; // oauth2User.getAttributes
 
-    public GoogleUserInfo(Map<String, Object> attributes) {
+    public NaverUserInfo(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
 
@@ -16,13 +17,14 @@ public class GoogleUserInfo implements OAuth2UserInfo {
         return attributes;
     }
 
+    @Override
     public String getProviderId() {
-        return (String) attributes.get("sub");
+        return (String) attributes.get("id");
     }
 
     @Override
     public String getProvider() {
-        return "google";
+        return "naver";
     }
 
     @Override

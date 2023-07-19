@@ -1,6 +1,6 @@
 package bookstore24.v2.controller;
 
-import bookstore24.v2.config.auth.PrincipalDetails;
+import bookstore24.v2.auth.PrincipalDetails;
 import bookstore24.v2.domain.Member;
 import bookstore24.v2.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;

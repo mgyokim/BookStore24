@@ -1,7 +1,7 @@
-package bookstore24.v2.config.oauth.logic;
+package bookstore24.v2.oauth.logic;
 
-import bookstore24.v2.config.oauth.profile.NaverProfile;
-import bookstore24.v2.config.oauth.token.NaverOauthToken;
+import bookstore24.v2.oauth.profile.NaverProfile;
+import bookstore24.v2.oauth.token.NaverOauthToken;
 import bookstore24.v2.domain.Member;
 import bookstore24.v2.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;

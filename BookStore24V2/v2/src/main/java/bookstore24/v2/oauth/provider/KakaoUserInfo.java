@@ -1,4 +1,4 @@
-package bookstore24.v2.config.oauth.provider;
+package bookstore24.v2.oauth.provider;
 
 import java.util.Map;
 
