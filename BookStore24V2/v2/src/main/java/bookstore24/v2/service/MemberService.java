@@ -28,4 +28,10 @@ public class MemberService {
         Member member = memberRepository.findByLoginId(loginId);
         return member;
     }
+
+    // Email 로 회원 조회
+    public Member findMemberByEmail(String email) {
+        Member member = memberRepository.findByEmail(email);
+        return member;
+    }
 }

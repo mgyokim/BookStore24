@@ -11,4 +11,6 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     // select * from member where loginId = ?
     public Member findByLoginId(String loginId);
 
+    // select * from member where email = ?
+    public Member findByEmail(String email);
 }
