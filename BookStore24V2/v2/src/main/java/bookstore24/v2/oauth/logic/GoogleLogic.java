@@ -173,20 +173,31 @@ public class GoogleLogic {
      * 미가입자만 체크해서 자동 회원가입
      */
 
-    public void joinCheck(Member googleUser) {
+    public Member joinCheck(Member googleUser) {
 
-        log.info("[구글]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 시작---------------------------------------------------");
+        log.info("[구글] Oauth 이메일 기존회원의 이메일과 중복 여부 체크 및 미중복자 자동 회원가입 처리 시작---------------------------------------------------");
 
-        Member originMember = memberService.findMemberByLoginId(googleUser.getLoginId());
+        Member duplicateEmailMember = memberService.findMemberByEmail(googleUser.getEmail());
 
-        if (originMember == null) {
+        if (duplicateEmailMember == null) {
             memberService.joinMember(googleUser);
+            Member joinedMember = memberService.findMemberByEmail(googleUser.getEmail());
             log.info("구글 로그인이 최초입니다. 자동 회원가입되었습니다.");
+            log.info("[구글]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 완료---------------------------------------------------");
+            return joinedMember;
+        }
+        if ((duplicateEmailMember != null) & (duplicateEmailMember.getProvider() == "google")) {
+            log.info("[구글]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 완료---------------------------------------------------");
+            return duplicateEmailMember;
         } else {
-            log.info("구글 로그인을 한적이 있습니다. 이미 회원가입 되어있습니다.");
+            String provider = duplicateEmailMember.getProvider();
+            log.info(googleUser.getEmail() + " 은 " + provider + " 로그인 방식으로 이미 가입된 이메일입니다. " + provider + " 로그인 방식으로 로그인을 시도하세요.");
+            log.info("[구글]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 완료---------------------------------------------------");
+            googleUser.setLoginId(null);    // 컨트롤러에서 로그인 처리를 하지 않기 위한 용도
+            googleUser.setProvider(provider);
+            return googleUser;
         }
 
-        log.info("[구글]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 완료---------------------------------------------------");
     }
 
     /**
