@@ -187,6 +187,7 @@ public class GoogleLogic {
             return joinedMember;
         }
         if ((duplicateEmailMember != null) & (duplicateEmailMember.getProvider() == "google")) {
+            log.info("구글 로그인을 한적이 있습니다. 이미 회원가입 되어있습니다.");
             log.info("[구글]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 완료---------------------------------------------------");
             return duplicateEmailMember;
         } else {
