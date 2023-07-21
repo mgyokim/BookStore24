@@ -24,6 +24,7 @@ public class LocalLogic {
         member.setLoginId(localSignUpDto.getLoginId());
         member.setLoginPassword(localSignUpDto.getLoginPassword());
         member.setEmail(localSignUpDto.getEmail());
+        member.setProvider("bookstore24");
         member.setRole("ROLE_USER");
 
         log.info("[로컬]회원가입 요청 데이터 로부터 Member 객체 생성 완료---------------------------------------------------");
