@@ -172,20 +172,32 @@ public class NaverLogic {
      * 미가입자만 체크해서 자동 회원가입
      */
 
-    public void joinCheck(Member naverUser) {
+    public Member joinCheck(Member naverUser) {
 
-        log.info("[네이버]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 시작---------------------------------------------------");
+        log.info("[네이버] Oauth 이메일 기존회원의 이메일과 중복 여부 체크 및 미중복자 자동 회원가입 처리 시작---------------------------------------------------");
 
-        Member originMember = memberService.findMemberByLoginId(naverUser.getLoginId());
+        Member duplicatedEmailMember = memberService.findMemberByEmail(naverUser.getEmail());
 
-        if (originMember == null) {
+        if (duplicatedEmailMember == null) {
             memberService.joinMember(naverUser);
+            Member joinedMember = memberService.findMemberByEmail(naverUser.getEmail());
             log.info("네이버 로그인이 최초입니다. 자동 회원가입되었습니다.");
-        } else {
+            log.info("[네이버] Oauth 이메일 기존회원의 이메일과 중복 여부 체크 및 미중복자 자동 회원가입 처리 완료---------------------------------------------------");
+            return joinedMember;
+        }
+        if ((duplicatedEmailMember != null) & (duplicatedEmailMember.getProvider() == "naver")) {
             log.info("네이버 로그인을 한적이 있습니다. 이미 회원가입 되어있습니다.");
+            log.info("[네이버] Oauth 이메일 기존회원의 이메일과 중복 여부 체크 및 미중복자 자동 회원가입 처리 완료---------------------------------------------------");
+            return duplicatedEmailMember;
+        } else {
+            String provider = duplicatedEmailMember.getProvider();
+            log.info(naverUser.getEmail() + " 은 " + provider + " 로그인 방식으로 이미 가입된 이메일입니다. " + provider + " 로그인 방식으로 로그인을 시도하세요.");
+            log.info("[네이버] Oauth 이메일 기존회원의 이메일과 중복 여부 체크 및 미중복자 자동 회원가입 처리 완료---------------------------------------------------");
+            naverUser.setLoginId(null);
+            naverUser.setProvider(provider);
+            return naverUser;
         }
 
-        log.info("[네이버]회원가입 여부 체크 및 미가입자 자동 회원가입 처리 완료---------------------------------------------------");
     }
 
     /**

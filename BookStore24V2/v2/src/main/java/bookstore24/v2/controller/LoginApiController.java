@@ -63,13 +63,17 @@ public class LoginApiController {
         Member member = naverLogic.accessTokenToProfile(naverOauthToken);
 
         // 해당 회원의 회원가입 여부 체크후 비회원만 회원가입 처리
-        naverLogic.joinCheck(member);
+        Member joinedMember = naverLogic.joinCheck(member);
 
-        // 해당 회원 로그인 처리
-        naverLogic.naverAutoLogin(member);
-
-        // 회원의 LoginId 반환
-        return member.getLoginId();
+        if (joinedMember.getLoginId() != null) {
+            // 해당 회원 로그인 처리
+            naverLogic.naverAutoLogin(member);
+            // 회원의 LoginId 반환
+            return member.getLoginId();
+        } else {
+            String provider = joinedMember.getProvider();
+            return joinedMember.getEmail() + " 은 " + provider +" 로그인 방식으로 이미 가입된 이메일입니다. " + provider + " 로그인 방식으로 로그인을 시도하세요.";
+        }
     }
 
     @GetMapping("auth/google/callback")
