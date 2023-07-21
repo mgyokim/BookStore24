@@ -34,15 +34,22 @@ public class LoginApiController {
 
         // 발급받은 인가 코드로 토큰 요청
         KakaoOauthToken kakaoOauthToken = kakaoLogic.codeToToken(code);
+
         // 발급받은 액세스토큰으로 프로필 정보 요청
         Member member = kakaoLogic.accessTokenToProfile(kakaoOauthToken);
-        // 해당 회원의 회원가입 여부 체크후 비회원만 회원가입 처리
-        kakaoLogic.joinCheck(member);
-        // 해당 회원 로그인 처리
-        kakaoLogic.kakaoAutoLogin(member);
 
-        // 회원의 LoginId 반환
-        return member.getLoginId();
+        // 해당 회원의 회원가입 여부 체크후 비회원만 회원가입 처리
+        Member joinedMember = kakaoLogic.joinCheck(member);
+
+        if (joinedMember.getLoginId() != null) {
+            // 해당 회원 로그인 처리
+            kakaoLogic.kakaoAutoLogin(member);
+            // 회원의 LoginId 반환
+            return member.getLoginId();
+        } else {
+            String provider = joinedMember.getProvider();
+            return joinedMember.getEmail() + " 은 " + provider +" 로그인 방식으로 이미 가입된 이메일입니다. " + provider + " 로그인 방식으로 로그인을 시도하세요.";
+        }
     }
 
     @GetMapping("auth/naver/callback")
