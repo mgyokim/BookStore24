@@ -1,5 +1,6 @@
 package bookstore24.v2.config;
 
+import bookstore24.v2.filter.MyFilter3;
 import bookstore24.v2.oauth.PrincipalOauth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -9,7 +10,9 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 /**
  * 1. 코드받기(인증)
@@ -26,28 +29,26 @@ public class SecurityConfig {
 
     private final PrincipalOauth2UserService principalOauth2UserService;
 
+    private final CorsConfig corsConfig;
+
     /**
      * SecurityFilterChain 을 정의하여 Spring Security 를 구성
      */
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.addFilterBefore(new MyFilter3(), LogoutFilter.class);
         http.csrf().disable();
-        http.authorizeRequests()    // .antMatchers 는 스프링 시큐리티에서 경로에 대한 접근 권한을 설정하기 위해 사용
-                .antMatchers("/user/**").authenticated()    // 해당 경로는 인증된 사용자만
-                .antMatchers("/manager/**").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_MANAGER')")   // 해당 경로는 어드민이거나 매니저만
-                .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")   // 해당 경로는 어드민만
-                .anyRequest().permitAll()  // 그 이외경로는 모두가 권한있음
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 사용 안함, Stateless로 만들 것임
                 .and()
-                .formLogin()
-                .loginPage("/loginForm")   // 권한 없는 경로 접근시 이 경로로 강제이동
-                .loginProcessingUrl("/login")  // /login 주소가 호출이 되면 시큐리티가 낚아채서 대신 로그인을 진행해줌. 그렇기때문에 컨트롤러에 따로 /login을 만들어주지 않아도 된다.
-                .defaultSuccessUrl("/")    // 로그인 성공시 / 로(메인페이지) 보내줄건데, 만약, 너가 특정 페이지를 들어가려고 했었으면 그 페이지로 보내줄게.
-                .and()
-                .oauth2Login()
-                .loginPage("/loginForm")
-                .userInfoEndpoint()
-                .userService(principalOauth2UserService); // OAuth 로그인 완료된 뒤의 후처리가 필요함. Tip. 코드X, (엑세스 토큰 + 사용자 프로필 정보)
+                .addFilter(corsConfig.corsFilter()) // cors 설정 ( @CrossOrigin 을 사용하면, 인증이 필요한 요청은 해결할 수 없다. 따라서 필터에 걸어줘야 한다.)
+                .formLogin().disable()  // formLogin 방식 사용 안함
+                .httpBasic().disable()  // 기본적인 Http Basic 로그인 방식 사용 안하고, Bearer 방식을 사용할 것이다.
+                .authorizeRequests()
+                .antMatchers("/user/**").access("hasRole('ROLE_USER')")
+                .anyRequest().permitAll();
+
+        // SecurityFilterChain 을 반환
         return http.build();
     }
 

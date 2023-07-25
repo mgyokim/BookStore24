@@ -21,6 +21,15 @@ public class MemberSubController {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @GetMapping("home")
+    public @ResponseBody  String home() {
+        return "<h1>home</h1>";
+    }
+    @PostMapping ("token")
+    public @ResponseBody  String token() {
+        return "<h1>token</h1>";
+    }
+
     // Authentication 을 DI(의존성 주입) 하면 authentication객체 안에 getPrincipal 객체가 있고 이걸 PrincipalDetails로 다운캐스팅해서 .getUser() 호출하면 User 객체 얻을 수 있음.
     // @AuthenticationPrincipal 통해서 getUser를 찾을 수도 있다.
     @GetMapping("/test/login")
@@ -79,6 +88,7 @@ public class MemberSubController {
         // 뷰리졸버 설정 : templates(prefix), mustache(suffix) 생략가능!
         return "index"; // src/main/resources/templates/index.mustache
     }
+
 
     // OAuth 로그인을 해도 PrincipalDetails
     // 일반 로그인을 해도 PrincipalDetails
