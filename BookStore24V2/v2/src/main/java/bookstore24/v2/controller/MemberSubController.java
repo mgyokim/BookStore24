@@ -1,6 +1,6 @@
 package bookstore24.v2.controller;
 
-import bookstore24.v2.auth.PrincipalDetails;
+import bookstore24.v2.auth.PrincipalDetails2;
 import bookstore24.v2.domain.Member;
 import bookstore24.v2.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,11 +36,11 @@ public class MemberSubController {
     public @ResponseBody
     String testLogin(   // 일반적인 로컬 로그인을 하면 UserDetails 타입이 authentication 객체에 들어오는 것.
                         Authentication authentication,// // Authentication 을 DI해서 PrincipalDetails로 다운캐스팅과정 거쳐서 User객체 찾을 수도 있고,
-                        @AuthenticationPrincipal PrincipalDetails userDetails) {  // @AuthenticationPrincipal 통해서 getUser를 찾을 수도 있다.
+                        @AuthenticationPrincipal PrincipalDetails2 userDetails) {  // @AuthenticationPrincipal 통해서 getUser를 찾을 수도 있다.
 
         System.out.println("/test/login ========================");
-        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-        System.out.println("authentication : " + principalDetails.getMember());
+        PrincipalDetails2 principalDetails2 = (PrincipalDetails2) authentication.getPrincipal();
+        System.out.println("authentication : " + principalDetails2.getMember());
 
         System.out.println("userDetails : " + userDetails.getMember());
 
@@ -61,12 +61,12 @@ public class MemberSubController {
      * <p>
      * 그러면, 이 객체가 들어가면 세션이 생기니까 로그인이 된 것인데,
      * 우리가 필요할 때 꺼내 써야하는데, 불편한게 있다.
-     * 우리가 어떤 컨트롤러에서 일반적인 로그인을 했을때 세션에 접근하려면 어떻게 해야하냐면, @AuthenticationPrincipal PrincipalDetails userDetails를 파라미터로 받아야한다. 혹은 @AuthenticationPrincipal UserDetails userDetails.
+     * 우리가 어떤 컨트롤러에서 일반적인 로그인을 했을때 세션에 접근하려면 어떻게 해야하냐면, @AuthenticationPrincipal PrincipalDetails2 userDetails를 파라미터로 받아야한다. 혹은 @AuthenticationPrincipal UserDetails userDetails.
      * 그런데 만약에 구글로 로그인 했다면, @AuthenticationPrincipal OAuth2User oauth 이렇게 받아야 한다.
      * 이렇게 두가지 로그인 방식에 해당하는 객체가 다르기 때문에 컨트롤러에서 처리하는 것에 대해 고민이 생긴다.
      * 그래서 어떻게 해야하냐면,
      * Authentication 객체 안에 들어갈 수 있는 타입은 UserDetials, OAuth2User 2개니까 X라는 클래스를 만들어서 각각을 implemetation 하도록 하고, Authentication에 X를 담는 방식을 사용하면 된다.
-     * 지금 이 프로젝트애서는 X가 PrincipalDetails 이 될 것이다.
+     * 지금 이 프로젝트애서는 X가 PrincipalDetails2 이 될 것이다.
      */
     @GetMapping("/test/oauth/login")
     public @ResponseBody
@@ -90,12 +90,12 @@ public class MemberSubController {
     }
 
 
-    // OAuth 로그인을 해도 PrincipalDetails
-    // 일반 로그인을 해도 PrincipalDetails
+    // OAuth 로그인을 해도 PrincipalDetails2
+    // 일반 로그인을 해도 PrincipalDetails2
     @GetMapping("/user")
     public @ResponseBody
-    String user(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-        System.out.println("principalDetails : " + principalDetails.getMember());
+    String user(@AuthenticationPrincipal PrincipalDetails2 principalDetails2) {
+        System.out.println("principalDetails2 : " + principalDetails2.getMember());
         return "user";
     }
 

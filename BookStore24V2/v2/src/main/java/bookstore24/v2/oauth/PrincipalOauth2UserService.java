@@ -1,6 +1,6 @@
 package bookstore24.v2.oauth;
 
-import bookstore24.v2.auth.PrincipalDetails;
+import bookstore24.v2.auth.PrincipalDetails2;
 import bookstore24.v2.oauth.provider.GoogleUserInfo;
 import bookstore24.v2.oauth.provider.KakaoUserInfo;
 import bookstore24.v2.oauth.provider.NaverUserInfo;
@@ -30,7 +30,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
      * 함수 종료시 @AuthenticationPrincipal 어노테이션이 만들어진다.
      * 오버라이딩 하지 않아도 loadUser는 정상적으로 발동을 한다. 그러면 왜 오버라이딩을 해주었는가?
      * 1. OAuth 로그인한 회원을 강제 회원가입 시키기 위해서.
-     * 2. PrincipalDetails 타입으로 객체를 반환하기 위해서.
+     * 2. PrincipalDetails2 타입으로 객체를 반환하기 위해서.
      */
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -82,6 +82,6 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
             System.out.println(provider + " 로그인을 이미 한적이 있습니다. 자동회원가입이 되어있습니다.");
         }
 
-        return new PrincipalDetails(memberEntity, oAuth2User.getAttributes());
+        return new PrincipalDetails2(memberEntity, oAuth2User.getAttributes());
     }
 }

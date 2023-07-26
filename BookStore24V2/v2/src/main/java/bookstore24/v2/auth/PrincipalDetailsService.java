@@ -8,20 +8,20 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+// http://localhost:8080/login => 시큐리티 설정때문에 여기서 동작을 안한다. 따라서 필터로 등록해줘야함
 @Service
 @RequiredArgsConstructor
 public class PrincipalDetailsService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
 
-    // 시큐리티 session(내부 Authentication(내부 UserDetails)) <= Authentication(내부 UserDetails) <= UserDetails
-    // 함수 종료시 @AuthenticationPrincipal 어노테이션이 만들어진다.
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        System.out.println("PrincipalDetailsService 의 loadUserByUsername()");
         Member memberEntity = memberRepository.findByLoginId(username);
-        if (memberEntity != null) {
-            return new PrincipalDetails(memberEntity);
-        }
-        return null;
+        System.out.println("memberEntity : " + memberEntity);
+        return new PrincipalDetails(memberEntity);
     }
+
 }
