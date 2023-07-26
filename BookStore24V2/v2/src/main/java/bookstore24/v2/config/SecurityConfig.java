@@ -1,6 +1,7 @@
 package bookstore24.v2.config;
 
 import bookstore24.v2.filter.MyFilter3;
+import bookstore24.v2.jwt.JwtAuthenticationFilter;
 import bookstore24.v2.oauth.PrincipalOauth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -44,6 +45,7 @@ public class SecurityConfig {
                 .addFilter(corsConfig.corsFilter()) // cors 설정 ( @CrossOrigin 을 사용하면, 인증이 필요한 요청은 해결할 수 없다. 따라서 필터에 걸어줘야 한다.)
                 .formLogin().disable()  // formLogin 방식 사용 안함
                 .httpBasic().disable()  // 기본적인 Http Basic 로그인 방식 사용 안하고, Bearer 방식을 사용할 것이다.
+                .addFilter(new JwtAuthenticationFilter(authenticationManager(http)))   // AuthenticationManager 파라미터를 줘야함.
                 .authorizeRequests()
                 .antMatchers("/user/**").access("hasRole('ROLE_USER')")
                 .anyRequest().permitAll();
