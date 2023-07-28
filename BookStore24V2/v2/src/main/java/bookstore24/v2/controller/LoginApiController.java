@@ -28,9 +28,8 @@ public class LoginApiController {
     private final GoogleLogic googleLogic;
     private final LocalLogic localLogic;
 
-    @GetMapping("/auth/kakao/callback")
-    public @ResponseBody
-    String kakaoLogin(String code) {
+    @PostMapping("/auth/kakao/callback")
+    public String kakaoLogin(@RequestParam("Authorization_code") String code) {
 
         // 발급받은 인가 코드로 토큰 요청
         KakaoOauthToken kakaoOauthToken = kakaoLogic.codeToToken(code);
@@ -52,10 +51,10 @@ public class LoginApiController {
         }
     }
 
-    @GetMapping("auth/naver/callback")
-    public @ResponseBody
-    String naverLogin(String code) {
-
+    @PostMapping("auth/naver/callback")
+    public String naverLogin(@RequestParam("Authorization_code") String code)
+    {
+        log.info("=============인가코드========= " + code);
         // 발급받은 인가 코드로 토큰 요청
         NaverOauthToken naverOauthToken = naverLogic.codeToToken(code);
 
@@ -76,9 +75,8 @@ public class LoginApiController {
         }
     }
 
-    @GetMapping("auth/google/callback")
-    public @ResponseBody
-    String googleLogin(String code) {
+    @PostMapping("auth/google/callback")
+    public String googleLogin(@RequestParam("Authorization_code") String code) {
 
         // 발급받은 인가 코드로 토큰 요청
         GoogleOauthToken googleOauthToken = googleLogic.codeToToken(code);

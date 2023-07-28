@@ -40,7 +40,7 @@ public class NaverLogic {
     @Value(("${spring.security.oauth2.client.registration.naver.client-secret}"))
     private String clientSecret;
 
-    final String NAVER_REDIRECT_URI = "http://bookstore24.shop/auth/naver/callback";
+    final String NAVER_REDIRECT_URI = "http://localhost:3000/auth/naver";
 
     final String NAVER_TOKEN_REQUEST_URI = "https://nid.naver.com/oauth2.0/token";
 
@@ -50,7 +50,10 @@ public class NaverLogic {
      * 네이버 인가 코드 받기 (LoginApiController.naverLogin() 에서 처리)
      */
     // 요청 URL
-    // https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=B3RGNtinEp3Va8fysxkN&redirect_uri=http://bookstore24.shop/auth/naver/callback&state='test'
+    // 프론트에서
+    // https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=B3RGNtinEp3Va8fysxkN&redirect_uri=http://localhost:3000/auth/naver&state='test'
+    // 로 요청하면 인가코드 획득함.
+    // 획득한 인가코드를 서버IP/auth/naver/callback?Authorization_code={} 로 POST 요청하면 서버가 인가코드 획득함.
 
     /**
      * 발급받은 인가 코드로 토큰 요청하기

@@ -37,7 +37,7 @@ public class KakaoLogic {
     @Value(("${spring.security.oauth2.client.registration.kakao.client-id}"))
     private String clientId;
 
-    final String KAKAO_REDIRECT_URI = "http://bookstore24.shop/auth/kakao/callback";
+    final String KAKAO_REDIRECT_URI = "http://localhost:3000/auth/kakao";
 
     final String KAKAO_TOKEN_REQUEST_URI = "https://kauth.kakao.com/oauth/token";
 
@@ -47,7 +47,10 @@ public class KakaoLogic {
      * 카카오 인가 코드 받기 (LoginApiController.kakaoLogin() 에서 처리)
      */
     // 요청 URL
-    // https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=e435f34295d28879dfabc32de2bd7546&redirect_uri=http://bookstore24.shop/auth/kakao/callback
+    // 프론트에서
+    // https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=e435f34295d28879dfabc32de2bd7546&redirect_uri=http://localhost:3000/auth/kakao
+    // 로 요청하면 인가코드 획득함.
+    // 획득한 인가코드를 서버IP/auth/kakao/callback?Authorization_code={} 로 POST 요청하면 서버가 인가코드 획득함.
 
 
     /**

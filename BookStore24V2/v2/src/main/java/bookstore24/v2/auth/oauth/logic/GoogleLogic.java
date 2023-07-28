@@ -40,7 +40,7 @@ public class GoogleLogic {
     @Value(("${spring.security.oauth2.client.registration.google.client-secret}"))
     private String clientSecret;
 
-    final String GOOGLE_REDIRECT_URI = "http://bookstore24.shop/auth/google/callback";
+    final String GOOGLE_REDIRECT_URI = "http://localhost:3000/auth/google";
 
     final String GOOGLE_TOKEN_REQUEST_URI = "https://oauth2.googleapis.com/token";
 
@@ -50,7 +50,10 @@ public class GoogleLogic {
      * 구글 인가 코드 받기 (LoginApiController.googleLogin() 에서 처리)
      */
     // 요청 URL
-    // https://accounts.google.com/o/oauth2/v2/auth?client_id=766446517759-t82jo5h4vk9rmj30bld1d30su7sqdde1.apps.googleusercontent.com&redirect_uri=http://bookstore24.shop/auth/google/callback&response_type=code&scope=openid%20email%20profile
+    // 프론트에서
+    // https://accounts.google.com/o/oauth2/v2/auth?client_id=766446517759-t82jo5h4vk9rmj30bld1d30su7sqdde1.apps.googleusercontent.com&redirect_uri=http://localhost:3000/auth/google&response_type=code&scope=openid%20email%20profile
+    // 로 요청하면 인가코드 획득함.
+    // 획득한 인가코드를 서버IP/auth/google/callback?Authorization_code={} 로 POST 요청하면 서버가 인가코드 획득함.
 
     /**
      * 발급받은 인가 코드로 토큰 요청하기
