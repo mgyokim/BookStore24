@@ -1,13 +1,13 @@
 package bookstore24.v2.controller;
 
-import bookstore24.v2.auth.LocalSignUpDto;
-import bookstore24.v2.oauth.logic.GoogleLogic;
-import bookstore24.v2.oauth.logic.KakaoLogic;
-import bookstore24.v2.oauth.logic.LocalLogic;
-import bookstore24.v2.oauth.logic.NaverLogic;
-import bookstore24.v2.oauth.token.GoogleOauthToken;
-import bookstore24.v2.oauth.token.KakaoOauthToken;
-import bookstore24.v2.oauth.token.NaverOauthToken;
+import bookstore24.v2.auth.local.LocalSignUpDto;
+import bookstore24.v2.auth.oauth.logic.GoogleLogic;
+import bookstore24.v2.auth.oauth.logic.KakaoLogic;
+import bookstore24.v2.auth.local.logic.LocalLogic;
+import bookstore24.v2.auth.oauth.logic.NaverLogic;
+import bookstore24.v2.auth.oauth.token.GoogleOauthToken;
+import bookstore24.v2.auth.oauth.token.KakaoOauthToken;
+import bookstore24.v2.auth.oauth.token.NaverOauthToken;
 import bookstore24.v2.domain.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,8 +1,8 @@
 package bookstore24.v2.config;
 
-import bookstore24.v2.filter.MyFilter3;
 import bookstore24.v2.jwt.JwtAuthenticationFilter;
-import bookstore24.v2.oauth.PrincipalOauth2UserService;
+import bookstore24.v2.jwt.JwtAuthorizationFilter;
+import bookstore24.v2.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +13,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 /**
  * 1. 코드받기(인증)
@@ -28,7 +27,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final PrincipalOauth2UserService principalOauth2UserService;
+    private final MemberRepository memberRepository;
 
     private final CorsConfig corsConfig;
 
@@ -38,7 +37,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.addFilterBefore(new MyFilter3(), LogoutFilter.class);
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 사용 안함, Stateless로 만들 것임
                 .and()
@@ -46,8 +44,15 @@ public class SecurityConfig {
                 .formLogin().disable()  // formLogin 방식 사용 안함
                 .httpBasic().disable()  // 기본적인 Http Basic 로그인 방식 사용 안하고, Bearer 방식을 사용할 것이다.
                 .addFilter(new JwtAuthenticationFilter(authenticationManager(http)))   // AuthenticationManager 파라미터를 줘야함.
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(http), memberRepository))    // // AuthenticationManager 파라미터를 줘야함.
                 .authorizeRequests()
-                .antMatchers("/user/**").access("hasRole('ROLE_USER')")
+//                .antMatchers("/user/**").access("hasRole('ROLE_USER')")
+                .antMatchers("/user/**")
+                .access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+                .antMatchers("/manager/**")
+                .access("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+                .antMatchers("/admin/**")
+                .access("hasRole('ROLE_ADMIN')")
                 .anyRequest().permitAll();
 
         // SecurityFilterChain 을 반환

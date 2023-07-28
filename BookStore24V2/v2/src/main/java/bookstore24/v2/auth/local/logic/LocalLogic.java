@@ -1,6 +1,6 @@
-package bookstore24.v2.oauth.logic;
+package bookstore24.v2.auth.local.logic;
 
-import bookstore24.v2.auth.LocalSignUpDto;
+import bookstore24.v2.auth.local.LocalSignUpDto;
 import bookstore24.v2.domain.Member;
 import bookstore24.v2.service.MemberService;
 import lombok.RequiredArgsConstructor;

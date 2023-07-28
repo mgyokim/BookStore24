@@ -1,7 +1,7 @@
-package bookstore24.v2.oauth.logic;
+package bookstore24.v2.auth.oauth.logic;
 
-import bookstore24.v2.oauth.profile.GoogleProfile;
-import bookstore24.v2.oauth.token.GoogleOauthToken;
+import bookstore24.v2.auth.oauth.profile.GoogleProfile;
+import bookstore24.v2.auth.oauth.token.GoogleOauthToken;
 import bookstore24.v2.domain.Member;
 import bookstore24.v2.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -130,7 +130,7 @@ public class GoogleLogic {
         // HttpHeader 와 HttpBody 를 하나의 HttpEntity 오브젝트에 담기 -> 이렇게 해주는 이유는 아래의 restTemplate.exchange() 가 파라미터로 HttpEntity 를 받게 되있기 때문.
         HttpEntity<MultiValueMap<String, String>> googleProfileRequest = new HttpEntity<>(httpHeaders);
 
-        // Http 요청하기 - POST 방식으로 - 그리고 reponse 변수로 응답받음
+        // Http 요청하기 - POST 방식으로 - 그리고 response 변수로 응답받음
         ResponseEntity<String> response = restTemplate.exchange(
                 GOOGLE_PROFILE_REQUEST_URI,    // 구글 문서상의 프로필 정보 요청 주소
                 HttpMethod.GET,    // 구글

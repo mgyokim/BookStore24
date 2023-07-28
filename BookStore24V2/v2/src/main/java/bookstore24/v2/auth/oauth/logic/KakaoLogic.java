@@ -1,7 +1,7 @@
-package bookstore24.v2.oauth.logic;
+package bookstore24.v2.auth.oauth.logic;
 
-import bookstore24.v2.oauth.profile.KakaoProfile;
-import bookstore24.v2.oauth.token.KakaoOauthToken;
+import bookstore24.v2.auth.oauth.profile.KakaoProfile;
+import bookstore24.v2.auth.oauth.token.KakaoOauthToken;
 import bookstore24.v2.domain.Member;
 import bookstore24.v2.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;

@@ -1,4 +1,4 @@
-package bookstore24.v2.oauth.token;
+package bookstore24.v2.auth.oauth.token;
 
 import lombok.Data;
 

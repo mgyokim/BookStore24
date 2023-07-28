@@ -1,4 +1,4 @@
-package bookstore24.v2.auth;
+package bookstore24.v2.auth.local;
 
 import lombok.Data;
 
