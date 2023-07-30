@@ -9,14 +9,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -37,7 +31,8 @@ public class KakaoLogic {
     @Value(("${spring.security.oauth2.client.registration.kakao.client-id}"))
     private String clientId;
 
-    final String KAKAO_REDIRECT_URI = "http://localhost:3000/auth/kakao";
+    //    final String KAKAO_REDIRECT_URI = "http://localhost:3000/auth/kakao";    // 프론트 통신용
+    final String KAKAO_REDIRECT_URI = "http://bookstore24.shop/auth/kakao/callback";    // 로컬 개발용
 
     final String KAKAO_TOKEN_REQUEST_URI = "https://kauth.kakao.com/oauth/token";
 
@@ -197,15 +192,48 @@ public class KakaoLogic {
         }
     }
 
-    /**
-     * 자동 로그인 처리
-     */
+//    /**
+//     * 자동 로그인 처리
+//     */
+//    public void kakaoAutoLogin(Member kakaoUser) {
+//        log.info("[카카오]자동 로그인 시작---------------------------------------------------");
+//
+//        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(kakaoUser.getLoginId(), cosKey));
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//        log.info("[카카오]자동 로그인 완료---------------------------------------------------");
+//    }
+
     public void kakaoAutoLogin(Member kakaoUser) {
-        log.info("[카카오]자동 로그인 시작---------------------------------------------------");
+        // 카카오 로그인 요청 회원 데이터
+        String loginId = kakaoUser.getLoginId();
+        log.info("Request loginId : " + loginId);
+        String loginPassword = cosKey;
+        log.info("Request loginPassword : " + loginPassword);
 
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(kakaoUser.getLoginId(), cosKey));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        // JSON 데이터로 변환
+        String jsonData = "{\"loginId\":\"" + loginId + "\", \"loginPassword\":\"" + loginPassword + "\"}";
 
-        log.info("[카카오]자동 로그인 완료---------------------------------------------------");
+        // 요청 헤더 설정
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+        // 요청 바디와 헤더를 포함하는 HttpEntity 생성
+        HttpEntity<String> requestEntity = new HttpEntity<>(jsonData, httpHeaders);
+
+        // RestTemplate 생성
+        RestTemplate restTemplate = new RestTemplate();
+
+        // /login 컨트롤러로 POST 요청 보내기
+        String url = "http://bookstore24.shop/login"; // 엔드포인트 URL
+        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+
+        // 응답 결과 처리
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            HttpHeaders responseEntityHeaders = responseEntity.getHeaders();
+            log.info("로그인 응답 데이터 헤더 : " + responseEntityHeaders);
+        } else {
+            log.info("로그인 실패 : " + responseEntity.getStatusCodeValue());
+        }
     }
 }
