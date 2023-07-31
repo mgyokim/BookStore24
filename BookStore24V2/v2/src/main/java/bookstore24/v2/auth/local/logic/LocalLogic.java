@@ -46,7 +46,7 @@ public class LocalLogic {
             memberService.joinMember(localMember);
             Member joinMember = memberService.findMemberByEmail(localMember.getEmail());
 
-            log.info("[END] - LocalLogic.joinCheck (duplicateLoginId == null) & (duplicateEmail == null) / LoginId : [" + localMember.getLoginId() + ", Email : " + localMember.getEmail() + "] 둘다 미중복임 -> 회원가입 완료---------------------------------------------------");
+            log.info("[END] - LocalLogic.joinCheck (duplicateLoginId == null) & (duplicateEmail == null) / [LoginId : " + localMember.getLoginId() + ", Email : " + localMember.getEmail() + "] 둘다 미중복임 -> 회원가입 완료---------------------------------------------------");
             log.info("[END] - LocalLogic.joinCheck / [LoginId : " + localMember.getLoginId() + ", email : " + localMember.getEmail() + "]  각각 중복여부 체크 및 회원가입 로직 종료 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
 
             return joinMember;
