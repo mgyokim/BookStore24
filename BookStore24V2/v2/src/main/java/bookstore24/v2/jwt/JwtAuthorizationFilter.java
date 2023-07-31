@@ -75,6 +75,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
         }
+        else{
+            log.info("로그인 실패 : 유효하지 않은 JWT");
+        }
         chain.doFilter(request, response);
     }
 

@@ -9,6 +9,7 @@ import bookstore24.v2.auth.oauth.token.KakaoOauthToken;
 import bookstore24.v2.domain.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,7 @@ public class MemberSubController {
      * 테스트용 컨트롤러
      */
     @GetMapping("/auth/kakao/callback")
-    String kakaoLogin2(String code) {
+    ResponseEntity<String> kakaoLogin2(String code) {
 
         // 발급받은 인가 코드로 토큰 요청
         KakaoOauthToken kakaoOauthToken = kakaoLogic.codeToToken(code);
@@ -42,12 +43,19 @@ public class MemberSubController {
 
         if (joinedMember.getLoginId() != null) {
             // 해당 회원 로그인 처리
-            kakaoLogic.kakaoAutoLogin(member);
+            ResponseEntity<String> responseJwt = kakaoLogic.kakaoAutoLogin(member);
             // 회원의 LoginId 반환
-            return member.getLoginId();
+            log.info("kakaoLogin 컨트롤러에서 로그인 정상 응답 반환 완료");
+            return responseJwt;
         } else {
+            String email = joinedMember.getEmail();
             String provider = joinedMember.getProvider();
-            return joinedMember.getEmail() + " 은 " + provider + " 로그인 방식으로 이미 가입된 이메일입니다. " + provider + " 로그인 방식으로 로그인을 시도하세요.";
+
+            ResponseEntity<String> failResponseJwt = kakaoLogic.kakaoAutoLoginFail(email, provider);
+
+            log.info("kakaoLogin 컨트롤러에서 로그인 실패 응답 반환 완료" + failResponseJwt);
+            return failResponseJwt;
+//            return joinedMember.getEmail() + " 은 " + provider +" 로그인 방식으로 이미 가입된 이메일입니다. " + provider + " 로그인 방식으로 로그인을 시도하세요.";
         }
     }
 

@@ -3,18 +3,21 @@ package bookstore24.v2.auth.oauth.logic;
 import bookstore24.v2.auth.oauth.profile.KakaoProfile;
 import bookstore24.v2.auth.oauth.token.KakaoOauthToken;
 import bookstore24.v2.domain.Member;
+import bookstore24.v2.jwt.JwtProperties;
 import bookstore24.v2.service.MemberService;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import java.util.Date;
 
 @Component
 @RequiredArgsConstructor
@@ -23,15 +26,13 @@ public class KakaoLogic {
 
     private final MemberService memberService;
 
-    private final AuthenticationManager authenticationManager;
-
     @Value("${cos.key}")
     private String cosKey;
 
     @Value(("${spring.security.oauth2.client.registration.kakao.client-id}"))
     private String clientId;
 
-    //    final String KAKAO_REDIRECT_URI = "http://localhost:3000/auth/kakao";    // 프론트 통신용
+    //        final String KAKAO_REDIRECT_URI = "http://localhost:3000/auth/kakao";    // 프론트 통신용
     final String KAKAO_REDIRECT_URI = "http://bookstore24.shop/auth/kakao/callback";    // 로컬 개발용
 
     final String KAKAO_TOKEN_REQUEST_URI = "https://kauth.kakao.com/oauth/token";
@@ -192,19 +193,7 @@ public class KakaoLogic {
         }
     }
 
-//    /**
-//     * 자동 로그인 처리
-//     */
-//    public void kakaoAutoLogin(Member kakaoUser) {
-//        log.info("[카카오]자동 로그인 시작---------------------------------------------------");
-//
-//        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(kakaoUser.getLoginId(), cosKey));
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//
-//        log.info("[카카오]자동 로그인 완료---------------------------------------------------");
-//    }
-
-    public void kakaoAutoLogin(Member kakaoUser) {
+    public ResponseEntity<String> kakaoAutoLogin(Member kakaoUser) {
         // 카카오 로그인 요청 회원 데이터
         String loginId = kakaoUser.getLoginId();
         log.info("Request loginId : " + loginId);
@@ -232,8 +221,27 @@ public class KakaoLogic {
         if (responseEntity.getStatusCode().is2xxSuccessful()) {
             HttpHeaders responseEntityHeaders = responseEntity.getHeaders();
             log.info("로그인 응답 데이터 헤더 : " + responseEntityHeaders);
+            return responseEntity;
+
         } else {
             log.info("로그인 실패 : " + responseEntity.getStatusCodeValue());
         }
+        return null;
+    }
+
+    public ResponseEntity<String> kakaoAutoLoginFail(String email, String provider) {
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+
+        String loginFailJwt = JWT.create()
+                .withSubject("bookstore24LoginFailToken")    // 토큰 제목
+                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.EXPIRATION_TIME))  // 토큰 만료 일자
+                .withClaim("email", email) // Private claim
+                .withClaim("provider", provider)  // Private claim
+                .sign(Algorithm.HMAC512(JwtProperties.SECRET));    // 토큰 사인
+
+        httpHeaders.set(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + loginFailJwt);
+
+        return new ResponseEntity<>("login failed. Please check your email.", httpHeaders, HttpStatus.UNAUTHORIZED);
     }
 }
