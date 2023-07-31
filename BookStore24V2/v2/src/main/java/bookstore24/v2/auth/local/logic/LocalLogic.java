@@ -18,7 +18,7 @@ public class LocalLogic {
      * 회원 정보 생성
      */
     public Member requestJsonToMember(LocalSignUpDto localSignUpDto) {
-        log.info("[로컬]회원가입 요청 데이터 로부터 Member 객체 생성 시작---------------------------------------------------");
+        log.info("[START] - LocalLogic.requestJsonToMember / 클라이언트 요청 데이터 [loginId : " + localSignUpDto.getLoginId() + ", loginPassword : " + localSignUpDto.getLoginPassword() + ", email : " + localSignUpDto.getEmail() + "] 이용하여 Member 객체 생성 시작---------------------------------------------------------------------------------");
 
         Member member = new Member();
         member.setLoginId(localSignUpDto.getLoginId());
@@ -27,8 +27,7 @@ public class LocalLogic {
         member.setProvider("bookstore24");
         member.setRole("ROLE_USER");
 
-        log.info("[로컬]회원가입 요청 데이터 로부터 Member 객체 생성 완료---------------------------------------------------");
-
+        log.info("[END] - LocalLogic.requestJsonToMember / 클라이언트 요청 데이터 [loginId : " + localSignUpDto.getLoginId() + ", loginPassword : " + localSignUpDto.getLoginPassword() + ", email : " + localSignUpDto.getEmail() + "] 이용하여 Member 객체 생성 완료-----------------------------------------------------------------------------------");
         return member;
     }
 
@@ -36,40 +35,54 @@ public class LocalLogic {
      * LoginId, Email 각각 중복여부 체크하여 미중복시 회원가입 성공
      */
     public Member joinCheck(Member localMember) {
-        log.info("[로컬]LoginId, Email 각각 중복여부 체크하여 미중복시 회원가입 처리 시작---------------------------------------------------");
+        log.info("[START] - LocalLogic.joinCheck / [LoginId : " + localMember.getLoginId() + ", email : " + localMember.getEmail() + "]  각각 중복여부 체크 및 회원가입 로직 시작 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
 
         Member duplicateLoginId = memberService.findMemberByLoginId(localMember.getLoginId());
         Member duplicateEmail = memberService.findMemberByEmail(localMember.getEmail());
 
         if ((duplicateLoginId == null) & (duplicateEmail == null)) {
+            log.info("[START] - LocalLogic.joinCheck (duplicateLoginId == null) & (duplicateEmail == null) / [LoginId : " + localMember.getLoginId() + ", Email : " + localMember.getEmail() + "] 둘다 미중복임 -> 회원가입 진행---------------------------------------------------");
+
             memberService.joinMember(localMember);
-            log.info("로컬 회원가입이 완료되었습니다.");
             Member joinMember = memberService.findMemberByEmail(localMember.getEmail());
-            log.info("[로컬]LoginId, Email 각각 중복여부 체크하여 미중복시 회원가입 처리 완료---------------------------------------------------");
+
+            log.info("[END] - LocalLogic.joinCheck (duplicateLoginId == null) & (duplicateEmail == null) / LoginId : [" + localMember.getLoginId() + ", Email : " + localMember.getEmail() + "] 둘다 미중복임 -> 회원가입 완료---------------------------------------------------");
+            log.info("[END] - LocalLogic.joinCheck / [LoginId : " + localMember.getLoginId() + ", email : " + localMember.getEmail() + "]  각각 중복여부 체크 및 회원가입 로직 종료 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
+
             return joinMember;
         }
         if ((duplicateLoginId != null) & (duplicateEmail != null)) {
-            log.info("LoginId 와 Email 이 모두 중복입니다.회원가입에 실패했습니다.");
+            log.info("[START] - LocalLogic.joinCheck (duplicateLoginId != null) & (duplicateEmail != null) / [LoginId : " + localMember.getLoginId() + ", Email : " + localMember.getEmail() + "] 둘다 중복임 -> 회원가입 실패 객체 생성 시작---------------------------------------------------");
+
             Member failCaseLoginIdEmail = new Member();
-            log.info("[로컬]LoginId, Email 각각 중복여부 체크하여 미중복시 회원가입 처리 완료---------------------------------------------------");
+
+            log.info("[END] - LocalLogic.joinCheck (duplicateLoginId != null) & (duplicateEmail != null) / [LoginId : " + localMember.getLoginId() + ", Email : " + localMember.getEmail() + "] 둘다 중복임 -> 회원가입 실패 객체 생성 완료---------------------------------------------------");
+            log.info("[END] - LocalLogic.joinCheck / [LoginId : " + localMember.getLoginId() + ", email : " + localMember.getEmail() + "]  각각 중복여부 체크 및 회원가입 로직 종료 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
             return failCaseLoginIdEmail;
         }
         if (duplicateLoginId != null) {
-            log.info("LoginId 가 중복입니다. 회원가입에 실패했습니다.");
+            log.info("[START] - LocalLogic.joinCheck (duplicateLoginId != null) / [LoginId : " + localMember.getLoginId() + ", Email : " + localMember.getEmail() + "] loginId 가 중복임 -> 회원가입 실패 객체 생성 시작---------------------------------------------------");
+
             Member failCaseLoginId = new Member();
             failCaseLoginId.setEmail(localMember.getEmail());
-            log.info("[로컬]LoginId, Email 각각 중복여부 체크하여 미중복시 회원가입 처리 완료---------------------------------------------------");
+
+            log.info("[END] - LocalLogic.joinCheck (duplicateLoginId != null) / [LoginId : " + localMember.getLoginId() + ", Email : " + localMember.getEmail() + "] loginId 가 중복임 -> 회원가입 실패 객체 생성 완료---------------------------------------------------");
+            log.info("[END] - LocalLogic.joinCheck / [LoginId : " + localMember.getLoginId() + ", email : " + localMember.getEmail() + "]  각각 중복여부 체크 및 회원가입 로직 종료 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
+
             return failCaseLoginId;
         }
         if (duplicateEmail != null) {
-            log.info("Email 이 중복입니다. 회원가입에 실패했습니다.");
+            log.info("[START] - LocalLogic.joinCheck (duplicateEmail != null) / [LoginId : " + localMember.getLoginId() + ", Email : " + localMember.getEmail() + "] email 가 중복임 -> 회원가입 실패 객체 생성 시작---------------------------------------------------");
             Member failCauseEmail = new Member();
             failCauseEmail.setLoginId(localMember.getLoginId());
-            log.info("[로컬]LoginId, Email 각각 중복여부 체크하여 미중복시 회원가입 처리 완료---------------------------------------------------");
+
+            log.info("[END] - LocalLogic.joinCheck (duplicateEmail != null) / [LoginId : " + localMember.getLoginId() + ", Email : " + localMember.getEmail() + "] email 가 중복임 -> 회원가입 실패 객체 생성 완료---------------------------------------------------");
+            log.info("[END] - LocalLogic.joinCheck / [LoginId : " + localMember.getLoginId() + ", email : " + localMember.getEmail() + "]  각각 중복여부 체크 및 회원가입 로직 종료 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
             return failCauseEmail;
         } else {
-            log.info("회원가입에 실패했습니다. 이유는 LoginId, Email 중복 때문은 아님.");
-            log.info("[로컬]LoginId, Email 각각 중복여부 체크하여 미중복시 회원가입 처리 완료---------------------------------------------------");
+            log.info("[START] - LocalLogic.joinCheck 특수케이스임 체크 필수!!! / [LoginId : " + localMember.getLoginId() + ", Email : " + localMember.getEmail() + "] 특수케이스임!!! -> 회원가입 실패 특수케이스임!!---------------------------------------------------");
+            log.info("[END] - LocalLogic.joinCheck 특수케이스임 체크 필수!!! / [LoginId : " + localMember.getLoginId() + ", Email : " + localMember.getEmail() + "] 특수케이스임!!! -> 회원가입 실패 특수케이스임!!---------------------------------------------------");
+            log.info("[END] - LocalLogic.joinCheck / [LoginId : " + localMember.getLoginId() + ", email : " + localMember.getEmail() + "]  각각 중복여부 체크 및 회원가입 로직 종료 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
             return null;
         }
     }
