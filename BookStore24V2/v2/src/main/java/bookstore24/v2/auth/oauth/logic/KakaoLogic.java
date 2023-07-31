@@ -54,7 +54,7 @@ public class KakaoLogic {
      */
     public KakaoOauthToken codeToToken(String code) {
 
-        log.info("[카카오]발급받은 인가 코드로 토큰 요청 시작-----------------------------------------------------------------");
+        log.info("[START] - KakaoLogic.codeToToken / 카카오에서 발급받아 클라이언트가 요청으로 보낸 [Authorization_code : " + code + "] 를 이용하여 토큰 요청하기 시작  ---------------------------------------------------------------------------------");
 
         // POST 방식으로 key=value 데이터를 요청(카카오쪽으로)
         // 사용 라이브러리 - RestTemplate
@@ -92,8 +92,8 @@ public class KakaoLogic {
             e.printStackTrace();
         }
 
-        log.info("카카오 토큰 : " + kakaoOauthToken);
-        log.info("[카카오]발급받은 인가 코드로 토큰 요청 완료-----------------------------------------------------------------");
+        log.info("클라이언트가 보낸 [Authorization_code : " + code + "] 를 이용하여 발급받은 [kakaoOauthToken : " + kakaoOauthToken + "]----------------------------------------------------------------------------------------------------------");
+        log.info("[END] - KakaoLogic.codeToToken / 카카오에서 발급받아 클라이언트가 요청으로 보낸 [Authorization_code : " + code + "] 를 이용하여 토큰 요청하기 완료  ---------------------------------------------------------------------------------");
 
         return kakaoOauthToken;
     }
@@ -104,7 +104,7 @@ public class KakaoLogic {
 
     public Member accessTokenToProfile(KakaoOauthToken kakaoOauthToken) {
 
-        log.info("[카카오]AccessToken 을 이용하여 카카오 프로필 정보 요청 시작-------------------------------------------------");
+        log.info("[START] - KakaoLogic.accessTokenToProfile / 카카오에서 발급받은 토큰 [kakaoOauthToken : " + kakaoOauthToken + "] 를 이용하여 프로필 정보 요청하기 시작  ---------------------------------------------------------------------------------");
 
         // 카카오 토큰 응답 데이터를 각 변수에 저장
         String kakao_access_token = kakaoOauthToken.getAccess_token();
@@ -142,12 +142,7 @@ public class KakaoLogic {
             e.printStackTrace();
         }
 
-        log.info("provider : " + "kakao");
-        log.info("providerId : " + kakaoProfile.getId());
-        log.info("loginId : " + "kakao" + "_" + kakaoProfile.getId());
-        log.info("loginPassword : " + cosKey);
-        log.info("email : " + kakaoProfile.getKakao_account().getEmail());
-        log.info("role : " + "ROLE_USER");
+        log.info("카카오로부터 응답받은 프로필 정보 [kakaoProfile : " + kakaoProfile + "]");
 
         Member kakaoUser = Member.builder()
                 .provider("kakao")
@@ -158,7 +153,15 @@ public class KakaoLogic {
                 .role("ROLE_USER")
                 .build();
 
-        log.info("[카카오]AccessToken 을 이용하여 카카오 프로필 정보 요청 완료-------------------------------------------------");
+        log.info("프로필 정보를 이용하여 카카오 자동 회원가입용 객체 생성 [kakaoUser : " + kakaoUser + "]");
+        log.info("kakaoUser.provider : " + kakaoUser.getProvider());
+        log.info("kakaoUser.providerId : " + kakaoUser.getProviderId());
+        log.info("kakaoUser.loginId : " + kakaoUser.getLoginId());
+        log.info("kakaoUser.loginPassword : " + kakaoUser.getLoginPassword());
+        log.info("kakaoUser.email : " + kakaoUser.getEmail());
+        log.info("kakaoUser.role : " + kakaoUser.getRole());
+
+        log.info("[END] - KakaoLogic.accessTokenToProfile / 카카오에서 발급받은 토큰 [kakaoOauthToken : " + kakaoOauthToken + "] 를 이용하여 프로필 정보 요청하기 완료  ---------------------------------------------------------------------------------");
 
         return kakaoUser;
     }
@@ -168,32 +171,42 @@ public class KakaoLogic {
      */
     public Member joinCheck(Member kakaoUser) {
 
-        log.info("[카카오] Oauth 이메일 기존회원의 이메일과 중복 여부 체크 및 미중복자 자동 회원가입 처리 시작---------------------------------------------------");
+        log.info("[START] - KakaoLogic.joinCheck / [email : " + kakaoUser.getEmail() + "]  email 중복여부 체크 및 회원가입 로직 시작 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
 
         Member duplicateEmailMember = memberService.findMemberByEmail(kakaoUser.getEmail());
 
         if (duplicateEmailMember == null) {
+
             memberService.joinMember(kakaoUser);
             Member joinedMember = memberService.findMemberByEmail(kakaoUser.getEmail());
+
             log.info("카카오 로그인이 최초입니다. 자동 회원가입되었습니다.");
-            log.info("[카카오] Oauth 이메일 기존회원의 이메일과 중복 여부 체크 및 미중복자 자동 회원가입 처리 완료---------------------------------------------------");
+            log.info("[END] - KakaoLogic.joinCheck / [email : " + kakaoUser.getEmail() + "]  email 중복여부 체크 및 회원가입 로직 종료 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
+
             return joinedMember;
         }
         if ((duplicateEmailMember != null) & (duplicateEmailMember.getProvider() == "kakao")) {
             log.info("카카오 로그인을 한적이 있습니다. 이미 회원가입 되어있습니다.");
-            log.info("[카카오] Oauth 이메일 기존회원의 이메일과 중복 여부 체크 및 미중복자 자동 회원가입 처리 완료---------------------------------------------------");
+            log.info("[END] - KakaoLogic.joinCheck / [email : " + kakaoUser.getEmail() + "]  email 중복여부 체크 및 회원가입 로직 종료 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
+
             return duplicateEmailMember;
         } else {
             String provider = duplicateEmailMember.getProvider();
+
             log.info(kakaoUser.getEmail() + " 은 " + provider + " 로그인 방식으로 이미 가입된 이메일입니다. " + provider + " 로그인 방식으로 로그인을 시도하세요.");
-            log.info("[카카오] Oauth 이메일 기존회원의 이메일과 중복 여부 체크 및 미중복자 자동 회원가입 처리 완료---------------------------------------------------");
+
             kakaoUser.setLoginId(null);     // 컨트롤러에서 로그인 처리를 하지 않기 위한 용도
             kakaoUser.setProvider(provider);
+
+            log.info("[END] - KakaoLogic.joinCheck / [email : " + kakaoUser.getEmail() + "]  email 중복여부 체크 및 회원가입 로직 종료 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
             return kakaoUser;
         }
     }
 
     public ResponseEntity<String> kakaoAutoLogin(Member kakaoUser) {
+
+        log.info("[START] - KakaoLogic.kakaoAutoLogin / [email : " + kakaoUser.getEmail() + "]  해당 회원은 Kakao 로 회원가입 되어있으므로 자동 로그인 로직 시작 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
+
         // 카카오 로그인 요청 회원 데이터
         String loginId = kakaoUser.getLoginId();
         log.info("Request loginId : " + loginId);
@@ -220,16 +233,19 @@ public class KakaoLogic {
         // 응답 결과 처리
         if (responseEntity.getStatusCode().is2xxSuccessful()) {
             HttpHeaders responseEntityHeaders = responseEntity.getHeaders();
-            log.info("로그인 응답 데이터 헤더 : " + responseEntityHeaders);
+            log.info("로그인 성공 응답 데이터 헤더 : " + responseEntityHeaders);
+            log.info("[END] - KakaoLogic.kakaoAutoLogin / [email : " + kakaoUser.getEmail() + "]  해당 회원은 Kakao 로 회원가입 되어있으므로 자동 로그인 로직 종료 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
             return responseEntity;
 
         } else {
-            log.info("로그인 실패 : " + responseEntity.getStatusCodeValue());
+            log.info("로그인 실패 상태 코드 : " + responseEntity.getStatusCodeValue());
         }
         return null;
     }
 
     public ResponseEntity<String> kakaoAutoLoginFail(String email, String provider) {
+        log.info("[START] - KakaoLogic.kakaoAutoLoginFail / [email : " + email + "] 해당 회원은 " + provider + " 로 회원가입 되어있으므로 자동 로그인 실패 응답 시작 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
+
 
         HttpHeaders httpHeaders = new HttpHeaders();
 
@@ -242,6 +258,8 @@ public class KakaoLogic {
 
         httpHeaders.set(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + loginFailJwt);
 
-        return new ResponseEntity<>("login failed. Please check your email.", httpHeaders, HttpStatus.UNAUTHORIZED);
+        log.info("loginFailJwt = " + JwtProperties.TOKEN_PREFIX + loginFailJwt);
+        log.info("[END] - KakaoLogic.kakaoAutoLoginFail / [email : " + email + "] 해당 회원은 " + provider + " 로 회원가입 되어있으므로 자동 로그인 실패 응답 완료 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
+        return new ResponseEntity<>("kakao Auto Login failed. Cause : Duplicated Email.", httpHeaders, HttpStatus.UNAUTHORIZED);
     }
 }
