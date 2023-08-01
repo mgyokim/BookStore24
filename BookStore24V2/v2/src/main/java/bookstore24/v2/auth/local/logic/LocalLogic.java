@@ -1,6 +1,6 @@
 package bookstore24.v2.auth.local.logic;
 
-import bookstore24.v2.auth.local.LocalSignUpDto;
+import bookstore24.v2.auth.local.LocalSignUpRequestDto;
 import bookstore24.v2.domain.Member;
 import bookstore24.v2.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -17,17 +17,17 @@ public class LocalLogic {
     /**
      * 회원 정보 생성
      */
-    public Member requestJsonToMember(LocalSignUpDto localSignUpDto) {
-        log.info("[START] - LocalLogic.requestJsonToMember / 클라이언트 요청 데이터 [loginId : " + localSignUpDto.getLoginId() + ", loginPassword : " + localSignUpDto.getLoginPassword() + ", email : " + localSignUpDto.getEmail() + "] 이용하여 Member 객체 생성 시작---------------------------------------------------------------------------------");
+    public Member requestJsonToMember(LocalSignUpRequestDto localSignUpRequestDto) {
+        log.info("[START] - LocalLogic.requestJsonToMember / 클라이언트 요청 데이터 [loginId : " + localSignUpRequestDto.getLoginId() + ", loginPassword : " + localSignUpRequestDto.getLoginPassword() + ", email : " + localSignUpRequestDto.getEmail() + "] 이용하여 Member 객체 생성 시작---------------------------------------------------------------------------------");
 
         Member member = new Member();
-        member.setLoginId(localSignUpDto.getLoginId());
-        member.setLoginPassword(localSignUpDto.getLoginPassword());
-        member.setEmail(localSignUpDto.getEmail());
+        member.setLoginId(localSignUpRequestDto.getLoginId());
+        member.setLoginPassword(localSignUpRequestDto.getLoginPassword());
+        member.setEmail(localSignUpRequestDto.getEmail());
         member.setProvider("bookstore24");
         member.setRole("ROLE_USER");
 
-        log.info("[END] - LocalLogic.requestJsonToMember / 클라이언트 요청 데이터 [loginId : " + localSignUpDto.getLoginId() + ", loginPassword : " + localSignUpDto.getLoginPassword() + ", email : " + localSignUpDto.getEmail() + "] 이용하여 Member 객체 생성 완료-----------------------------------------------------------------------------------");
+        log.info("[END] - LocalLogic.requestJsonToMember / 클라이언트 요청 데이터 [loginId : " + localSignUpRequestDto.getLoginId() + ", loginPassword : " + localSignUpRequestDto.getLoginPassword() + ", email : " + localSignUpRequestDto.getEmail() + "] 이용하여 Member 객체 생성 완료-----------------------------------------------------------------------------------");
         return member;
     }
 

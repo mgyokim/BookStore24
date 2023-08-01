@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 
 @Data
-public class LocalSignUpDto {
+public class LocalSignUpRequestDto {
 
     @NotEmpty
     private String loginId;
