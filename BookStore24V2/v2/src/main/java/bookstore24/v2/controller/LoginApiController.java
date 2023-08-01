@@ -1,6 +1,7 @@
 package bookstore24.v2.controller;
 
-import bookstore24.v2.auth.local.LocalSignUpDto;
+import bookstore24.v2.auth.local.LocalSignUpRequestDto;
+import bookstore24.v2.auth.local.LocalSignUpResponseDto;
 import bookstore24.v2.auth.local.logic.LocalLogic;
 import bookstore24.v2.auth.oauth.logic.GoogleLogic;
 import bookstore24.v2.auth.oauth.logic.KakaoLogic;
@@ -108,32 +109,36 @@ public class LoginApiController {
     }
 
     @PostMapping("local/signup")
-    public ResponseEntity<String> localSignup(@RequestBody @Valid LocalSignUpDto localSignUpDto,
-                                              BindingResult bindingResult) {
+    public ResponseEntity<?> localSignUp(@RequestBody @Valid LocalSignUpRequestDto localSignUpRequestDto,
+                                         BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             // 유효성 검사 오류가 있는 경우 에러 응답 변환
             return ResponseEntity.badRequest().body("Invalid signup request");
         }
 
         // 회원 정보 생성
-        Member member = localLogic.requestJsonToMember(localSignUpDto);
+        Member member = localLogic.requestJsonToMember(localSignUpRequestDto);
 
-        // 회원 가입 시도 (email 이 중복되지 않는 경우에만 회원가입 성공)
+        // 회원 가입 시도 (loginId, email 이 중복되지 않는 경우에만 회원가입 성공)
         Member tryJoinMember = localLogic.joinCheck(member);
 
         if ((tryJoinMember.getLoginId() != null) & (tryJoinMember.getEmail() != null)) {
-            return ResponseEntity.ok("회원가입 성공!");
+            LocalSignUpResponseDto localSignUpResponseDto = new LocalSignUpResponseDto();
+            localSignUpResponseDto.setMessage("회원가입 성공");
+            localSignUpResponseDto.setLoginId(member.getLoginId());
+            localSignUpResponseDto.setEmail(member.getEmail());
+            return ResponseEntity.status(HttpStatus.CREATED).body(localSignUpResponseDto);
         }
         if ((tryJoinMember.getLoginId() == null) & (tryJoinMember.getEmail() != null)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("LoginId 중복입니다. 회원가입 실패!");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("로그인 아이디 중복 : 회원가입 실패");
         }
         if ((tryJoinMember.getLoginId() != null) & (tryJoinMember.getEmail() == null)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email 중복입니다. 회원가입 실패!");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("이메일 중복 : 회원가입 실패");
         }
         if ((tryJoinMember.getLoginId() == null) & (tryJoinMember.getEmail() == null)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("LoginId 와 Email 모두 중복입니다. 회원가입 실패!");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("로그인 아이디, 이메일 중복 : 회원가입 실패");
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("회원가입 실패! 실패원인은 개발자에게 문의.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("개발자 문의 요망 : 회원가입 실패");
         }
     }
 }
