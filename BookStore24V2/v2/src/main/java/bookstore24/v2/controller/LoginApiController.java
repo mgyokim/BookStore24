@@ -32,7 +32,7 @@ public class LoginApiController {
     private final LocalLogic localLogic;
 
     @PostMapping("/auth/kakao/callback")
-    public ResponseEntity<String> kakaoLogin(@RequestParam("Authorization_code") String code) {
+    public ResponseEntity<String> kakaoLogin(@RequestParam(value = "Authorization_code", required = true) String code) {
 
         // 발급받은 인가 코드로 토큰 요청
         KakaoOauthToken kakaoOauthToken = kakaoLogic.codeToToken(code);
@@ -63,7 +63,7 @@ public class LoginApiController {
 
     @PostMapping("auth/naver/callback")
     public String naverLogin(@RequestParam("Authorization_code") String code) {
-        log.info("=============인가코드========= " + code);
+
         // 발급받은 인가 코드로 토큰 요청
         NaverOauthToken naverOauthToken = naverLogic.codeToToken(code);
 
