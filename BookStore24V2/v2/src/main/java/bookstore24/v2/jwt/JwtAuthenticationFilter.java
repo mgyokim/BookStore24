@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     // /login 요청을 하면 로그인 시도를 위해서 실행되는 함수
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        log.info("JwtAuthenticationFilter : 로그인 시도중");
+        log.info("[START] - JwtAuthenticationFilter.attemptAuthentication / 로그인 시도 시작 ---------------------------------------------------------------------------------------------------------------------");
 
         // 1. username, password 받아서
         // 2. 정상인지 로그인 시도를 해보는 것이다. authenticationManager 로 로그인 시도를 하면,
@@ -46,13 +46,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             ObjectMapper objectMapper = new ObjectMapper();
             Member member = objectMapper.readValue(request.getInputStream(), Member.class);
 
-            log.info("LoginId : " + member.getLoginId());
-            log.info("LoginPassword : " + member.getLoginPassword());
-
             // username, password 토큰 생성
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(member.getLoginId(), member.getLoginPassword());
 
-            log.info("JwtAuthenticationFilter : authenticationManager 인증용 토큰 생성 완료");
+            log.info("JwtAuthenticationFilter : authenticationManager 인증용 토큰 생성 완료 authenticationToken: " + authenticationToken + ", loginId : " + member.getLoginId() + ", loginPassword" + member.getLoginPassword());
 
 
             // authenticate() 함수가 호출 되면 인증 프로바이더가 PrincipalDetailsService 의
@@ -72,6 +69,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             // authentication 객체가 session 영역에 저장됨. => 로그인이 되었다는 뜻
             // 리턴의 이유는 권한 관리를 security 가 대신 해주기 때문에 편하려고 하는 것임.
             // 굳이 jwt 을 사용하면서 세션을 만들 이유가 없음. 근데 단지 권한 처리 때문에 session 에 넣어준다.
+            log.info("[END] - JwtAuthenticationFilter.attemptAuthentication / 로그인 시도 완료 ---------------------------------------------------------------------------------------------------------------------");
             return authentication;
 
         } catch (IOException e) {
@@ -85,7 +83,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     // jwt 을 만들어서 request 요청한 사용자에게 jwt 을 response 해주면 된다.
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        log.info("successfulAuthentication() 메서드가 실행됨 : 인증이 완료되었다는 뜻임, 클라이언트에게 jwt 토큰 반환 시작 =====================================");
+        log.info("[START] - JwtAuthenticationFilter.successfulAuthentication / 해당 메서드 실행됨 : 인증(로그인)이 완료되었다는 뜻임, 클라이언트에게 jwt 토큰 반환 시작 ---------------------------------------------------------------");
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
 
         String jwtToken = JWT.create()
@@ -96,8 +94,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .sign(Algorithm.HMAC512(JwtProperties.SECRET));    // 토큰 사인
 
         response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
-        log.info("클라이언트에게 반환된 access jwt = Authorization : Bearer " + jwtToken);
-        log.info("successfulAuthentication() 메서드 실행완료 : 인증이 완료되었다는 뜻임, 클라이언트에게 jwt 토큰 반환 완료 =====================================");
 
+        log.info("클라이언트에게 반환된 access jwt = Authorization : Bearer " + jwtToken);
+        log.info("[END] - JwtAuthenticationFilter.successfulAuthentication / 해당 메서드 실행됨 : 인증(로그인)이 완료되었다는 뜻임, 클라이언트에게 jwt 토큰 반환 완료 ---------------------------------------------------------------");
     }
 }

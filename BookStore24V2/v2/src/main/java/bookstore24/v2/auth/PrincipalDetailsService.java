@@ -20,9 +20,10 @@ public class PrincipalDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        log.info("PrincipalDetailsService 의 loadUserByUsername() 호출");
+        log.info("[START] - PrincipalDetailsService.loadUserByUsername / 메서드 시작");
         Member memberEntity = memberRepository.findByLoginId(username);
         log.info("loadUserByUsername() 호출되며 찾아온 memberEntity 의 loginId : " + memberEntity.getLoginId());
+        log.info("[END] - PrincipalDetailsService.loadUserByUsername / 메서드 종료");
         return new PrincipalDetails(memberEntity);
     }
 
