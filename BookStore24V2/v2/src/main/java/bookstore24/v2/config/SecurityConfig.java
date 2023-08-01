@@ -6,6 +6,7 @@ import bookstore24.v2.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -13,6 +14,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
 /**
  * 1. 코드받기(인증)
@@ -46,14 +48,16 @@ public class SecurityConfig {
                 .addFilter(new JwtAuthenticationFilter(authenticationManager(http)))   // AuthenticationManager 파라미터를 줘야함.
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(http), memberRepository))    // // AuthenticationManager 파라미터를 줘야함.
                 .authorizeRequests()
-//                .antMatchers("/user/**").access("hasRole('ROLE_USER')")
-                .antMatchers("/user/**")
-                .access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
-                .antMatchers("/manager/**")
-                .access("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
-                .antMatchers("/admin/**")
-                .access("hasRole('ROLE_ADMIN')")
-                .anyRequest().permitAll();
+                .antMatchers("/login").permitAll() // 로그인은 인증 없이 접근 가능하도록 설정 (/login 은 시큐리티 사용시 default 가 .permitAll() 이지만 명시적으로 작성했음)
+                .antMatchers("/local/signup").permitAll() // 로컬 회원가입은 인증 없이 접근 가능하도록 설정
+                .antMatchers("/auth/kakao/callback").permitAll() // 카카오 로그인은 인증 없이 접근 가능하도록 설정
+                .antMatchers("/auth/naver/callback").permitAll() //  네이버 로그인은 인증 없이 접근 가능하도록 설정
+                .antMatchers("/auth/google/callback").permitAll() // 구글 로그인은 인증 없이 접근 가능하도록 설정
+
+                .anyRequest().authenticated()    // 그 외의 모든 요청은 인증을 요구
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)); // 401 Unauthorized 상태 코드를 반환하도록 설정
 
         // SecurityFilterChain 을 반환
         return http.build();
