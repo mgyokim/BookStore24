@@ -39,7 +39,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
         log.info("[START] - JwtAuthorizationFilter.doFilterInternal / 인증이나 권한이 필요한 주소에 대한 인가 절차 시작 (필터체인에 등록했기 때문에, 인가가 필요없는 접근에 대해서도 수행만 됨.)");
-        log.info("REQUEST URI : " + request.getRequestURI());
+        log.info("REQUEST URI : " + request.getRequestURI() + " ClientIp : " + request.getRemoteAddr());
+
 
         String jwtHeader = request.getHeader(JwtProperties.HEADER_STRING);
         log.info("reqeust 에서 Authorization 헤더에 담긴 JWT : " + jwtHeader);
