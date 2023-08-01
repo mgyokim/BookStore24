@@ -47,7 +47,7 @@ public class LoginApiController {
         if (joinedMember.getLoginId() != null) {
             // 해당 회원 로그인 처리
             ResponseEntity<String> responseJwt = kakaoLogic.kakaoAutoLogin(member);
-            // 회원의 LoginId 반환
+            // 회원의 정보로 구성한 Jwt 반환
             log.info("kakaoLogin 컨트롤러에서 로그인 정상 응답 반환 완료");
             return responseJwt;
         } else {
@@ -63,7 +63,7 @@ public class LoginApiController {
     }
 
     @PostMapping("auth/naver/callback")
-    public String naverLogin(@RequestParam("Authorization_code") String code) {
+    public ResponseEntity<String> naverLogin(@RequestParam(value = "Authorization_code", required = true) String code) {
 
         // 발급받은 인가 코드로 토큰 요청
         NaverOauthToken naverOauthToken = naverLogic.codeToToken(code);
@@ -76,12 +76,19 @@ public class LoginApiController {
 
         if (joinedMember.getLoginId() != null) {
             // 해당 회원 로그인 처리
-            naverLogic.naverAutoLogin(member);
-            // 회원의 LoginId 반환
-            return member.getLoginId();
+            ResponseEntity<String> responseJwt = naverLogic.naverAutoLogin(member);
+            // 회원의 정보로 구성한 Jwt 반환
+            return responseJwt;
         } else {
+            String email = joinedMember.getEmail();
             String provider = joinedMember.getProvider();
-            return joinedMember.getEmail() + " 은 " + provider + " 로그인 방식으로 이미 가입된 이메일입니다. " + provider + " 로그인 방식으로 로그인을 시도하세요.";
+
+            ResponseEntity<String> failResponseJwt = naverLogic.naverAutoLoginFail(email, provider);
+
+            log.info("naverLogin 컨트롤러에서 로그인 실패 응답 반환 완료" + failResponseJwt);
+            log.info(joinedMember.getEmail() + " 은 " + provider + " 로그인 방식으로 이미 가입된 이메일입니다. " + provider + " 로그인 방식으로 로그인을 시도하세요.");
+
+            return failResponseJwt;
         }
     }
 
