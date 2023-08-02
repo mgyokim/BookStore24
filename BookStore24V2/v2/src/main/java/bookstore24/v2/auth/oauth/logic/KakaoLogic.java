@@ -32,8 +32,7 @@ public class KakaoLogic {
     @Value(("${spring.security.oauth2.client.registration.kakao.client-id}"))
     private String clientId;
 
-    //        final String KAKAO_REDIRECT_URI = "http://localhost:3000/auth/kakao";    // 프론트 통신용
-    final String KAKAO_REDIRECT_URI = "http://bookstore24.shop/auth/kakao/callback";    // 로컬 개발용
+    final String KAKAO_REDIRECT_URI = "http://localhost:3000/auth/kakao";    // 프론트 통신용
 
     final String KAKAO_TOKEN_REQUEST_URI = "https://kauth.kakao.com/oauth/token";
 
@@ -114,18 +113,18 @@ public class KakaoLogic {
         String kakao_scope = kakaoOauthToken.getScope();
         String kakao_refresh_token_expires_in = kakaoOauthToken.getRefresh_token_expires_in();
 
-        RestTemplate restTemplate2 = new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();
 
         // HttpHeader 오브젝트 생성
-        HttpHeaders httpHeaders2 = new HttpHeaders();
-        httpHeaders2.add("Authorization", "Bearer " + kakao_access_token);   // 발급받았던 AccessToken을 프로필 정보 요청에 사용
-        httpHeaders2.add("Content-Type", "application/x-www-form-urlencoded");  // 내가 지금 전달할 데이터가 key=value 형태임을 알려주는 것.
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization", "Bearer " + kakao_access_token);   // 발급받았던 AccessToken을 프로필 정보 요청에 사용
+        httpHeaders.add("Content-Type", "application/x-www-form-urlencoded");  // 내가 지금 전달할 데이터가 key=value 형태임을 알려주는 것.
 
         // HttpHeader 와 HttpBody 를 하나의 HttpEntity 오브젝트에 담기 -> 이렇게 해주는 이유는 아래의 restTemplate.exchange() 가 파라미터로 HttpEntity 를 받게 되있기 때문.
-        HttpEntity<MultiValueMap<String, String>> kakaoProfileRequest = new HttpEntity<>(httpHeaders2);
+        HttpEntity<MultiValueMap<String, String>> kakaoProfileRequest = new HttpEntity<>(httpHeaders);
 
         // Http 요청하기 - POST 방식으로 - 그리고 reponse2 변수로 응답받음
-        ResponseEntity<String> response2 = restTemplate2.exchange(
+        ResponseEntity<String> response2 = restTemplate.exchange(
                 KAKAO_PROFILE_REQUEST_URI,    // 카카오 문서상의 프로필 정보 요청 주소
                 HttpMethod.POST,    // 카카오
                 kakaoProfileRequest,
@@ -227,7 +226,7 @@ public class KakaoLogic {
         RestTemplate restTemplate = new RestTemplate();
 
         // /login 컨트롤러로 POST 요청 보내기
-        String url = "http://bookstore24.shop/login"; // 엔드포인트 URL
+        String url = "http://bookstore24.shop/login"; // 외부 통신 엔드포인트 URL
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
 
         // 응답 결과 처리
@@ -236,7 +235,6 @@ public class KakaoLogic {
             log.info("로그인 성공 응답 데이터 헤더 : " + responseEntityHeaders);
             log.info("[END] - KakaoLogic.kakaoAutoLogin / [email : " + kakaoUser.getEmail() + "]  해당 회원은 Kakao 로 회원가입 되어있으므로 자동 로그인 로직 종료 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
             return responseEntity;
-
         } else {
             log.info("로그인 실패 상태 코드 : " + responseEntity.getStatusCodeValue());
         }

@@ -37,8 +37,6 @@ public class GoogleLogic {
     private String clientSecret;
 
     final String GOOGLE_REDIRECT_URI = "http://localhost:3000/auth/google";     // 프론트 통신용
-//    final String GOOGLE_REDIRECT_URI = "http://bookstore24.shop/auth/google/callback";    // 집에서 포트 열어놓은 상태일때 로컬 개발용
-//    final String GOOGLE_REDIRECT_URI = "http://localhost:8080/auth/google/callback";    // 외부에서 로컬 개발용
 
     final String GOOGLE_TOKEN_REQUEST_URI = "https://oauth2.googleapis.com/token";
 
@@ -236,7 +234,6 @@ public class GoogleLogic {
 
         // /login 컨트롤러로 POST 요청 보내기
         String url = "http://bookstore24.shop/login"; // 외부 통신 엔드포인트 URL
-//        String url = "http://localhost:8080/login"; // 로컬 통신 엔드포인트 URL
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
 
         // 응답 결과 처리

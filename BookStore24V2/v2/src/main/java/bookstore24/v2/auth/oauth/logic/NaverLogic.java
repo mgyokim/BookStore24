@@ -39,9 +39,7 @@ public class NaverLogic {
     @Value(("${spring.security.oauth2.client.registration.naver.client-secret}"))
     private String clientSecret;
 
-    //    final String NAVER_REDIRECT_URI = "http://localhost:3000/auth/naver";   // 프론트 통신용
-//    final String NAVER_REDIRECT_URI = "http://bookstore24.shop/auth/naver/callback";    // 집에서 포트 열어놓은 상태일때 로컬 개발용
-    final String NAVER_REDIRECT_URI = "http://localhost:8080/auth/naver/callback";    // 외부에서 로컬 개발용
+    final String NAVER_REDIRECT_URI = "http://localhost:3000/auth/naver";   // 프론트 통신용
 
     final String NAVER_TOKEN_REQUEST_URI = "https://nid.naver.com/oauth2.0/token";
 
@@ -163,6 +161,7 @@ public class NaverLogic {
                 .role("ROLE_USER")
                 .build();
 
+        log.info("프로필 정보를 이용하여 네이버 자동 회원가입용 객체 생성 [naverUser : " + naverUser + "]");
         log.info("naverUser.provider : " + naverUser.getProvider());
         log.info("naverUser.providerId : " + naverUser.getProviderId());
         log.info("naverUser.loginId : " + naverUser.getLoginId());
@@ -241,7 +240,6 @@ public class NaverLogic {
 
         // /login 컨트롤러로 POST 요청 보내기
         String url = "http://bookstore24.shop/login"; // 외부 통신 엔드포인트 URL
-//        String url = "http://localhost:8080/login"; // 로컬 통신 엔드포인트 URL
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
 
         // 응답 결과 처리
