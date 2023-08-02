@@ -1,9 +1,9 @@
-package bookstore24.v2.auth.oauth.profile;
+package bookstore24.v2.auth.oauth.dto.profile;
 
 import lombok.Data;
 
 @Data
-public class KakaoProfile {
+public class KakaoProfileDto {
 
     public Long id;
     public String connected_at;

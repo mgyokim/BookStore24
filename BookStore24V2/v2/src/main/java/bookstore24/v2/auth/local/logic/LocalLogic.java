@@ -1,8 +1,8 @@
 package bookstore24.v2.auth.local.logic;
 
-import bookstore24.v2.auth.local.LocalSignUpRequestDto;
+import bookstore24.v2.auth.local.dto.LocalSignUpRequestDto;
 import bookstore24.v2.domain.Member;
-import bookstore24.v2.service.MemberService;
+import bookstore24.v2.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

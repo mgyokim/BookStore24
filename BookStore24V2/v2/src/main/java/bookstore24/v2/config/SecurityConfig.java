@@ -1,8 +1,8 @@
 package bookstore24.v2.config;
 
-import bookstore24.v2.jwt.JwtAuthenticationFilter;
-import bookstore24.v2.jwt.JwtAuthorizationFilter;
-import bookstore24.v2.repository.MemberRepository;
+import bookstore24.v2.auth.jwt.JwtAuthenticationFilter;
+import bookstore24.v2.auth.jwt.JwtAuthorizationFilter;
+import bookstore24.v2.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

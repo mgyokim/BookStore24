@@ -1,4 +1,4 @@
-package bookstore24.v2.jwt;
+package bookstore24.v2.auth.jwt;
 
 import bookstore24.v2.auth.PrincipalDetails;
 import bookstore24.v2.domain.Member;

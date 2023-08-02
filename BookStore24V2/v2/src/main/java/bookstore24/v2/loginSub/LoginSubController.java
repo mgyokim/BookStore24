@@ -1,8 +1,8 @@
 package bookstore24.v2.loginSub;
 
-import bookstore24.v2.auth.oauth.token.GoogleOauthToken;
-import bookstore24.v2.auth.oauth.token.KakaoOauthToken;
-import bookstore24.v2.auth.oauth.token.NaverOauthToken;
+import bookstore24.v2.auth.oauth.dto.token.GoogleOauthTokenDto;
+import bookstore24.v2.auth.oauth.dto.token.KakaoOauthTokenDto;
+import bookstore24.v2.auth.oauth.dto.token.NaverOauthTokenDto;
 import bookstore24.v2.domain.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,10 +43,10 @@ public class LoginSubController {
     ResponseEntity<String> kakaoLoginSub(String code) {
 
         // 발급받은 인가 코드로 토큰 요청
-        KakaoOauthToken kakaoOauthToken = kakaoLogicSub.codeToToken(code);
+        KakaoOauthTokenDto kakaoOauthTokenDto = kakaoLogicSub.codeToToken(code);
 
         // 발급받은 액세스토큰으로 프로필 정보 요청
-        Member member = kakaoLogicSub.accessTokenToProfile(kakaoOauthToken);
+        Member member = kakaoLogicSub.accessTokenToProfile(kakaoOauthTokenDto);
 
         // 해당 회원의 회원가입 여부 체크후 비회원만 회원가입 처리
         Member joinedMember = kakaoLogicSub.joinCheck(member);
@@ -74,10 +74,10 @@ public class LoginSubController {
     ResponseEntity<String> naverLoginSub(String code) {
 
         // 발급받은 인가 코드로 토큰 요청
-        NaverOauthToken naverOauthToken = naverLogicSub.codeToToken(code);
+        NaverOauthTokenDto naverOauthTokenDto = naverLogicSub.codeToToken(code);
 
         // 발급받은 액세스토큰으로 프로필 정보 요청
-        Member member = naverLogicSub.accessTokenToProfile(naverOauthToken);
+        Member member = naverLogicSub.accessTokenToProfile(naverOauthTokenDto);
 
         // 해당 회원의 회원가입 여부 체크후 비회원만 회원가입 처리
         Member joinedMember = naverLogicSub.joinCheck(member);
@@ -105,10 +105,10 @@ public class LoginSubController {
     ResponseEntity<String> googleLoginSub(String code) {
 
         // 발급받은 인가 코드로 토큰 요청
-        GoogleOauthToken googleOauthToken = googleLogicSub.codeToToken(code);
+        GoogleOauthTokenDto googleOauthTokenDto = googleLogicSub.codeToToken(code);
 
         // 발급받은 액세스토큰으로 프로필 정보 요청
-        Member member = googleLogicSub.accessTokenToProfile(googleOauthToken);
+        Member member = googleLogicSub.accessTokenToProfile(googleOauthTokenDto);
 
         // 해당 회원의 회원가입 여부 체크후 비회원만 회원가입 처리
         Member joinedMember = googleLogicSub.joinCheck(member);

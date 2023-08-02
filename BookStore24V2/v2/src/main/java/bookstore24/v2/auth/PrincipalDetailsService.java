@@ -1,7 +1,7 @@
 package bookstore24.v2.auth;
 
 import bookstore24.v2.domain.Member;
-import bookstore24.v2.repository.MemberRepository;
+import bookstore24.v2.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;

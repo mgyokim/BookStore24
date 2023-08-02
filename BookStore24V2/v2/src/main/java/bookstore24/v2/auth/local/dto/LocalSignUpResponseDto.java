@@ -1,16 +1,16 @@
-package bookstore24.v2.auth.local;
+package bookstore24.v2.auth.local.dto;
 
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 
 @Data
-public class LocalSignUpRequestDto {
+public class LocalSignUpResponseDto {
 
     @NotEmpty
-    private String loginId;
+    private String message;
     @NotEmpty
-    private String loginPassword;
+    private String loginId;
     @NotEmpty
     private String email;
 }

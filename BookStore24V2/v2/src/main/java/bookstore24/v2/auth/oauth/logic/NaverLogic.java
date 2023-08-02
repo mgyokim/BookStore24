@@ -1,10 +1,10 @@
 package bookstore24.v2.auth.oauth.logic;
 
-import bookstore24.v2.auth.oauth.profile.NaverProfile;
-import bookstore24.v2.auth.oauth.token.NaverOauthToken;
+import bookstore24.v2.auth.oauth.dto.profile.NaverProfileDto;
+import bookstore24.v2.auth.oauth.dto.token.NaverOauthTokenDto;
 import bookstore24.v2.domain.Member;
-import bookstore24.v2.jwt.JwtProperties;
-import bookstore24.v2.service.MemberService;
+import bookstore24.v2.auth.jwt.JwtProperties;
+import bookstore24.v2.member.service.MemberService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -46,7 +46,7 @@ public class NaverLogic {
     final String NAVER_PROFILE_REQUEST_URI = "https://openapi.naver.com/v1/nid/me";
 
     /**
-     * 네이버 인가 코드 받기 (LoginApiController.naverLogin() 에서 처리)
+     * 네이버 인가 코드 받기 (MemberApiController.naverLogin() 에서 처리)
      */
     // 요청 URL
     // 프론트에서
@@ -57,7 +57,7 @@ public class NaverLogic {
     /**
      * 발급받은 인가 코드로 토큰 요청하기
      */
-    public NaverOauthToken codeToToken(String code) {
+    public NaverOauthTokenDto codeToToken(String code) {
 
         log.info("[START] - NaverLogic.codeToToken / 네이버에서 발급받아 클라이언트가 요청으로 보낸 [Authorization_code : " + code + "] 를 이용하여 토큰 요청하기 시작  ---------------------------------------------------------------------------------");
 
@@ -90,18 +90,18 @@ public class NaverLogic {
 
         // ObjectMapper
         ObjectMapper objectMapper = new ObjectMapper();
-        NaverOauthToken naverOauthToken = null;   // 네이 토큰 응답 데이터를 통째로 저장할 곳
+        NaverOauthTokenDto naverOauthTokenDto = null;   // 네이 토큰 응답 데이터를 통째로 저장할 곳
 
         try {
-            naverOauthToken = objectMapper.readValue(response.getBody(), NaverOauthToken.class);  // Json 데이터를 자바로 처리하기 위해 자바 오브젝트로 바꿈.
+            naverOauthTokenDto = objectMapper.readValue(response.getBody(), NaverOauthTokenDto.class);  // Json 데이터를 자바로 처리하기 위해 자바 오브젝트로 바꿈.
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
 
-        log.info("클라이언트가 보낸 [Authorization_code : " + code + "] 를 이용하여 발급받은 [naverOauthToken : " + naverOauthToken + "]----------------------------------------------------------------------------------------------------------");
+        log.info("클라이언트가 보낸 [Authorization_code : " + code + "] 를 이용하여 발급받은 [naverOauthTokenDto : " + naverOauthTokenDto + "]----------------------------------------------------------------------------------------------------------");
         log.info("[END] - NaverLogic.codeToToken / 네이버에서 발급받아 클라이언트가 요청으로 보낸 [Authorization_code : " + code + "] 를 이용하여 토큰 요청하기 완료  ---------------------------------------------------------------------------------");
 
-        return naverOauthToken;
+        return naverOauthTokenDto;
     }
 
     /**
@@ -110,17 +110,17 @@ public class NaverLogic {
      * @return
      */
 
-    public Member accessTokenToProfile(NaverOauthToken naverOauthToken) {
+    public Member accessTokenToProfile(NaverOauthTokenDto naverOauthTokenDto) {
 
-        log.info("[START] - NaverLogic.accessTokenToProfile / 네이버에서 발급받은 토큰 [naverOauthToken : " + naverOauthToken + "] 를 이용하여 프로필 정보 요청하기 시작  ---------------------------------------------------------------------------------");
+        log.info("[START] - NaverLogic.accessTokenToProfile / 네이버에서 발급받은 토큰 [naverOauthTokenDto : " + naverOauthTokenDto + "] 를 이용하여 프로필 정보 요청하기 시작  ---------------------------------------------------------------------------------");
 
         // 네이버 토큰 응답 데이터를 각 변수에 저장
-        String naver_access_token = naverOauthToken.getAccess_token();
-        String naver_token_type = naverOauthToken.getToken_type();
-        String naver_expires_in = naverOauthToken.getExpires_in();
-        String naver_refresh_token = naverOauthToken.getRefresh_token();
-        String naver_scope = naverOauthToken.getScope();
-        String naver_refresh_token_expires_in = naverOauthToken.getRefresh_token_expires_in();
+        String naver_access_token = naverOauthTokenDto.getAccess_token();
+        String naver_token_type = naverOauthTokenDto.getToken_type();
+        String naver_expires_in = naverOauthTokenDto.getExpires_in();
+        String naver_refresh_token = naverOauthTokenDto.getRefresh_token();
+        String naver_scope = naverOauthTokenDto.getScope();
+        String naver_refresh_token_expires_in = naverOauthTokenDto.getRefresh_token_expires_in();
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -142,22 +142,22 @@ public class NaverLogic {
 
         // ObjectMapper
         ObjectMapper objectMapper = new ObjectMapper();
-        NaverProfile naverProfile = null;
+        NaverProfileDto naverProfileDto = null;
 
         try {
-            naverProfile = objectMapper.readValue(response.getBody(), NaverProfile.class);
+            naverProfileDto = objectMapper.readValue(response.getBody(), NaverProfileDto.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
 
-        log.info("네이버로부터 응답받은 프로필 정보 [naverProfile : " + naverProfile + "]");
+        log.info("네이버로부터 응답받은 프로필 정보 [naverProfileDto : " + naverProfileDto + "]");
 
         Member naverUser = Member.builder()
                 .provider("naver")
-                .providerId(String.valueOf(naverProfile.getResponse().getId()))
-                .loginId("naver" + "_" + naverProfile.getResponse().getId())
+                .providerId(String.valueOf(naverProfileDto.getResponse().getId()))
+                .loginId("naver" + "_" + naverProfileDto.getResponse().getId())
                 .loginPassword(cosKey)
-                .email(naverProfile.getResponse().getEmail())
+                .email(naverProfileDto.getResponse().getEmail())
                 .role("ROLE_USER")
                 .build();
 
@@ -169,7 +169,7 @@ public class NaverLogic {
         log.info("naverUser.email : " + naverUser.getEmail());
         log.info("naverUser.role : " + naverUser.getRole());
 
-        log.info("[END] - NaverLogic.accessTokenToProfile / 네이에서 발급받은 토큰 [naverOauthToken : " + naverOauthToken + "] 를 이용하여 프로필 정보 요청하기 완료  ---------------------------------------------------------------------------------");
+        log.info("[END] - NaverLogic.accessTokenToProfile / 네이에서 발급받은 토큰 [naverOauthTokenDto : " + naverOauthTokenDto + "] 를 이용하여 프로필 정보 요청하기 완료  ---------------------------------------------------------------------------------");
 
         return naverUser;
     }

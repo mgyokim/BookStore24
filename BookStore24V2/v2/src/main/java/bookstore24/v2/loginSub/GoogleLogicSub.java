@@ -1,10 +1,10 @@
 package bookstore24.v2.loginSub;
 
-import bookstore24.v2.auth.oauth.profile.GoogleProfile;
-import bookstore24.v2.auth.oauth.token.GoogleOauthToken;
+import bookstore24.v2.auth.oauth.dto.profile.GoogleProfileDto;
+import bookstore24.v2.auth.oauth.dto.token.GoogleOauthTokenDto;
 import bookstore24.v2.domain.Member;
-import bookstore24.v2.jwt.JwtProperties;
-import bookstore24.v2.service.MemberService;
+import bookstore24.v2.auth.jwt.JwtProperties;
+import bookstore24.v2.member.service.MemberService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -43,7 +43,7 @@ public class GoogleLogicSub {
     final String GOOGLE_PROFILE_REQUEST_URI = "https://www.googleapis.com/oauth2/v1/userinfo";
 
     /**
-     * 구글 인가 코드 받기 (LoginApiController.googleLogin() 에서 처리)
+     * 구글 인가 코드 받기 (MemberApiController.googleLogin() 에서 처리)
      */
     // 요청 URL
     // 프론트에서
@@ -54,7 +54,7 @@ public class GoogleLogicSub {
     /**
      * 발급받은 인가 코드로 토큰 요청하기
      */
-    public GoogleOauthToken codeToToken(String code) {
+    public GoogleOauthTokenDto codeToToken(String code) {
 
         log.info("[START] - GoogleLogicSub.codeToToken / 구글에서 발급받아 클라이언트가 요청으로 보낸 [Authorization_code : " + code + "] 를 이용하여 토큰 요청하기 시작  ---------------------------------------------------------------------------------");
 
@@ -87,35 +87,35 @@ public class GoogleLogicSub {
 
         // ObjectMapper
         ObjectMapper objectMapper = new ObjectMapper();
-        GoogleOauthToken googleOauthToken = null;   // 구글 토큰 응답 데이터를 통째로 저장할 곳
+        GoogleOauthTokenDto googleOauthTokenDto = null;   // 구글 토큰 응답 데이터를 통째로 저장할 곳
 
         try {
-            googleOauthToken = objectMapper.readValue(response.getBody(), GoogleOauthToken.class);  // Json 데이터를 자바로 처리하기 위해 자바 오브젝트로 바꿈.
+            googleOauthTokenDto = objectMapper.readValue(response.getBody(), GoogleOauthTokenDto.class);  // Json 데이터를 자바로 처리하기 위해 자바 오브젝트로 바꿈.
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
 
-        log.info("클라이언트가 보낸 [Authorization_code : " + code + "] 를 이용하여 발급받은 [googleOauthToken : " + googleOauthToken + "]----------------------------------------------------------------------------------------------------------");
+        log.info("클라이언트가 보낸 [Authorization_code : " + code + "] 를 이용하여 발급받은 [googleOauthTokenDto : " + googleOauthTokenDto + "]----------------------------------------------------------------------------------------------------------");
         log.info("[END] - GoogleLogicSub.codeToToken / 구글에서 발급받아 클라이언트가 요청으로 보낸 [Authorization_code : " + code + "] 를 이용하여 토큰 요청하기 완료  ---------------------------------------------------------------------------------");
 
-        return googleOauthToken;
+        return googleOauthTokenDto;
     }
 
     /**
      * 발급받은 AccessToken 을 이용하여 구글 프로필 정보 요청하기
      */
 
-    public Member accessTokenToProfile(GoogleOauthToken googleOauthToken) {
+    public Member accessTokenToProfile(GoogleOauthTokenDto googleOauthTokenDto) {
 
-        log.info("[START] - GoogleLogicSub.accessTokenToProfile / 구글에서 발급받은 토큰 [googleOauthToken : " + googleOauthToken + "] 를 이용하여 프로필 정보 요청하기 시작  ---------------------------------------------------------------------------------");
+        log.info("[START] - GoogleLogicSub.accessTokenToProfile / 구글에서 발급받은 토큰 [googleOauthTokenDto : " + googleOauthTokenDto + "] 를 이용하여 프로필 정보 요청하기 시작  ---------------------------------------------------------------------------------");
 
         // 구글 토큰 응답 데이터를 각 변수에 저장
-        String google_access_token = googleOauthToken.getAccess_token();
-        String google_token_type = googleOauthToken.getToken_type();
-        String google_refresh_token = googleOauthToken.getRefresh_token();
-        String google_expires_in = googleOauthToken.getExpires_in();
-        String google_scope = googleOauthToken.getScope();
-        String google_id_token = googleOauthToken.getId_token();
+        String google_access_token = googleOauthTokenDto.getAccess_token();
+        String google_token_type = googleOauthTokenDto.getToken_type();
+        String google_refresh_token = googleOauthTokenDto.getRefresh_token();
+        String google_expires_in = googleOauthTokenDto.getExpires_in();
+        String google_scope = googleOauthTokenDto.getScope();
+        String google_id_token = googleOauthTokenDto.getId_token();
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -137,22 +137,22 @@ public class GoogleLogicSub {
 
         // ObjectMapper
         ObjectMapper objectMapper = new ObjectMapper();
-        GoogleProfile googleProfile = null;
+        GoogleProfileDto googleProfileDto = null;
 
         try {
-            googleProfile = objectMapper.readValue(response.getBody(), GoogleProfile.class);
+            googleProfileDto = objectMapper.readValue(response.getBody(), GoogleProfileDto.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
 
-        log.info("구글로부터 응답받은 프로필 정보 [googleProfile : " + googleProfile + "]");
+        log.info("구글로부터 응답받은 프로필 정보 [googleProfileDto : " + googleProfileDto + "]");
 
         Member googleUser = Member.builder()
                 .provider("google")
-                .providerId(String.valueOf(googleProfile.getId()))
-                .loginId("google" + "_" + googleProfile.getId())
+                .providerId(String.valueOf(googleProfileDto.getId()))
+                .loginId("google" + "_" + googleProfileDto.getId())
                 .loginPassword(cosKey)
-                .email(googleProfile.getEmail())
+                .email(googleProfileDto.getEmail())
                 .role("ROLE_USER")
                 .build();
 
@@ -164,7 +164,7 @@ public class GoogleLogicSub {
         log.info("email : " + googleUser.getEmail());
         log.info("role : " + googleUser.getRole());
 
-        log.info("[END] - GoogleLogicSub.accessTokenToProfile / 구글에서 발급받은 토큰 [googleOauthToken : " + googleOauthToken + "] 를 이용하여 프로필 정보 요청하기 완료  ---------------------------------------------------------------------------------");
+        log.info("[END] - GoogleLogicSub.accessTokenToProfile / 구글에서 발급받은 토큰 [googleOauthTokenDto : " + googleOauthTokenDto + "] 를 이용하여 프로필 정보 요청하기 완료  ---------------------------------------------------------------------------------");
 
         return googleUser;
     }

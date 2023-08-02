@@ -1,4 +1,4 @@
-package bookstore24.v2.repository;
+package bookstore24.v2.member.repository;
 
 
 import bookstore24.v2.domain.Member;

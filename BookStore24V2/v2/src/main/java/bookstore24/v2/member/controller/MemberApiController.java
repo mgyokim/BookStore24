@@ -1,14 +1,14 @@
-package bookstore24.v2.controller;
+package bookstore24.v2.member.controller;
 
-import bookstore24.v2.auth.local.LocalSignUpRequestDto;
-import bookstore24.v2.auth.local.LocalSignUpResponseDto;
+import bookstore24.v2.auth.local.dto.LocalSignUpRequestDto;
+import bookstore24.v2.auth.local.dto.LocalSignUpResponseDto;
 import bookstore24.v2.auth.local.logic.LocalLogic;
+import bookstore24.v2.auth.oauth.dto.token.GoogleOauthTokenDto;
+import bookstore24.v2.auth.oauth.dto.token.KakaoOauthTokenDto;
 import bookstore24.v2.auth.oauth.logic.GoogleLogic;
 import bookstore24.v2.auth.oauth.logic.KakaoLogic;
 import bookstore24.v2.auth.oauth.logic.NaverLogic;
-import bookstore24.v2.auth.oauth.token.GoogleOauthToken;
-import bookstore24.v2.auth.oauth.token.KakaoOauthToken;
-import bookstore24.v2.auth.oauth.token.NaverOauthToken;
+import bookstore24.v2.auth.oauth.dto.token.NaverOauthTokenDto;
 import bookstore24.v2.domain.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ import javax.validation.Valid;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class LoginApiController {
+public class MemberApiController {
 
     private final KakaoLogic kakaoLogic;
     private final NaverLogic naverLogic;
@@ -36,10 +36,10 @@ public class LoginApiController {
     public ResponseEntity<String> kakaoLogin(@RequestParam(value = "Authorization_code", required = true) String code) {
 
         // 발급받은 인가 코드로 토큰 요청
-        KakaoOauthToken kakaoOauthToken = kakaoLogic.codeToToken(code);
+        KakaoOauthTokenDto kakaoOauthTokenDto = kakaoLogic.codeToToken(code);
 
         // 발급받은 액세스토큰으로 프로필 정보 요청
-        Member member = kakaoLogic.accessTokenToProfile(kakaoOauthToken);
+        Member member = kakaoLogic.accessTokenToProfile(kakaoOauthTokenDto);
 
         // 해당 회원의 회원가입 여부 체크후 비회원만 회원가입 처리
         Member joinedMember = kakaoLogic.joinCheck(member);
@@ -66,10 +66,10 @@ public class LoginApiController {
     public ResponseEntity<String> naverLogin(@RequestParam(value = "Authorization_code", required = true) String code) {
 
         // 발급받은 인가 코드로 토큰 요청
-        NaverOauthToken naverOauthToken = naverLogic.codeToToken(code);
+        NaverOauthTokenDto naverOauthTokenDto = naverLogic.codeToToken(code);
 
         // 발급받은 액세스토큰으로 프로필 정보 요청
-        Member member = naverLogic.accessTokenToProfile(naverOauthToken);
+        Member member = naverLogic.accessTokenToProfile(naverOauthTokenDto);
 
         // 해당 회원의 회원가입 여부 체크후 비회원만 회원가입 처리
         Member joinedMember = naverLogic.joinCheck(member);
@@ -97,10 +97,10 @@ public class LoginApiController {
     public ResponseEntity<String> googleLogin(@RequestParam(value = "Authorization_code", required = true) String code) {
 
         // 발급받은 인가 코드로 토큰 요청
-        GoogleOauthToken googleOauthToken = googleLogic.codeToToken(code);
+        GoogleOauthTokenDto googleOauthTokenDto = googleLogic.codeToToken(code);
 
         // 발급받은 액세스토큰으로 프로필 정보 요청
-        Member member = googleLogic.accessTokenToProfile(googleOauthToken);
+        Member member = googleLogic.accessTokenToProfile(googleOauthTokenDto);
 
         // 해당 회원의 회원가입 여부 체크후 비회원만 회원가입 처리
         Member joinedMember = googleLogic.joinCheck(member);

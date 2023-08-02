@@ -1,8 +1,8 @@
-package bookstore24.v2.jwt;
+package bookstore24.v2.auth.jwt;
 
 import bookstore24.v2.auth.PrincipalDetails;
 import bookstore24.v2.domain.Member;
-import bookstore24.v2.repository.MemberRepository;
+import bookstore24.v2.member.repository.MemberRepository;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;

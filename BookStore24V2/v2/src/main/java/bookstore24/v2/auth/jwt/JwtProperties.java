@@ -1,4 +1,4 @@
-package bookstore24.v2.jwt;
+package bookstore24.v2.auth.jwt;
 
 public interface JwtProperties {
     String SECRET = "bookstore24";  // 서버만 알고 있는 비밀값

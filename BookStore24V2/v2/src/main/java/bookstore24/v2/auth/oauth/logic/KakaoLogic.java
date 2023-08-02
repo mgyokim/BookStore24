@@ -1,10 +1,10 @@
 package bookstore24.v2.auth.oauth.logic;
 
-import bookstore24.v2.auth.oauth.profile.KakaoProfile;
-import bookstore24.v2.auth.oauth.token.KakaoOauthToken;
+import bookstore24.v2.auth.oauth.dto.profile.KakaoProfileDto;
+import bookstore24.v2.auth.oauth.dto.token.KakaoOauthTokenDto;
 import bookstore24.v2.domain.Member;
-import bookstore24.v2.jwt.JwtProperties;
-import bookstore24.v2.service.MemberService;
+import bookstore24.v2.auth.jwt.JwtProperties;
+import bookstore24.v2.member.service.MemberService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -39,7 +39,7 @@ public class KakaoLogic {
     final String KAKAO_PROFILE_REQUEST_URI = "https://kapi.kakao.com/v2/user/me";
 
     /**
-     * 카카오 인가 코드 받기 (LoginApiController.kakaoLogin() 에서 처리)
+     * 카카오 인가 코드 받기 (MemberApiController.kakaoLogin() 에서 처리)
      */
     // 요청 URL
     // 프론트에서
@@ -51,7 +51,7 @@ public class KakaoLogic {
     /**
      * 발급받은 인가 코드로 토큰 요청하기
      */
-    public KakaoOauthToken codeToToken(String code) {
+    public KakaoOauthTokenDto codeToToken(String code) {
 
         log.info("[START] - KakaoLogic.codeToToken / 카카오에서 발급받아 클라이언트가 요청으로 보낸 [Authorization_code : " + code + "] 를 이용하여 토큰 요청하기 시작  ---------------------------------------------------------------------------------");
 
@@ -83,35 +83,35 @@ public class KakaoLogic {
 
         // ObjectMapper
         ObjectMapper objectMapper = new ObjectMapper();
-        KakaoOauthToken kakaoOauthToken = null;   // 카카오 토큰 응답 데이터를 통째로 저장할 곳
+        KakaoOauthTokenDto kakaoOauthTokenDto = null;   // 카카오 토큰 응답 데이터를 통째로 저장할 곳
 
         try {
-            kakaoOauthToken = objectMapper.readValue(response.getBody(), KakaoOauthToken.class);  // Json 데이터를 자바로 처리하기 위해 자바 오브젝트로 바꿈.
+            kakaoOauthTokenDto = objectMapper.readValue(response.getBody(), KakaoOauthTokenDto.class);  // Json 데이터를 자바로 처리하기 위해 자바 오브젝트로 바꿈.
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
 
-        log.info("클라이언트가 보낸 [Authorization_code : " + code + "] 를 이용하여 발급받은 [kakaoOauthToken : " + kakaoOauthToken + "]----------------------------------------------------------------------------------------------------------");
+        log.info("클라이언트가 보낸 [Authorization_code : " + code + "] 를 이용하여 발급받은 [kakaoOauthTokenDto : " + kakaoOauthTokenDto + "]----------------------------------------------------------------------------------------------------------");
         log.info("[END] - KakaoLogic.codeToToken / 카카오에서 발급받아 클라이언트가 요청으로 보낸 [Authorization_code : " + code + "] 를 이용하여 토큰 요청하기 완료  ---------------------------------------------------------------------------------");
 
-        return kakaoOauthToken;
+        return kakaoOauthTokenDto;
     }
 
     /**
      * 발급받은 AccessToken 을 이용하여 카카오 프로필 정보 요청하기
      */
 
-    public Member accessTokenToProfile(KakaoOauthToken kakaoOauthToken) {
+    public Member accessTokenToProfile(KakaoOauthTokenDto kakaoOauthTokenDto) {
 
-        log.info("[START] - KakaoLogic.accessTokenToProfile / 카카오에서 발급받은 토큰 [kakaoOauthToken : " + kakaoOauthToken + "] 를 이용하여 프로필 정보 요청하기 시작  ---------------------------------------------------------------------------------");
+        log.info("[START] - KakaoLogic.accessTokenToProfile / 카카오에서 발급받은 토큰 [kakaoOauthTokenDto : " + kakaoOauthTokenDto + "] 를 이용하여 프로필 정보 요청하기 시작  ---------------------------------------------------------------------------------");
 
         // 카카오 토큰 응답 데이터를 각 변수에 저장
-        String kakao_access_token = kakaoOauthToken.getAccess_token();
-        String kakao_token_type = kakaoOauthToken.getToken_type();
-        String kakao_expires_in = kakaoOauthToken.getExpires_in();
-        String kakao_refresh_token = kakaoOauthToken.getRefresh_token();
-        String kakao_scope = kakaoOauthToken.getScope();
-        String kakao_refresh_token_expires_in = kakaoOauthToken.getRefresh_token_expires_in();
+        String kakao_access_token = kakaoOauthTokenDto.getAccess_token();
+        String kakao_token_type = kakaoOauthTokenDto.getToken_type();
+        String kakao_expires_in = kakaoOauthTokenDto.getExpires_in();
+        String kakao_refresh_token = kakaoOauthTokenDto.getRefresh_token();
+        String kakao_scope = kakaoOauthTokenDto.getScope();
+        String kakao_refresh_token_expires_in = kakaoOauthTokenDto.getRefresh_token_expires_in();
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -133,22 +133,22 @@ public class KakaoLogic {
 
         // ObjectMapper
         ObjectMapper objectMapper2 = new ObjectMapper();
-        KakaoProfile kakaoProfile = null;
+        KakaoProfileDto kakaoProfileDto = null;
 
         try {
-            kakaoProfile = objectMapper2.readValue(response2.getBody(), KakaoProfile.class);
+            kakaoProfileDto = objectMapper2.readValue(response2.getBody(), KakaoProfileDto.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
 
-        log.info("카카오로부터 응답받은 프로필 정보 [kakaoProfile : " + kakaoProfile + "]");
+        log.info("카카오로부터 응답받은 프로필 정보 [kakaoProfileDto : " + kakaoProfileDto + "]");
 
         Member kakaoUser = Member.builder()
                 .provider("kakao")
-                .providerId(String.valueOf(kakaoProfile.getId()))
-                .loginId("kakao" + "_" + kakaoProfile.getId())
+                .providerId(String.valueOf(kakaoProfileDto.getId()))
+                .loginId("kakao" + "_" + kakaoProfileDto.getId())
                 .loginPassword(cosKey)
-                .email(kakaoProfile.getKakao_account().getEmail())
+                .email(kakaoProfileDto.getKakao_account().getEmail())
                 .role("ROLE_USER")
                 .build();
 
@@ -160,7 +160,7 @@ public class KakaoLogic {
         log.info("kakaoUser.email : " + kakaoUser.getEmail());
         log.info("kakaoUser.role : " + kakaoUser.getRole());
 
-        log.info("[END] - KakaoLogic.accessTokenToProfile / 카카오에서 발급받은 토큰 [kakaoOauthToken : " + kakaoOauthToken + "] 를 이용하여 프로필 정보 요청하기 완료  ---------------------------------------------------------------------------------");
+        log.info("[END] - KakaoLogic.accessTokenToProfile / 카카오에서 발급받은 토큰 [kakaoOauthTokenDto : " + kakaoOauthTokenDto + "] 를 이용하여 프로필 정보 요청하기 완료  ---------------------------------------------------------------------------------");
 
         return kakaoUser;
     }

@@ -1,9 +1,9 @@
-package bookstore24.v2.auth.oauth.profile;
+package bookstore24.v2.auth.oauth.dto.profile;
 
 import lombok.Data;
 
 @Data
-public class NaverProfile {
+public class NaverProfileDto {
 
     public String resultcode;
     public String message;
