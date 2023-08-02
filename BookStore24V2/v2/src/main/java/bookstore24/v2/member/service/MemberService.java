@@ -23,15 +23,27 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    // LoginId로 회원 조회
+    // LoginId 으로 회원 조회
     public Member findMemberByLoginId(String loginId) {
         Member member = memberRepository.findByLoginId(loginId);
         return member;
     }
 
-    // Email 로 회원 조회
+    // Email 으로 회원 조회
     public Member findMemberByEmail(String email) {
         Member member = memberRepository.findByEmail(email);
         return member;
+    }
+
+    // nickname 으로 회원 조회
+    public Member findByNickname(String nickname) {
+        Member member = memberRepository.findByNickName(nickname);
+        return member;
+    }
+
+    // member 저장
+    public Member saveMember(Member member) {
+        Member savedMember = memberRepository.save(member);
+        return savedMember;
     }
 }

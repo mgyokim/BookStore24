@@ -10,10 +10,16 @@ import bookstore24.v2.auth.oauth.logic.KakaoLogic;
 import bookstore24.v2.auth.oauth.logic.NaverLogic;
 import bookstore24.v2.auth.oauth.dto.token.NaverOauthTokenDto;
 import bookstore24.v2.domain.Member;
+import bookstore24.v2.domain.Residence;
+import bookstore24.v2.member.dto.NicknameResidenceSaveRequestDto;
+import bookstore24.v2.member.dto.NicknameResidenceSaveResponseDto;
+import bookstore24.v2.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +30,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 @Slf4j
 public class MemberApiController {
 
@@ -32,6 +39,9 @@ public class MemberApiController {
     private final GoogleLogic googleLogic;
     private final LocalLogic localLogic;
 
+    private final MemberService memberService;
+
+    @Transactional
     @PostMapping("/auth/kakao/callback")
     public ResponseEntity<String> kakaoLogin(@RequestParam(value = "Authorization_code", required = true) String code) {
 
@@ -62,6 +72,7 @@ public class MemberApiController {
         }
     }
 
+    @Transactional
     @PostMapping("auth/naver/callback")
     public ResponseEntity<String> naverLogin(@RequestParam(value = "Authorization_code", required = true) String code) {
 
@@ -93,6 +104,7 @@ public class MemberApiController {
         }
     }
 
+    @Transactional
     @PostMapping("auth/google/callback")
     public ResponseEntity<String> googleLogin(@RequestParam(value = "Authorization_code", required = true) String code) {
 
@@ -124,6 +136,7 @@ public class MemberApiController {
         }
     }
 
+    @Transactional
     @PostMapping("local/signup")
     public ResponseEntity<?> localSignUp(@RequestBody @Valid LocalSignUpRequestDto localSignUpRequestDto,
                                          BindingResult bindingResult) {
@@ -157,5 +170,45 @@ public class MemberApiController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("개발자 문의 요망 : 회원가입 실패");
         }
     }
-}
 
+    @Transactional
+    @PostMapping("/member/save/nicknameresidence")
+    public ResponseEntity<?> saveNickname(Authentication authentication, @RequestBody @Valid NicknameResidenceSaveRequestDto nicknameResidenceSaveRequestDto) {
+
+        // JWT 를 이용하여 요청한 회원 확인
+        String JwtLoginId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(JwtLoginId);
+
+        // 요청으로 받은 nicknameResidenceSaveRequestDto 으로부터 nickname 과 residence 받기
+        String nickname = nicknameResidenceSaveRequestDto.getNickname();
+        String residence = nicknameResidenceSaveRequestDto.getResidence();
+
+        // 등록을 요청한 닉네임 중복 여부 검사
+        Member duplicateNiname = memberService.findByNickname(nickname);
+
+        if (duplicateNiname == null) {
+            member.setNickName(nickname);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("duplicate Nickname");
+        }
+
+        // 요청 데이터를 처리하는 로직
+        if (Residence.incheon.name().equals(residence)) {
+            member.setResidence(Residence.incheon);
+        } else if (Residence.seoul.name().equals(residence)) {
+            member.setResidence(Residence.seoul);
+        } else if (Residence.gyeonggi.name().equals(residence)) {
+            member.setResidence(Residence.gyeonggi);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid Region");
+        }
+
+        Member saveMember = memberService.saveMember(member);
+
+        NicknameResidenceSaveResponseDto nicknameResidenceSaveResponseDto = new NicknameResidenceSaveResponseDto();
+        nicknameResidenceSaveResponseDto.setNickname(saveMember.getNickName());
+        nicknameResidenceSaveResponseDto.setResidence(String.valueOf(saveMember.getResidence()));
+
+        return ResponseEntity.status(HttpStatus.OK).body(nicknameResidenceSaveResponseDto);
+    }
+}
