@@ -5,6 +5,7 @@ import bookstore24.v2.auth.local.logic.LocalLogic;
 import bookstore24.v2.auth.oauth.logic.GoogleLogic;
 import bookstore24.v2.auth.oauth.logic.KakaoLogic;
 import bookstore24.v2.auth.oauth.logic.NaverLogic;
+import bookstore24.v2.auth.oauth.token.GoogleOauthToken;
 import bookstore24.v2.auth.oauth.token.KakaoOauthToken;
 import bookstore24.v2.auth.oauth.token.NaverOauthToken;
 import bookstore24.v2.domain.Member;
@@ -82,6 +83,36 @@ public class MemberSubController {
             String provider = joinedMember.getProvider();
 
             ResponseEntity<String> failResponseJwt = naverLogic.naverAutoLoginFail(email, provider);
+
+            log.info("naverLogin 컨트롤러에서 로그인 실패 응답 반환 완료" + failResponseJwt);
+            log.info(joinedMember.getEmail() + " 은 " + provider + " 로그인 방식으로 이미 가입된 이메일입니다. " + provider + " 로그인 방식으로 로그인을 시도하세요.");
+
+            return failResponseJwt;
+        }
+    }
+
+    @GetMapping("auth/google/callback")
+    ResponseEntity<String> googleLogin2(String code) {
+
+        // 발급받은 인가 코드로 토큰 요청
+        GoogleOauthToken googleOauthToken = googleLogic.codeToToken(code);
+
+        // 발급받은 액세스토큰으로 프로필 정보 요청
+        Member member = googleLogic.accessTokenToProfile(googleOauthToken);
+
+        // 해당 회원의 회원가입 여부 체크후 비회원만 회원가입 처리
+        Member joinedMember = googleLogic.joinCheck(member);
+
+        if (joinedMember.getLoginId() != null) {
+            // 해당 회원 로그인 처리
+            ResponseEntity<String> responseJwt = googleLogic.googleAutoLogin(member);
+            // 회원의 정보로 구성한 Jwt 반환
+            return responseJwt;
+        } else {
+            String email = joinedMember.getEmail();
+            String provider = joinedMember.getProvider();
+
+            ResponseEntity<String> failResponseJwt = googleLogic.googleAutoLoginFail(email, provider);
 
             log.info("naverLogin 컨트롤러에서 로그인 실패 응답 반환 완료" + failResponseJwt);
             log.info(joinedMember.getEmail() + " 은 " + provider + " 로그인 방식으로 이미 가입된 이메일입니다. " + provider + " 로그인 방식으로 로그인을 시도하세요.");

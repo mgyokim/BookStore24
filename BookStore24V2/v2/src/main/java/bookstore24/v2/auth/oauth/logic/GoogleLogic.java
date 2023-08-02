@@ -3,24 +3,22 @@ package bookstore24.v2.auth.oauth.logic;
 import bookstore24.v2.auth.oauth.profile.GoogleProfile;
 import bookstore24.v2.auth.oauth.token.GoogleOauthToken;
 import bookstore24.v2.domain.Member;
+import bookstore24.v2.jwt.JwtProperties;
 import bookstore24.v2.service.MemberService;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Date;
 
 @Component
 @RequiredArgsConstructor
@@ -28,8 +26,6 @@ import org.springframework.web.client.RestTemplate;
 public class GoogleLogic {
 
     private final MemberService memberService;
-
-    private final AuthenticationManager authenticationManager;
 
     @Value("${cos.key}")
     private String cosKey;
@@ -40,7 +36,9 @@ public class GoogleLogic {
     @Value(("${spring.security.oauth2.client.registration.google.client-secret}"))
     private String clientSecret;
 
-    final String GOOGLE_REDIRECT_URI = "http://localhost:3000/auth/google";
+    final String GOOGLE_REDIRECT_URI = "http://localhost:3000/auth/google";     // 프론트 통신용
+//    final String GOOGLE_REDIRECT_URI = "http://bookstore24.shop/auth/google/callback";    // 집에서 포트 열어놓은 상태일때 로컬 개발용
+//    final String GOOGLE_REDIRECT_URI = "http://localhost:8080/auth/google/callback";    // 외부에서 로컬 개발용
 
     final String GOOGLE_TOKEN_REQUEST_URI = "https://oauth2.googleapis.com/token";
 
@@ -60,7 +58,7 @@ public class GoogleLogic {
      */
     public GoogleOauthToken codeToToken(String code) {
 
-        log.info("[구글]발급받은 인가 코드로 토큰 요청 시작-----------------------------------------------------------------");
+        log.info("[START] - GoogleLogic.codeToToken / 구글에서 발급받아 클라이언트가 요청으로 보낸 [Authorization_code : " + code + "] 를 이용하여 토큰 요청하기 시작  ---------------------------------------------------------------------------------");
 
         // POST 방식으로 key=value 데이터를 요청(구글쪽으로)
         // 사용 라이브러리 - RestTemplate
@@ -99,21 +97,19 @@ public class GoogleLogic {
             e.printStackTrace();
         }
 
-        log.info("구글 토큰 : " + googleOauthToken);
-        log.info("[구글]발급받은 인가 코드로 토큰 요청 완료-----------------------------------------------------------------");
+        log.info("클라이언트가 보낸 [Authorization_code : " + code + "] 를 이용하여 발급받은 [googleOauthToken : " + googleOauthToken + "]----------------------------------------------------------------------------------------------------------");
+        log.info("[END] - GoogleLogic.codeToToken / 구글에서 발급받아 클라이언트가 요청으로 보낸 [Authorization_code : " + code + "] 를 이용하여 토큰 요청하기 완료  ---------------------------------------------------------------------------------");
 
         return googleOauthToken;
     }
 
     /**
      * 발급받은 AccessToken 을 이용하여 구글 프로필 정보 요청하기
-     *
-     * @return
      */
 
     public Member accessTokenToProfile(GoogleOauthToken googleOauthToken) {
 
-        log.info("[구글]AccessToken 을 이용하여 구글 프로필 정보 요청 시작-------------------------------------------------");
+        log.info("[START] - GoogleLogic.accessTokenToProfile / 구글에서 발급받은 토큰 [googleOauthToken : " + googleOauthToken + "] 를 이용하여 프로필 정보 요청하기 시작  ---------------------------------------------------------------------------------");
 
         // 구글 토큰 응답 데이터를 각 변수에 저장
         String google_access_token = googleOauthToken.getAccess_token();
@@ -151,12 +147,7 @@ public class GoogleLogic {
             e.printStackTrace();
         }
 
-        log.info("provider : " + "google");
-        log.info("providerId : " + googleProfile.getId());
-        log.info("loginId : " + "google" + "_" + googleProfile.getId());
-        log.info("loginPassword : " + cosKey);
-        log.info("email : " + googleProfile.getEmail());
-        log.info("role : " + "ROLE_USER");
+        log.info("구글로부터 응답받은 프로필 정보 [googleProfile : " + googleProfile + "]");
 
         Member googleUser = Member.builder()
                 .provider("google")
@@ -167,7 +158,15 @@ public class GoogleLogic {
                 .role("ROLE_USER")
                 .build();
 
-        log.info("[구글]AccessToken 을 이용하여 구글 프로필 정보 요청 완료-------------------------------------------------");
+        log.info("프로필 정보를 이용하여 구글 자동 회원가입용 객체 생성 [googleUser : " + googleUser + "]");
+        log.info("provider : " + googleUser.getProvider());
+        log.info("providerId : " + googleUser.getProviderId());
+        log.info("loginId : " + googleUser.getLoginId());
+        log.info("loginPassword : " + googleUser.getLoginPassword());
+        log.info("email : " + googleUser.getEmail());
+        log.info("role : " + googleUser.getRole());
+
+        log.info("[END] - GoogleLogic.accessTokenToProfile / 구글에서 발급받은 토큰 [googleOauthToken : " + googleOauthToken + "] 를 이용하여 프로필 정보 요청하기 완료  ---------------------------------------------------------------------------------");
 
         return googleUser;
     }
@@ -178,27 +177,32 @@ public class GoogleLogic {
 
     public Member joinCheck(Member googleUser) {
 
-        log.info("[구글] Oauth 이메일 기존회원의 이메일과 중복 여부 체크 및 미중복자 자동 회원가입 처리 시작---------------------------------------------------");
+        log.info("[START] - GoogleLogic.joinCheck / [email : " + googleUser.getEmail() + "]  email 중복여부 체크 및 회원가입 로직 시작 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
 
         Member duplicateEmailMember = memberService.findMemberByEmail(googleUser.getEmail());
 
         if (duplicateEmailMember == null) {
             memberService.joinMember(googleUser);
             Member joinedMember = memberService.findMemberByEmail(googleUser.getEmail());
+
             log.info("구글 로그인이 최초입니다. 자동 회원가입되었습니다.");
-            log.info("[구글] Oauth 이메일 기존회원의 이메일과 중복 여부 체크 및 미중복자 자동 회원가입 처리 완료---------------------------------------------------");
+            log.info("[END] - GoogleLogic.joinCheck / [email : " + googleUser.getEmail() + "]  email 중복여부 체크 및 회원가입 로직 종료 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
+
             return joinedMember;
         }
         if ((duplicateEmailMember != null) & (duplicateEmailMember.getProvider() == "google")) {
             log.info("구글 로그인을 한적이 있습니다. 이미 회원가입 되어있습니다.");
-            log.info("[구글] Oauth 이메일 기존회원의 이메일과 중복 여부 체크 및 미중복자 자동 회원가입 처리 완료---------------------------------------------------");
+            log.info("[END] - GoogleLogic.joinCheck / [email : " + googleUser.getEmail() + "]  email 중복여부 체크 및 회원가입 로직 종료 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
             return duplicateEmailMember;
         } else {
             String provider = duplicateEmailMember.getProvider();
+
             log.info(googleUser.getEmail() + " 은 " + provider + " 로그인 방식으로 이미 가입된 이메일입니다. " + provider + " 로그인 방식으로 로그인을 시도하세요.");
-            log.info("[구글] Oauth 이메일 기존회원의 이메일과 중복 여부 체크 및 미중복자 자동 회원가입 처리 완료---------------------------------------------------");
+
             googleUser.setLoginId(null);    // 컨트롤러에서 로그인 처리를 하지 않기 위한 용도
             googleUser.setProvider(provider);
+
+            log.info("[END] - GoogleLogic.joinCheck / [email : " + googleUser.getEmail() + "]  email 중복여부 체크 및 회원가입 로직 종료 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
             return googleUser;
         }
 
@@ -208,12 +212,62 @@ public class GoogleLogic {
      * 자동 로그인 처리
      */
 
-    public void googleAutoLogin(Member googleUser) {
-        log.info("[구글]자동 로그인 시작---------------------------------------------------");
+    public ResponseEntity<String> googleAutoLogin(Member googleUser) {
+        log.info("[START] - GoogleLogic.googleAutoLogin / [email : " + googleUser.getEmail() + "]  해당 회원은 Google 로 회원가입 되어있으므로 자동 로그인 로직 시작 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
 
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(googleUser.getLoginId(), cosKey));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        // 구글 로그인 요청 회원 데이터
+        String loginId = googleUser.getLoginId();
+        log.info("Request loginId : " + loginId);
+        String loginPassword = cosKey;
+        log.info("Request loginPassword : " + loginPassword);
 
-        log.info("[구글]자동 로그인 완료---------------------------------------------------");
+        // JSON 데이터로 변환
+        String jsonData = "{\"loginId\":\"" + loginId + "\", \"loginPassword\":\"" + loginPassword + "\"}";
+
+        // 요청 헤더 설정
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+        // 요청 바디와 헤더를 포함하는 HttpEntity 생성
+        HttpEntity<String> requestEntity = new HttpEntity<>(jsonData, httpHeaders);
+
+        // RestTemplate 생성
+        RestTemplate restTemplate = new RestTemplate();
+
+        // /login 컨트롤러로 POST 요청 보내기
+        String url = "http://bookstore24.shop/login"; // 외부 통신 엔드포인트 URL
+//        String url = "http://localhost:8080/login"; // 로컬 통신 엔드포인트 URL
+        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+
+        // 응답 결과 처리
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            HttpHeaders responseEntityHeaders = responseEntity.getHeaders();
+            log.info("로그인 성공 응답 데이터 헤더 : " + responseEntityHeaders);
+            log.info("[END] - GoogleLogic.googleAutoLogin / [email : " + googleUser.getEmail() + "]  해당 회원은 Google 로 회원가입 되어있으므로 자동 로그인 로직 종료 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
+            return responseEntity;
+        } else {
+            log.info("로그인 실패 상태 코드 : " + responseEntity.getStatusCodeValue());
+        }
+        return null;
+    }
+
+    public ResponseEntity<String> googleAutoLoginFail(String email, String provider) {
+        log.info("[START] - GoogleLogic.googleAutoLoginFail / [email : " + email + "] 해당 회원은 " + provider + " 로 회원가입 되어있으므로 자동 로그인 실패 응답 시작 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+
+        String loginFailJwt = JWT.create()
+                .withSubject("bookstore24LoginFailToken")    // 토큰 제목
+                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.EXPIRATION_TIME))  // 토큰 만료 일자
+                .withClaim("email", email) // Private claim
+                .withClaim("provider", provider)  // Private claim
+                .sign(Algorithm.HMAC512(JwtProperties.SECRET));    // 토큰 사인
+
+        httpHeaders.set(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + loginFailJwt);
+
+        log.info("loginFailJwt = " + JwtProperties.TOKEN_PREFIX + loginFailJwt);
+        log.info("[END] - GoogleLogic.googleAutoLoginFail / [email : " + email + "] 해당 회원은 " + provider + " 로 회원가입 되어있으므로 자동 로그인 실패 응답 완료 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
+        return new ResponseEntity<>("google Auto Login failed. Cause : Duplicated Email.", httpHeaders, HttpStatus.UNAUTHORIZED);
     }
 }
