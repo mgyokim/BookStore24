@@ -170,13 +170,18 @@ public class MemberApiController {
     @PostMapping("/member/save/nicknameresidence")
     public ResponseEntity<?> saveNickname(Authentication authentication, @RequestBody @Valid NicknameResidenceSaveRequestDto nicknameResidenceSaveRequestDto) {
 
+        log.info("[START] - MemberApiController.saveNickname / 닉네임 및 거주지 정보 저장 요청 시작");
         // JWT 를 이용하여 요청한 회원 확인
         String JwtLoginId = authentication.getName();
         Member member = memberService.findMemberByLoginId(JwtLoginId);
 
+        log.info("닉네임 및 거주지 정보 저장을 요청한 회원의 loginId : " + JwtLoginId);
+
         // 요청으로 받은 nicknameResidenceSaveRequestDto 으로부터 nickname 과 residence 받기
         String nickname = nicknameResidenceSaveRequestDto.getNickname();
         String residence = nicknameResidenceSaveRequestDto.getResidence();
+        log.info("loginId : " + JwtLoginId + " 가 저장을 요청한 nickname : " + nickname + ", residence : " + residence);
+
 
         // 등록을 요청한 닉네임 중복 여부 검사
         Member duplicateNiname = memberService.findByNickname(nickname);
@@ -184,6 +189,7 @@ public class MemberApiController {
         if (duplicateNiname == null) {
             member.setNickName(nickname);
         } else {
+            log.info("닉네임 및 거주지 정보 저장 실패 [Cause : 닉네임 중복]");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("duplicate Nickname");
         }
 
@@ -195,6 +201,8 @@ public class MemberApiController {
         } else if (Residence.gyeonggi.name().equals(residence)) {
             member.setResidence(Residence.gyeonggi);
         } else {
+            log.info("닉네임 및 거주지 정보 저장 실패 [Cause : 서비스 사용 불가 거주지]");
+            log.info("[END] - MemberApiController.saveNickname / 닉네임 및 거주지 정보 저장 요청 종료");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid Region");
         }
 
@@ -204,6 +212,8 @@ public class MemberApiController {
         nicknameResidenceSaveResponseDto.setNickname(saveMember.getNickName());
         nicknameResidenceSaveResponseDto.setResidence(String.valueOf(saveMember.getResidence()));
 
+        log.info("닉네임 및 거주지 정보 저장 성공");
+        log.info("[END] - MemberApiController.saveNickname / 닉네임 및 거주지 정보 저장 요청 종료");
         return ResponseEntity.status(HttpStatus.OK).body(nicknameResidenceSaveResponseDto);
     }
 }
