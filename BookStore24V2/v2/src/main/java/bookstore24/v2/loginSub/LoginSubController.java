@@ -1,10 +1,6 @@
-package bookstore24.v2.controller;
+package bookstore24.v2.loginSub;
 
 import bookstore24.v2.auth.PrincipalDetails;
-import bookstore24.v2.auth.local.logic.LocalLogic;
-import bookstore24.v2.auth.oauth.logic.GoogleLogic;
-import bookstore24.v2.auth.oauth.logic.KakaoLogic;
-import bookstore24.v2.auth.oauth.logic.NaverLogic;
 import bookstore24.v2.auth.oauth.token.GoogleOauthToken;
 import bookstore24.v2.auth.oauth.token.KakaoOauthToken;
 import bookstore24.v2.auth.oauth.token.NaverOauthToken;
@@ -15,74 +11,89 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequiredArgsConstructor
 @Slf4j
-public class MemberSubController {
+public class LoginSubController {
 
-    private final KakaoLogic kakaoLogic;
-    private final NaverLogic naverLogic;
-    private final GoogleLogic googleLogic;
-    private final LocalLogic localLogic;
+    private final KakaoLogicSub kakaoLogicSub;
+    private final NaverLogicSub naverLogicSub;
+    private final GoogleLogicSub googleLogicSub;
 
     /**
-     * 테스트용 컨트롤러
+     * 개발용 테스트용 컨트롤러
+     * [카카오 로컬개발용]
+     * GET
+     * https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=e435f34295d28879dfabc32de2bd7546&redirect_uri=http://localhost:8080/auth/kakao/callback
+     *
+     *
+     *
+     * [네이버 로컬 개발용]
+     * GET
+     * https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=B3RGNtinEp3Va8fysxkN&redirect_uri=http://localhost:8080/auth/naver/callback&state='test'
+     *
+     *
+     * [구글 로컬 개발용]
+     * GET
+     * https://accounts.google.com/o/oauth2/v2/auth?client_id=766446517759-t82jo5h4vk9rmj30bld1d30su7sqdde1.apps.googleusercontent.com&redirect_uri=http://localhost:8080/auth/google/callback&response_type=code&scope=openid%20email%20profile
      */
+
     @GetMapping("/auth/kakao/callback")
-    ResponseEntity<String> kakaoLogin2(String code) {
+    ResponseEntity<String> kakaoLoginSub(String code) {
 
         // 발급받은 인가 코드로 토큰 요청
-        KakaoOauthToken kakaoOauthToken = kakaoLogic.codeToToken(code);
+        KakaoOauthToken kakaoOauthToken = kakaoLogicSub.codeToToken(code);
 
         // 발급받은 액세스토큰으로 프로필 정보 요청
-        Member member = kakaoLogic.accessTokenToProfile(kakaoOauthToken);
+        Member member = kakaoLogicSub.accessTokenToProfile(kakaoOauthToken);
 
         // 해당 회원의 회원가입 여부 체크후 비회원만 회원가입 처리
-        Member joinedMember = kakaoLogic.joinCheck(member);
+        Member joinedMember = kakaoLogicSub.joinCheck(member);
 
         if (joinedMember.getLoginId() != null) {
             // 해당 회원 로그인 처리
-            ResponseEntity<String> responseJwt = kakaoLogic.kakaoAutoLogin(member);
-            // 회원의 LoginId 반환
-            log.info("kakaoLogin 컨트롤러에서 로그인 정상 응답 반환 완료");
+            ResponseEntity<String> responseJwt = kakaoLogicSub.kakaoAutoLogin(member);
+            // 회원의 정보로 구성한 Jwt 반환
+            log.info("kakaoLoginSub 컨트롤러에서 로그인 정상 응답 반환 완료");
             return responseJwt;
         } else {
             String email = joinedMember.getEmail();
             String provider = joinedMember.getProvider();
 
-            ResponseEntity<String> failResponseJwt = kakaoLogic.kakaoAutoLoginFail(email, provider);
+            ResponseEntity<String> failResponseJwt = kakaoLogicSub.kakaoAutoLoginFail(email, provider);
 
-            log.info("kakaoLogin 컨트롤러에서 로그인 실패 응답 반환 완료" + failResponseJwt);
+            log.info("kakaoLoginSub 컨트롤러에서 로그인 실패 응답 반환 완료" + failResponseJwt);
+            log.info(joinedMember.getEmail() + " 은 " + provider + " 로그인 방식으로 이미 가입된 이메일입니다. " + provider + " 로그인 방식으로 로그인을 시도하세요.");
+
             return failResponseJwt;
-//            return joinedMember.getEmail() + " 은 " + provider +" 로그인 방식으로 이미 가입된 이메일입니다. " + provider + " 로그인 방식으로 로그인을 시도하세요.";
         }
     }
 
     @GetMapping("auth/naver/callback")
-    ResponseEntity<String> naverLogin2(String code) {
+    ResponseEntity<String> naverLoginSub(String code) {
 
         // 발급받은 인가 코드로 토큰 요청
-        NaverOauthToken naverOauthToken = naverLogic.codeToToken(code);
+        NaverOauthToken naverOauthToken = naverLogicSub.codeToToken(code);
 
         // 발급받은 액세스토큰으로 프로필 정보 요청
-        Member member = naverLogic.accessTokenToProfile(naverOauthToken);
+        Member member = naverLogicSub.accessTokenToProfile(naverOauthToken);
 
         // 해당 회원의 회원가입 여부 체크후 비회원만 회원가입 처리
-        Member joinedMember = naverLogic.joinCheck(member);
+        Member joinedMember = naverLogicSub.joinCheck(member);
 
         if (joinedMember.getLoginId() != null) {
             // 해당 회원 로그인 처리
-            ResponseEntity<String> responseJwt = naverLogic.naverAutoLogin(member);
+            ResponseEntity<String> responseJwt = naverLogicSub.naverAutoLogin(member);
             // 회원의 정보로 구성한 Jwt 반환
+            log.info("naverLoginSub 컨트롤러에서 로그인 정상 응답 반환 완료");
             return responseJwt;
         } else {
             String email = joinedMember.getEmail();
             String provider = joinedMember.getProvider();
 
-            ResponseEntity<String> failResponseJwt = naverLogic.naverAutoLoginFail(email, provider);
+            ResponseEntity<String> failResponseJwt = naverLogicSub.naverAutoLoginFail(email, provider);
 
             log.info("naverLogin 컨트롤러에서 로그인 실패 응답 반환 완료" + failResponseJwt);
             log.info(joinedMember.getEmail() + " 은 " + provider + " 로그인 방식으로 이미 가입된 이메일입니다. " + provider + " 로그인 방식으로 로그인을 시도하세요.");
@@ -92,27 +103,28 @@ public class MemberSubController {
     }
 
     @GetMapping("auth/google/callback")
-    ResponseEntity<String> googleLogin2(String code) {
+    ResponseEntity<String> googleLoginSub(String code) {
 
         // 발급받은 인가 코드로 토큰 요청
-        GoogleOauthToken googleOauthToken = googleLogic.codeToToken(code);
+        GoogleOauthToken googleOauthToken = googleLogicSub.codeToToken(code);
 
         // 발급받은 액세스토큰으로 프로필 정보 요청
-        Member member = googleLogic.accessTokenToProfile(googleOauthToken);
+        Member member = googleLogicSub.accessTokenToProfile(googleOauthToken);
 
         // 해당 회원의 회원가입 여부 체크후 비회원만 회원가입 처리
-        Member joinedMember = googleLogic.joinCheck(member);
+        Member joinedMember = googleLogicSub.joinCheck(member);
 
         if (joinedMember.getLoginId() != null) {
             // 해당 회원 로그인 처리
-            ResponseEntity<String> responseJwt = googleLogic.googleAutoLogin(member);
+            ResponseEntity<String> responseJwt = googleLogicSub.googleAutoLogin(member);
             // 회원의 정보로 구성한 Jwt 반환
+            log.info("googleLoginSub 컨트롤러에서 로그인 정상 응답 반환 완료");
             return responseJwt;
         } else {
             String email = joinedMember.getEmail();
             String provider = joinedMember.getProvider();
 
-            ResponseEntity<String> failResponseJwt = googleLogic.googleAutoLoginFail(email, provider);
+            ResponseEntity<String> failResponseJwt = googleLogicSub.googleAutoLoginFail(email, provider);
 
             log.info("naverLogin 컨트롤러에서 로그인 실패 응답 반환 완료" + failResponseJwt);
             log.info(joinedMember.getEmail() + " 은 " + provider + " 로그인 방식으로 이미 가입된 이메일입니다. " + provider + " 로그인 방식으로 로그인을 시도하세요.");
@@ -127,11 +139,6 @@ public class MemberSubController {
         return "<h1>home</h1>";
     }
 
-    @PostMapping("token")
-    public @ResponseBody
-    String token() {
-        return "<h1>token</h1>";
-    }
 
     // user, manager, admin 권한만 접근 가능
     @GetMapping("/user")
