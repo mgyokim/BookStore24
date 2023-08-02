@@ -38,7 +38,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
-        log.info("[START] - JwtAuthorizationFilter.doFilterInternal / 인증이나 권한이 필요한 주소에 대한 인가 절차 시작 (필터체인에 등록했기 때문에, 인가가 필요없는 접근에 대해서도 수행만 됨.)");
+        log.info("[START] - JwtAuthorizationFilter.doFilterInternal / 인증이나 권한이 필요한 주소에 대한 인가 절차 시작 (필터체인에 등록했기 때문에, 인가가 필요없는 접근에 대해서도 수행은 됨.)");
         log.info("REQUEST URI : " + request.getRequestURI() + " ClientIp : " + request.getRemoteAddr());
 
 
@@ -54,7 +54,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         if (jwtHeader == null || !jwtHeader.startsWith(JwtProperties.TOKEN_PREFIX)) {
 
             log.info("인증 관련 헤더가 없거나, Authorization 헤더가 아님");
-            log.info("[END] - JwtAuthorizationFilter.doFilterInternal / 인증이나 권한이 필요한 주소에 대한 인가 절차 종료 (필터체인에 등록했기 때문에, 인가가 필요없는 접근에 대해서도 수행만 됨.)");
+            log.info("[END] - JwtAuthorizationFilter.doFilterInternal / 인증이나 권한이 필요한 주소에 대한 인가 절차 종료 (필터체인에 등록했기 때문에, 인가가 필요없는 접근에 대해서도 수행은 됨.)");
 
             chain.doFilter(request, response);
             return;
@@ -83,20 +83,20 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
                 log.info("인증이 완료된 사용자의 loginId : " + memberEntity.getLoginId() + " 에 대한 인가 완료");
-                log.info("[END] - JwtAuthorizationFilter.doFilterInternal / 인증이나 권한이 필요한 주소에 대한 인가 절차 종료 (필터체인에 등록했기 때문에, 인가가 필요없는 접근에 대해서도 수행만 됨.)");
+                log.info("[END] - JwtAuthorizationFilter.doFilterInternal / 인증이나 권한이 필요한 주소에 대한 인가 절차 종료 (필터체인에 등록했기 때문에, 인가가 필요없는 접근에 대해서도 수행은 됨.)");
 
                 // 서명이 비정상적
             } else {
                 log.info("인가 실패 : 유효하지 않은 JWT");
-                log.info("[END] - JwtAuthorizationFilter.doFilterInternal / 인증이나 권한이 필요한 주소에 대한 인가 절차 종료 (필터체인에 등록했기 때문에, 인가가 필요없는 접근에 대해서도 수행만 됨.)");
+                log.info("[END] - JwtAuthorizationFilter.doFilterInternal / 인증이나 권한이 필요한 주소에 대한 인가 절차 종료 (필터체인에 등록했기 때문에, 인가가 필요없는 접근에 대해서도 수행은 됨.)");
             }
         } catch (SignatureVerificationException e) {
             log.info("인가 실패 : 유효하지 않은 JWT- SignatureVerificationException");
-            log.info("[END] - JwtAuthorizationFilter.doFilterInternal / 인증이나 권한이 필요한 주소에 대한 인가 절차 종료 (필터체인에 등록했기 때문에, 인가가 필요없는 접근에 대해서도 수행만 됨.)");
+            log.info("[END] - JwtAuthorizationFilter.doFilterInternal / 인증이나 권한이 필요한 주소에 대한 인가 절차 종료 (필터체인에 등록했기 때문에, 인가가 필요없는 접근에 대해서도 수행은 됨.)");
         }
         catch (JWTDecodeException e) {
             log.info("인가 실패 : 유효하지 않은 JWT - JWTDecodeException");
-            log.info("[END] - JwtAuthorizationFilter.doFilterInternal / 인증이나 권한이 필요한 주소에 대한 인가 절차 종료 (필터체인에 등록했기 때문에, 인가가 필요없는 접근에 대해서도 수행만 됨.)");
+            log.info("[END] - JwtAuthorizationFilter.doFilterInternal / 인증이나 권한이 필요한 주소에 대한 인가 절차 종료 (필터체인에 등록했기 때문에, 인가가 필요없는 접근에 대해서도 수행은 됨.)");
         }
         chain.doFilter(request, response);
     }
