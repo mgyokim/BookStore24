@@ -8,11 +8,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @Slf4j
 public class LoginSubController {
@@ -132,30 +132,16 @@ public class LoginSubController {
         }
     }
 
-    @GetMapping("home")
+    @GetMapping("/home")
     public @ResponseBody
     String home() {
         return "<h1>home</h1>";
     }
 
 
-    // user, manager, admin 권한만 접근 가능
+    // user 권한만 접근 가능
     @GetMapping("/user")
     public String user(Authentication authentication) {
-        String name = authentication.getName();
-        return name;
-    }
-
-    // manager, admin 권한만 접근 가능
-    @GetMapping("/manager")
-    public String manager(Authentication authentication) {
-        String name = authentication.getName();
-        return name;
-    }
-
-    // admin 권한만 접근 가능
-    @GetMapping("/admin")
-    public String admin(Authentication authentication) {
         String name = authentication.getName();
         return name;
     }
