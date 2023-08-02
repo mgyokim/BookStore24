@@ -78,6 +78,7 @@ public class LoginApiController {
             // 해당 회원 로그인 처리
             ResponseEntity<String> responseJwt = naverLogic.naverAutoLogin(member);
             // 회원의 정보로 구성한 Jwt 반환
+            log.info("naverLogin 컨트롤러에서 로그인 정상 응답 반환 완료");
             return responseJwt;
         } else {
             String email = joinedMember.getEmail();
@@ -108,6 +109,7 @@ public class LoginApiController {
             // 해당 회원 로그인 처리
             ResponseEntity<String> responseJwt = googleLogic.googleAutoLogin(member);
             // 회원의 정보로 구성한 Jwt 반환
+            log.info("googleLogin 컨트롤러에서 로그인 정상 응답 반환 완료");
             return responseJwt;
         } else {
             String email = joinedMember.getEmail();
