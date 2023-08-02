@@ -1,6 +1,5 @@
 package bookstore24.v2.loginSub;
 
-import bookstore24.v2.auth.PrincipalDetails;
 import bookstore24.v2.auth.oauth.token.GoogleOauthToken;
 import bookstore24.v2.auth.oauth.token.KakaoOauthToken;
 import bookstore24.v2.auth.oauth.token.NaverOauthToken;
@@ -27,14 +26,14 @@ public class LoginSubController {
      * [카카오 로컬개발용]
      * GET
      * https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=e435f34295d28879dfabc32de2bd7546&redirect_uri=http://localhost:8080/auth/kakao/callback
-     *
-     *
-     *
+     * <p>
+     * <p>
+     * <p>
      * [네이버 로컬 개발용]
      * GET
      * https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=B3RGNtinEp3Va8fysxkN&redirect_uri=http://localhost:8080/auth/naver/callback&state='test'
-     *
-     *
+     * <p>
+     * <p>
      * [구글 로컬 개발용]
      * GET
      * https://accounts.google.com/o/oauth2/v2/auth?client_id=766446517759-t82jo5h4vk9rmj30bld1d30su7sqdde1.apps.googleusercontent.com&redirect_uri=http://localhost:8080/auth/google/callback&response_type=code&scope=openid%20email%20profile
@@ -142,23 +141,22 @@ public class LoginSubController {
 
     // user, manager, admin 권한만 접근 가능
     @GetMapping("/user")
-    public @ResponseBody
-    String user(Authentication authentication) {
-        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-        return "user";
+    public String user(Authentication authentication) {
+        String name = authentication.getName();
+        return name;
     }
 
     // manager, admin 권한만 접근 가능
     @GetMapping("/manager")
-    public @ResponseBody
-    String manager() {
-        return "manager";
+    public String manager(Authentication authentication) {
+        String name = authentication.getName();
+        return name;
     }
 
     // admin 권한만 접근 가능
     @GetMapping("/admin")
-    public @ResponseBody
-    String admin() {
-        return "admin";
+    public String admin(Authentication authentication) {
+        String name = authentication.getName();
+        return name;
     }
 }
