@@ -30,7 +30,6 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 @Slf4j
 public class MemberApiController {
 
@@ -41,7 +40,6 @@ public class MemberApiController {
 
     private final MemberService memberService;
 
-    @Transactional
     @PostMapping("/auth/kakao/callback")
     public ResponseEntity<String> kakaoLogin(@RequestParam(value = "Authorization_code", required = true) String code) {
 
@@ -72,7 +70,6 @@ public class MemberApiController {
         }
     }
 
-    @Transactional
     @PostMapping("auth/naver/callback")
     public ResponseEntity<String> naverLogin(@RequestParam(value = "Authorization_code", required = true) String code) {
 
@@ -104,7 +101,6 @@ public class MemberApiController {
         }
     }
 
-    @Transactional
     @PostMapping("auth/google/callback")
     public ResponseEntity<String> googleLogin(@RequestParam(value = "Authorization_code", required = true) String code) {
 
@@ -136,7 +132,6 @@ public class MemberApiController {
         }
     }
 
-    @Transactional
     @PostMapping("local/signup")
     public ResponseEntity<?> localSignUp(@RequestBody @Valid LocalSignUpRequestDto localSignUpRequestDto,
                                          BindingResult bindingResult) {
