@@ -309,6 +309,6 @@ public class MemberApiController {
             log.info("다른 회원의 닉네임과 중복 -> 수정 실패");
             return ResponseEntity.status(HttpStatus.CONFLICT).body("다른 회원과 닉네임 중복");
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("닉네임 수정 실패 원인을 개발자에게 문의");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("닉네임 수정 실패 원인을 개발자에게 문의");
     }
 }
