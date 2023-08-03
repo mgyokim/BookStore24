@@ -36,7 +36,7 @@ public class Member extends BaseEntity {
 
     private String role;    // 회원 등급
 
-    private String nickName;    // 닉네임
+    private String nickname;    // 닉네임
 
     @Enumerated(EnumType.STRING)
     private Residence residence;   // 거주지 [seoul, incheon, gyeonggi]

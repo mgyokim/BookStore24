@@ -37,7 +37,7 @@ public class MemberService {
 
     // nickname 으로 회원 조회
     public Member findByNickname(String nickname) {
-        Member member = memberRepository.findByNickName(nickname);
+        Member member = memberRepository.findByNickname(nickname);
         return member;
     }
 

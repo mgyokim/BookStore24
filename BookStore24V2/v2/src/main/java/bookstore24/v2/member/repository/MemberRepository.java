@@ -15,5 +15,5 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     public Member findByEmail(String email);
 
     // select * from member where nickname = ?
-    public Member findByNickName(String nickname);
+    public Member findByNickname(String nickname);
 }

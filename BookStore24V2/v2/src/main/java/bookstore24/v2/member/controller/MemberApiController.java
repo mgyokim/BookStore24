@@ -11,8 +11,8 @@ import bookstore24.v2.auth.oauth.logic.NaverLogic;
 import bookstore24.v2.auth.oauth.dto.token.NaverOauthTokenDto;
 import bookstore24.v2.domain.Member;
 import bookstore24.v2.domain.Residence;
-import bookstore24.v2.member.dto.NicknameResidenceSaveRequestDto;
-import bookstore24.v2.member.dto.NicknameResidenceSaveResponseDto;
+import bookstore24.v2.member.dto.SaveNicknameAndResidenceRequestDto;
+import bookstore24.v2.member.dto.SaveNicknameAndResidenceResponseDto;
 import bookstore24.v2.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -165,7 +165,7 @@ public class MemberApiController {
 
     @Transactional
     @PostMapping("/member/save/nicknameresidence")
-    public ResponseEntity<?> saveNicknameAndResidence(Authentication authentication, @RequestBody @Valid NicknameResidenceSaveRequestDto nicknameResidenceSaveRequestDto) {
+    public ResponseEntity<?> saveNicknameAndResidence(Authentication authentication, @RequestBody @Valid SaveNicknameAndResidenceRequestDto saveNicknameAndResidenceRequestDto) {
 
         log.info("[START] - MemberApiController.saveNickname / 닉네임 및 거주지 정보 저장 요청 시작");
         // JWT 를 이용하여 요청한 회원 확인
@@ -174,9 +174,9 @@ public class MemberApiController {
 
         log.info("닉네임 및 거주지 정보 저장을 요청한 회원의 loginId : " + JwtLoginId);
 
-        // 요청으로 받은 nicknameResidenceSaveRequestDto 으로부터 nickname 과 residence 받기
-        String nickname = nicknameResidenceSaveRequestDto.getNickname();
-        String residence = nicknameResidenceSaveRequestDto.getResidence();
+        // 요청으로 받은 saveNicknameAndResidenceRequestDto 으로부터 nickname 과 residence 받기
+        String nickname = saveNicknameAndResidenceRequestDto.getNickname();
+        String residence = saveNicknameAndResidenceRequestDto.getResidence();
         log.info("loginId : " + JwtLoginId + " 가 저장을 요청한 nickname : " + nickname + ", residence : " + residence);
 
 
@@ -184,7 +184,7 @@ public class MemberApiController {
         Member duplicateNiname = memberService.findByNickname(nickname);
 
         if (duplicateNiname == null) {
-            member.setNickName(nickname);
+            member.setNickname(nickname);
         } else {
             log.info("닉네임 및 거주지 정보 저장 실패 [Cause : 닉네임 중복]");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("duplicate Nickname");
@@ -205,14 +205,14 @@ public class MemberApiController {
 
         Member saveMember = memberService.saveMember(member);
 
-        NicknameResidenceSaveResponseDto nicknameResidenceSaveResponseDto = new NicknameResidenceSaveResponseDto();
-        nicknameResidenceSaveResponseDto.setLoginId(JwtLoginId);
-        nicknameResidenceSaveResponseDto.setNickname(saveMember.getNickName());
-        nicknameResidenceSaveResponseDto.setResidence(String.valueOf(saveMember.getResidence()));
+        SaveNicknameAndResidenceResponseDto saveNicknameAndResidenceResponseDto = new SaveNicknameAndResidenceResponseDto();
+        saveNicknameAndResidenceResponseDto.setLoginId(JwtLoginId);
+        saveNicknameAndResidenceResponseDto.setNickname(saveMember.getNickname());
+        saveNicknameAndResidenceResponseDto.setResidence(String.valueOf(saveMember.getResidence()));
 
         log.info("닉네임 및 거주지 정보 저장 성공");
         log.info("[END] - MemberApiController.saveNickname / 닉네임 및 거주지 정보 저장 요청 종료");
-        return ResponseEntity.status(HttpStatus.OK).body(nicknameResidenceSaveResponseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(saveNicknameAndResidenceResponseDto);
     }
 
     @GetMapping("/member/check/nicknameresidence")
@@ -223,22 +223,22 @@ public class MemberApiController {
         String JwtLoginId = authentication.getName();
         Member member = memberService.findMemberByLoginId(JwtLoginId);
 
-        // 해당 회원의 정보를 조회하여 nickName 필드와 residence 에 값 null 인지, 값이 저장되어 있는지 상태를 반환
-        String nickName = member.getNickName();
+        // 해당 회원의 정보를 조회하여 nickname 필드와 residence 에 값 null 인지, 값이 저장되어 있는지 상태를 반환
+        String nickname = member.getNickname();
         Residence residence = member.getResidence();
 
-        if ((nickName != null) & (residence != null)) {
+        if ((nickname != null) & (residence != null)) {
             log.info("닉네임, 거주지 둘다 NOT NULL");
             log.info("[END] - MemberApiController.checkNicknameAndResidence / 닉네임 및 거주지 정보 조회 요청 완료");
-            return ResponseEntity.status(HttpStatus.OK).body("[NICKNAME : " + nickName + ", RESIDENCE : " + residence + "]");
-        } else if ((nickName == null) & (residence == null)) {
+            return ResponseEntity.status(HttpStatus.OK).body("[NICKNAME : " + nickname + ", RESIDENCE : " + residence + "]");
+        } else if ((nickname == null) & (residence == null)) {
             log.info("닉네임, 거주지 둘다 NULL");
             log.info("[END] - MemberApiController.checkNicknameAndResidence / 닉네임 및 거주지 정보 조회 요청 완료");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("[NICKNAME : NULL, RESIDENCE : NULL]");
-        } else if ((nickName != null) & (residence == null)) {
+        } else if ((nickname != null) & (residence == null)) {
             log.info("거주지만 NULL");
             log.info("[END] - MemberApiController.checkNicknameAndResidence / 닉네임 및 거주지 정보 조회 요청 완료");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("[NICKNAME : " + nickName + ", RESIDENCE : NULL]");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("[NICKNAME : " + nickname + ", RESIDENCE : NULL]");
         } else {
             log.info("닉네임만 NULL");
             log.info("[END] - MemberApiController.checkNicknameAndResidence / 닉네임 및 거주지 정보 조회 요청 완료");

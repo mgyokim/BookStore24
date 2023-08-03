@@ -90,7 +90,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withSubject("bookstore24Token")    // 토큰 제목
                 .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.EXPIRATION_TIME))  // 토큰 만료 일자
                 .withClaim("loginId", principalDetails.getMember().getLoginId()) // Private claim
-                .withClaim("nickName", principalDetails.getMember().getNickName())  // Private claim
+                .withClaim("nickname", principalDetails.getMember().getNickname())  // Private claim
                 .sign(Algorithm.HMAC512(JwtProperties.SECRET));    // 토큰 사인
 
         response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
