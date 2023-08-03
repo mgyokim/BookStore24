@@ -165,7 +165,7 @@ public class MemberApiController {
     }
 
     @Transactional
-    @PostMapping("/member/save/nicknameresidence")
+    @PostMapping("/member/nicknameresidence/save")
     public ResponseEntity<?> saveNicknameAndResidence(Authentication authentication, @RequestBody @Valid SaveNicknameAndResidenceRequestDto saveNicknameAndResidenceRequestDto) {
 
         log.info("[START] - MemberApiController.saveNickname / 닉네임 및 거주지 정보 저장 요청 시작");
@@ -216,7 +216,7 @@ public class MemberApiController {
         return ResponseEntity.status(HttpStatus.OK).body(saveNicknameAndResidenceResponseDto);
     }
 
-    @GetMapping("/member/check/nicknameresidence")
+    @GetMapping("/member/nicknameresidence/check")
     public ResponseEntity<?> checkNicknameAndResidence(Authentication authentication) {
         log.info("[START] - MemberApiController.checkNicknameAndResidence / 닉네임 및 거주지 정보 조회 요청 시작");
 
