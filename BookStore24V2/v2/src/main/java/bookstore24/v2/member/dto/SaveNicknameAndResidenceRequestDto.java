@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class NicknameResidenceSaveRequestDto {
+public class SaveNicknameAndResidenceRequestDto {
 
     @NotNull
     private String nickname;
