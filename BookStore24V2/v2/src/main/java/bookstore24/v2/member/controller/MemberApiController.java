@@ -11,6 +11,7 @@ import bookstore24.v2.auth.oauth.logic.NaverLogic;
 import bookstore24.v2.auth.oauth.dto.token.NaverOauthTokenDto;
 import bookstore24.v2.domain.Member;
 import bookstore24.v2.domain.Residence;
+import bookstore24.v2.member.dto.AccessProfileEditResponseDto;
 import bookstore24.v2.member.dto.SaveNicknameAndResidenceRequestDto;
 import bookstore24.v2.member.dto.SaveNicknameAndResidenceResponseDto;
 import bookstore24.v2.member.service.MemberService;
@@ -244,5 +245,32 @@ public class MemberApiController {
             log.info("[END] - MemberApiController.checkNicknameAndResidence / 닉네임 및 거주지 정보 조회 요청 완료");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("[NICKNAME : NULL, RESIDENCE : " + residence + "]");
         }
+    }
+
+    @GetMapping("/member/profile/edit")
+    public ResponseEntity<?> accessProfileEdit(Authentication authentication) {
+        log.info("[START] - MemberApiController.accessProfileEdit / 회원의 프로필 수정 접근(프로필 사진, 닉네임, 거주지역) 데이터 요청 시작");
+
+        // JWT 를 이용하여 요청한 회원 확인
+        String JwtLoginId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(JwtLoginId);
+
+        String loginId = member.getLoginId();
+        String email = member.getEmail();
+        String nickname = member.getNickname();
+        Residence residence = member.getResidence();
+        String profileImg = member.getProfileImg();
+
+        AccessProfileEditResponseDto accessProfileEditResponseDto = new AccessProfileEditResponseDto();
+
+        accessProfileEditResponseDto.setLoginId(loginId);
+        accessProfileEditResponseDto.setEmail(email);
+        accessProfileEditResponseDto.setNickname(nickname);
+        accessProfileEditResponseDto.setResidence(String.valueOf(residence));
+        accessProfileEditResponseDto.setProfileImg(profileImg);
+
+        log.info("[END] - MemberApiController.accessProfileEdit / 회원의 프로필 수정 접근(프로필 사진, 닉네임, 거주지역) 데이터 요청 완료");
+
+        return ResponseEntity.status(HttpStatus.OK).body(accessProfileEditResponseDto);
     }
 }
