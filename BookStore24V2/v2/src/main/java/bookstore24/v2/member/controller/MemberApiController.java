@@ -11,9 +11,7 @@ import bookstore24.v2.auth.oauth.logic.NaverLogic;
 import bookstore24.v2.auth.oauth.dto.token.NaverOauthTokenDto;
 import bookstore24.v2.domain.Member;
 import bookstore24.v2.domain.Residence;
-import bookstore24.v2.member.dto.AccessProfileEditResponseDto;
-import bookstore24.v2.member.dto.SaveNicknameAndResidenceRequestDto;
-import bookstore24.v2.member.dto.SaveNicknameAndResidenceResponseDto;
+import bookstore24.v2.member.dto.*;
 import bookstore24.v2.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -255,12 +253,14 @@ public class MemberApiController {
         String JwtLoginId = authentication.getName();
         Member member = memberService.findMemberByLoginId(JwtLoginId);
 
+        // DB에 저장되어있는 해당 회원의 정보
         String loginId = member.getLoginId();
         String email = member.getEmail();
         String nickname = member.getNickname();
         Residence residence = member.getResidence();
         String profileImg = member.getProfileImg();
 
+        // 해당 회원의 정보를 DTO 에 담아서 Response
         AccessProfileEditResponseDto accessProfileEditResponseDto = new AccessProfileEditResponseDto();
 
         accessProfileEditResponseDto.setLoginId(loginId);
@@ -272,5 +272,43 @@ public class MemberApiController {
         log.info("[END] - MemberApiController.accessProfileEdit / 회원의 프로필 수정 접근(프로필 사진, 닉네임, 거주지역) 데이터 요청 완료");
 
         return ResponseEntity.status(HttpStatus.OK).body(accessProfileEditResponseDto);
+    }
+
+    @Transactional
+    @PostMapping("/member/profile/nickname/edit/save")
+    public ResponseEntity<?> nicknameEditSave(Authentication authentication, @RequestBody @Valid NicknameEditSaveRequestDto nicknameEditSaveRequestDto) {
+        log.info("[START] - MemberApiController.nicknameEditSave / 회원의 프로필 닉네임 수정 저장 요청 시작");
+
+        // JWT 를 이용하여 요청한 회원 확인
+        String JwtLoginId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(JwtLoginId);
+
+        // 수정을 요청한 닉네임
+        String requestEditNickname = nicknameEditSaveRequestDto.getNickname();
+
+        // 수정을 요청한 닉네임을 사용중인 회원 조회
+        Member duplicateNicknameMember = memberService.findByNickname(requestEditNickname);
+
+        // 수정을 요청한 닉네임을 사용중인 회원의 loginId
+//        String duplicateNicknameMemberLoginId = duplicateNicknameMember.getLoginId();
+
+        if (duplicateNicknameMember == null) {  // 닉네임 미중복 -> 수정 성공
+            member.setNickname(requestEditNickname);
+            NicknameEditSaveResponseDto nicknameEditSaveResponseDto = new NicknameEditSaveResponseDto();
+            nicknameEditSaveResponseDto.setLoginId(JwtLoginId);
+            nicknameEditSaveResponseDto.setNickname(requestEditNickname);
+            log.info("닉네임 수정 성공");
+            log.info("[END] - MemberApiController.nicknameEditSave / 회원의 프로필 닉네임 수정 저장 요청 종료");
+            return ResponseEntity.status(HttpStatus.OK).body(nicknameEditSaveResponseDto);
+        } else if ((duplicateNicknameMember != null) & (duplicateNicknameMember.getLoginId() == JwtLoginId)) {    // 회원의 기존 닉네임과 일치 -> 수정 실패
+            log.info("회원의 기존 닉네임과 일치 -> 수정 실패");
+            log.info("[END] - MemberApiController.nicknameEditSave / 회원의 프로필 닉네임 수정 저장 요청 종료");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("사용중인 기존 닉네임과 일치");
+        } else if (duplicateNicknameMember != null) {   // 다른 회원과 닉네임 중복 -> 수정 실패
+            log.info("[END] - MemberApiController.nicknameEditSave / 회원의 프로필 닉네임 수정 저장 요청 종료");
+            log.info("다른 회원의 닉네임과 중복 -> 수정 실패");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("다른 회원과 닉네임 중복");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("닉네임 수정 실패 원인을 개발자에게 문의");
     }
 }
