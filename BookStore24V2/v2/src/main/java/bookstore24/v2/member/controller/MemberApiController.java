@@ -165,7 +165,7 @@ public class MemberApiController {
 
     @Transactional
     @PostMapping("/member/save/nicknameresidence")
-    public ResponseEntity<?> saveNickname(Authentication authentication, @RequestBody @Valid NicknameResidenceSaveRequestDto nicknameResidenceSaveRequestDto) {
+    public ResponseEntity<?> saveNicknameAndResidence(Authentication authentication, @RequestBody @Valid NicknameResidenceSaveRequestDto nicknameResidenceSaveRequestDto) {
 
         log.info("[START] - MemberApiController.saveNickname / 닉네임 및 거주지 정보 저장 요청 시작");
         // JWT 를 이용하여 요청한 회원 확인
@@ -214,5 +214,4 @@ public class MemberApiController {
         log.info("[END] - MemberApiController.saveNickname / 닉네임 및 거주지 정보 저장 요청 종료");
         return ResponseEntity.status(HttpStatus.OK).body(nicknameResidenceSaveResponseDto);
     }
-
 }
