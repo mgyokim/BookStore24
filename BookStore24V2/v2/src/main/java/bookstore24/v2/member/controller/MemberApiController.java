@@ -214,4 +214,27 @@ public class MemberApiController {
         log.info("[END] - MemberApiController.saveNickname / 닉네임 및 거주지 정보 저장 요청 종료");
         return ResponseEntity.status(HttpStatus.OK).body(nicknameResidenceSaveResponseDto);
     }
+
+    @GetMapping("/member/check/nicknameresidence")
+    public ResponseEntity<?> checkNicknameAndResidence(Authentication authentication) {
+
+        // JWT 를 이용하여 요청한 회원 확인
+        String JwtLoginId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(JwtLoginId);
+
+        // 해당 회원의 정보를 조회하여 nickName 필드와 residence 에 값 null 인지, 값이 저장되어 있는지 상태를 반환
+        String nickName = member.getNickName();
+        Residence residence = member.getResidence();
+
+        if ((nickName != null) & (residence != null)) {
+            return ResponseEntity.status(HttpStatus.OK).body("[NICKNAME : " + nickName + ", RESIDENCE : " + residence + "]");
+        } else if ((nickName == null) & (residence != null)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("[NICKNAME : NULL, RESIDENCE : " + residence + "]");
+        } else if ((nickName != null) & (residence == null)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("[NICKNAME : " + nickName + ", RESIDENCE : NULL]");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("[NICKNAME : NULL, RESIDENCE : NULL]");
+        }
+    }
+
 }
