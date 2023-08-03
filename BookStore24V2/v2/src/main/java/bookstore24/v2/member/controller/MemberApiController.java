@@ -209,6 +209,7 @@ public class MemberApiController {
         Member saveMember = memberService.saveMember(member);
 
         NicknameResidenceSaveResponseDto nicknameResidenceSaveResponseDto = new NicknameResidenceSaveResponseDto();
+        nicknameResidenceSaveResponseDto.setLoginId(JwtLoginId);
         nicknameResidenceSaveResponseDto.setNickname(saveMember.getNickName());
         nicknameResidenceSaveResponseDto.setResidence(String.valueOf(saveMember.getResidence()));
 

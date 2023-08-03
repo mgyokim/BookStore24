@@ -8,6 +8,9 @@ import javax.validation.constraints.NotNull;
 public class NicknameResidenceSaveResponseDto {
 
     @NotNull
+    private String loginId;
+
+    @NotNull
     private String nickname;
 
     @NotNull
