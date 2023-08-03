@@ -70,7 +70,7 @@ public class LoginSubController {
         }
     }
 
-    @GetMapping("auth/naver/callback")
+    @GetMapping("/auth/naver/callback")
     ResponseEntity<String> naverLoginSub(String code) {
 
         // 발급받은 인가 코드로 토큰 요청
@@ -101,7 +101,7 @@ public class LoginSubController {
         }
     }
 
-    @GetMapping("auth/google/callback")
+    @GetMapping("/auth/google/callback")
     ResponseEntity<String> googleLoginSub(String code) {
 
         // 발급받은 인가 코드로 토큰 요청

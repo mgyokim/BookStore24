@@ -21,10 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -70,7 +67,7 @@ public class MemberApiController {
         }
     }
 
-    @PostMapping("auth/naver/callback")
+    @PostMapping("/auth/naver/callback")
     public ResponseEntity<String> naverLogin(@RequestParam(value = "Authorization_code", required = true) String code) {
 
         // 발급받은 인가 코드로 토큰 요청
@@ -101,7 +98,7 @@ public class MemberApiController {
         }
     }
 
-    @PostMapping("auth/google/callback")
+    @PostMapping("/auth/google/callback")
     public ResponseEntity<String> googleLogin(@RequestParam(value = "Authorization_code", required = true) String code) {
 
         // 발급받은 인가 코드로 토큰 요청
@@ -132,7 +129,7 @@ public class MemberApiController {
         }
     }
 
-    @PostMapping("local/signup")
+    @PostMapping("/local/signup")
     public ResponseEntity<?> localSignUp(@RequestBody @Valid LocalSignUpRequestDto localSignUpRequestDto,
                                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -217,4 +214,5 @@ public class MemberApiController {
         log.info("[END] - MemberApiController.saveNickname / 닉네임 및 거주지 정보 저장 요청 종료");
         return ResponseEntity.status(HttpStatus.OK).body(nicknameResidenceSaveResponseDto);
     }
+
 }
