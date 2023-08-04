@@ -18,7 +18,7 @@ public class MemberService {
     @Transactional
     public void joinMember(Member member) {
         String rawPassword = member.getLoginPassword(); // 원문
-        String encPassword = customBCryptPasswordEncoder.encode(rawPassword);   // 해쉬
+        String encPassword = encodePassword(rawPassword);   // 해쉬
         member.registrationLoginPassword(encPassword);
         memberRepository.save(member);
     }
@@ -46,4 +46,16 @@ public class MemberService {
         Member savedMember = memberRepository.save(member);
         return savedMember;
     }
+
+    // 입력받은 비밀번호 인코딩
+    public String encodePassword(String password) {
+        return customBCryptPasswordEncoder.encode(password);
+    }
+
+    // 비밀번호를 인코딩하여 저장된 비밀번호와 비교하는 메서드
+    public boolean isPasswordMatch(String rawPassword, String dbPassword) {
+        return customBCryptPasswordEncoder.matches(rawPassword, dbPassword);
+    }
+
+
 }

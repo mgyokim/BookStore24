@@ -352,4 +352,58 @@ public class MemberApiController {
             }
         }
     }
+
+    @Transactional
+    @PostMapping("member/password/edit/save")
+    public ResponseEntity<?> passwordEditSave(Authentication authentication, @RequestBody @Valid PasswordEditSaveRequestDto passwordEditSaveRequestDto) {
+        log.info("[START] - MemberApiController.passwordEditSave / 회원의 비밀번호 수정 저장 요청 시작");
+
+        // JWT 를 이용하여 요청한 회원 확인
+        String JwtLoginId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(JwtLoginId);
+
+        // DB 에 저장되어 있는 JwtLoginId 의 loginPassword
+        String dbPassword = member.getLoginPassword();
+        log.info("DB 에 인코딩 되어 저장되어 있는 [LoginId : " + JwtLoginId + " 의 LoginPassword : " + dbPassword + "]");
+
+        // 비밀번호 수정을 요청한 회원이 본인검증을 위해 입력한 현재 비밀번호
+        String nowPassword = passwordEditSaveRequestDto.getNowPassword();
+        log.info("비밀번호 수정을 요청한 회원(" + JwtLoginId + ") 이 입력한 현재 loginPassword : " + nowPassword);
+
+        //DB 에 저장되어 있는 loginPassword 와 사용자가 입력한 비밀번호 일치여부
+        boolean nowPasswordAndDbPasswordMatch = memberService.isPasswordMatch(nowPassword, dbPassword);
+        log.info("DB 에 저장되어 있는 loginPassword 와 회원이 검증을 위해 입력한 nowPassword 를 인코딩해서 비교한 일치여부 : " + nowPasswordAndDbPasswordMatch);
+
+        if (nowPasswordAndDbPasswordMatch == false) {   // 현재 비밀번호 검증이 실패하면 응답으로 401 반환
+            log.info("loginId : " + JwtLoginId + " 의 비밀번호 수정 실패 [Cause : 입력한 현재 비밀번호가 틀림]");
+            log.info("[END] - MemberApiController.passwordEditSave / 회원의 비밀번호 수정 저장 요청 종료");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("입력한 현재 loginPassword 가 틀림");
+        } else {    // 현재 비밀번호를 잘 입력한 요청이라면,
+            String password1 = passwordEditSaveRequestDto.getPassword1();
+            String password2 = passwordEditSaveRequestDto.getPassword2();
+            String encodedPassword1 = memberService.encodePassword(password1);
+            boolean nowPasswordAndPassword1Match = memberService.isPasswordMatch(nowPassword, encodedPassword1);
+
+            if (nowPasswordAndPassword1Match == true) {     // 수정을 요청한 비밀번호가 기존 비밀번호와 일치하면 수정 실패
+                log.info("loginId : " + JwtLoginId + " 의 비밀번호 수정 실패 [Cause : 기존 비밀번호와 동일한 비밀번호로 수정 요청함]");
+                log.info("[END] - MemberApiController.passwordEditSave / 회원의 비밀번호 수정 저장 요청 종료");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("기존 비밀번호와 동일한 비밀번호로 수정을 요청함");
+            } else {    // 수정을 요청한 비밀번호가 기존 비밀번호와 일치하지 않으면
+                if (!(password1.equals(password2))) {   // 비밀번호1 과 비밀번호2 가 일치하지 않으면 수정 실패
+
+                    log.info("loginId : " + JwtLoginId + " 의 비밀번호 수정 실패 [Cause : 비밀번호1, 비밀번호2 불일치]");
+                    log.info("[END] - MemberApiController.passwordEditSave / 회원의 비밀번호 수정 저장 요청 종료");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("password1 와 password2 불일치");
+                } else {    // 비밀번호1 과 비밀번호2 가 일치하면 수정 성공
+                    String encodedPassword = memberService.encodePassword(password1);
+                    member.setLoginPassword(encodedPassword);
+                    PasswordEditSaveResponseDto passwordEditSaveResponseDto = new PasswordEditSaveResponseDto();
+                    passwordEditSaveResponseDto.setLoginId(JwtLoginId);
+                    log.info("loginId : " + JwtLoginId + " 의 비밀번호 수정 성공");
+                    log.info("[END] - MemberApiController.passwordEditSave / 회원의 비밀번호 수정 저장 요청 종료");
+                    return ResponseEntity.status(HttpStatus.OK).body(passwordEditSaveResponseDto);
+                }
+            }
+        }
+    }
 }
