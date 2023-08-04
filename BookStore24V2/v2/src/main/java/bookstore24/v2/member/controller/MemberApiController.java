@@ -215,7 +215,7 @@ public class MemberApiController {
     }
 
     @GetMapping("/member/nicknameresidence/check")
-    public ResponseEntity<?> checkNicknameAndResidence(Authentication authentication) {
+    public ResponseEntity<String> checkNicknameAndResidence(Authentication authentication) {
         log.info("[START] - MemberApiController.checkNicknameAndResidence / 닉네임 및 거주지 정보 조회 요청 시작");
 
         // JWT 를 이용하여 요청한 회원 확인
@@ -246,7 +246,7 @@ public class MemberApiController {
     }
 
     @GetMapping("/member/profile/edit")
-    public ResponseEntity<?> accessProfileEdit(Authentication authentication) {
+    public ResponseEntity<AccessProfileEditResponseDto> accessProfileEdit(Authentication authentication) {
         log.info("[START] - MemberApiController.accessProfileEdit / 회원의 프로필 수정 접근(프로필 사진, 닉네임, 거주지역) 데이터 요청 시작");
 
         // JWT 를 이용하여 요청한 회원 확인
