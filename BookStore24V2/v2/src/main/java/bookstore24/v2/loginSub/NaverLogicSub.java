@@ -182,9 +182,9 @@ public class NaverLogicSub {
 
         log.info("[START] - NaverLogicSub.joinCheck / [email : " + naverUser.getEmail() + "]  email 중복여부 체크 및 회원가입 로직 시작 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
 
-        Member duplicatedEmailMember = memberService.findMemberByEmail(naverUser.getEmail());
+        Member duplicateEmailMember = memberService.findMemberByEmail(naverUser.getEmail());
 
-        if (duplicatedEmailMember == null) {
+        if (duplicateEmailMember == null) {
             memberService.joinMember(naverUser);
             Member joinedMember = memberService.findMemberByEmail(naverUser.getEmail());
 
@@ -193,13 +193,13 @@ public class NaverLogicSub {
 
             return joinedMember;
         }
-        if ((duplicatedEmailMember != null) & (duplicatedEmailMember.getProvider() == "naver")) {
+        if ((duplicateEmailMember != null) & (duplicateEmailMember.getProvider() == "naver")) {
             log.info("네이버 로그인을 한적이 있습니다. 이미 회원가입 되어있습니다.");
             log.info("[END] - NaverLogicSub.joinCheck / [email : " + naverUser.getEmail() + "]  email 중복여부 체크 및 회원가입 로직 종료 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
 
-            return duplicatedEmailMember;
+            return duplicateEmailMember;
         } else {
-            String provider = duplicatedEmailMember.getProvider();
+            String provider = duplicateEmailMember.getProvider();
 
             log.info(naverUser.getEmail() + " 은 " + provider + " 로그인 방식으로 이미 가입된 이메일입니다. " + provider + " 로그인 방식으로 로그인을 시도하세요.");
 
