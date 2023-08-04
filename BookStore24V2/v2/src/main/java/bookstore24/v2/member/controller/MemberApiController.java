@@ -289,9 +289,6 @@ public class MemberApiController {
         // 수정을 요청한 닉네임을 사용중인 회원 조회
         Member duplicateNicknameMember = memberService.findByNickname(requestEditNickname);
 
-        // 수정을 요청한 닉네임을 사용중인 회원의 loginId
-//        String duplicateNicknameMemberLoginId = duplicateNicknameMember.getLoginId();
-
         if (duplicateNicknameMember == null) {  // 닉네임 미중복 -> 수정 성공
             member.setNickname(requestEditNickname);
             NicknameEditSaveResponseDto nicknameEditSaveResponseDto = new NicknameEditSaveResponseDto();
@@ -309,6 +306,50 @@ public class MemberApiController {
             log.info("다른 회원의 닉네임과 중복 -> 수정 실패");
             return ResponseEntity.status(HttpStatus.CONFLICT).body("다른 회원과 닉네임 중복");
         }
+        log.info("[END] - MemberApiController.nicknameEditSave / 회원의 프로필 닉네임 수정 저장 요청 종료");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("닉네임 수정 실패 원인을 개발자에게 문의");
+    }
+
+    @Transactional
+    @PostMapping("/member/profile/residence/edit/save")
+    public ResponseEntity<?> residenceEditSave(Authentication authentication, @RequestBody @Valid ResidenceEditSaveRequestDto residenceEditSaveRequestDto) {
+
+        log.info("[START] - MemberApiController.residenceEditSave / 회원의 프로필 거주지 수정 저장 요청 시작");
+        // JWT 를 이용하여 요청한 회원 확인
+        String JwtLoginId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(JwtLoginId);
+
+        // 회원의 기존 거주지
+        Residence residence = member.getResidence();
+
+        // 수정을 요청한 거주지
+        String requestEditResidence = residenceEditSaveRequestDto.getResidence();
+
+        // 요청 데이터를 처리하는 로직
+        if (residence.name().equals(requestEditResidence)) {    // 수정을 요청한 거주지가 기존 거주지와 같으면, 수정 실패
+            log.info("거주지 정보 수정 실패 [Cause : 기존 거주지와 일치]");
+            log.info("[END] - MemberApiController.residenceEditSave / 회원의 프로필 거주지 수정 저장 요청 종료");
+
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("기존 거주지와 같은 거주지입니다. 수정 실패");
+        } else {
+            if ((Residence.incheon.name().equals(requestEditResidence)) || (Residence.seoul.name().equals(requestEditResidence)) || (Residence.gyeonggi.name().equals(requestEditResidence))) {    // 성공적으로 수정
+                member.setResidence(Residence.valueOf(requestEditResidence));
+                ResidenceEditSaveResponseDto residenceEditSaveResponseDto = new ResidenceEditSaveResponseDto();
+                residenceEditSaveResponseDto.setLoginId(JwtLoginId);
+                residenceEditSaveResponseDto.setResidence(requestEditResidence);
+
+                log.info("거주지 정보 수정 성공 [LoginId : " + JwtLoginId + ", residence : " + requestEditResidence + "]");
+                log.info("[END] - MemberApiController.residenceEditSave / 회원의 프로필 거주지 수정 저장 요청 종료");
+
+                return ResponseEntity.status(HttpStatus.OK).body(residenceEditSaveResponseDto);
+            }
+            else {
+
+                log.info("거주지 정보 수정 실패 [Cause : 서비스 사용 불가 거주지]");
+                log.info("[END] - MemberApiController.residenceEditSave / 회원의 프로필 거주지 수정 저장 요청 종료");
+
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid Region");
+            }
+        }
     }
 }
