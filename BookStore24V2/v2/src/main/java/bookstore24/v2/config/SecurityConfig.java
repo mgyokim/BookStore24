@@ -2,6 +2,7 @@ package bookstore24.v2.config;
 
 import bookstore24.v2.auth.jwt.JwtAuthenticationFilter;
 import bookstore24.v2.auth.jwt.JwtAuthorizationFilter;
+import bookstore24.v2.filter.IpFilter;
 import bookstore24.v2.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
+import org.springframework.security.web.authentication.AuthenticationFilter;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
 /**
@@ -33,12 +36,15 @@ public class SecurityConfig {
 
     private final CorsConfig corsConfig;
 
+    private final IpFilter ipFilter;
+
     /**
      * SecurityFilterChain 을 정의하여 Spring Security 를 구성
      */
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.addFilterBefore(ipFilter, ChannelProcessingFilter.class);
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 사용 안함, Stateless로 만들 것임
                 .and()
