@@ -185,7 +185,7 @@ public class KakaoLogicSub {
 
             return joinedMember;
         }
-        if ((duplicateEmailMember != null) & (duplicateEmailMember.getProvider() == "kakao")) {
+        if ((duplicateEmailMember != null) & (duplicateEmailMember.getProvider().equals("kakao"))) {
             log.info("카카오 로그인을 한적이 있습니다. 이미 회원가입 되어있습니다.");
             log.info("[END] - KakaoLogicSub.joinCheck / [email : " + kakaoUser.getEmail() + "]  email 중복여부 체크 및 회원가입 로직 종료 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
 

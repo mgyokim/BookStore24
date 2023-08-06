@@ -193,7 +193,7 @@ public class NaverLogic {
 
             return joinedMember;
         }
-        if ((duplicateEmailMember != null) & (duplicateEmailMember.getProvider() == "naver")) {
+        if ((duplicateEmailMember != null) & (duplicateEmailMember.getProvider().equals("naver"))) {
             log.info("네이버 로그인을 한적이 있습니다. 이미 회원가입 되어있습니다.");
             log.info("[END] - NaverLogic.joinCheck / [email : " + naverUser.getEmail() + "]  email 중복여부 체크 및 회원가입 로직 종료 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
 

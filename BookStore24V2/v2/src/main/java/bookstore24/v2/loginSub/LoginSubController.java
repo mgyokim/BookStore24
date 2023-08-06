@@ -64,7 +64,6 @@ public class LoginSubController {
             ResponseEntity<String> failResponseJwt = kakaoLogicSub.kakaoAutoLoginFail(email, provider);
 
             log.info("kakaoLoginSub 컨트롤러에서 로그인 실패 응답 반환 완료" + failResponseJwt);
-            log.info(joinedMember.getEmail() + " 은 " + provider + " 로그인 방식으로 이미 가입된 이메일입니다. " + provider + " 로그인 방식으로 로그인을 시도하세요.");
 
             return failResponseJwt;
         }
@@ -95,7 +94,6 @@ public class LoginSubController {
             ResponseEntity<String> failResponseJwt = naverLogicSub.naverAutoLoginFail(email, provider);
 
             log.info("naverLogin 컨트롤러에서 로그인 실패 응답 반환 완료" + failResponseJwt);
-            log.info(joinedMember.getEmail() + " 은 " + provider + " 로그인 방식으로 이미 가입된 이메일입니다. " + provider + " 로그인 방식으로 로그인을 시도하세요.");
 
             return failResponseJwt;
         }
@@ -126,7 +124,6 @@ public class LoginSubController {
             ResponseEntity<String> failResponseJwt = googleLogicSub.googleAutoLoginFail(email, provider);
 
             log.info("naverLogin 컨트롤러에서 로그인 실패 응답 반환 완료" + failResponseJwt);
-            log.info(joinedMember.getEmail() + " 은 " + provider + " 로그인 방식으로 이미 가입된 이메일입니다. " + provider + " 로그인 방식으로 로그인을 시도하세요.");
 
             return failResponseJwt;
         }

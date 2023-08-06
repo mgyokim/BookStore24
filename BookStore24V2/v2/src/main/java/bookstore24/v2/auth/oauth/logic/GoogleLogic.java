@@ -188,7 +188,7 @@ public class GoogleLogic {
 
             return joinedMember;
         }
-        if ((duplicateEmailMember != null) & (duplicateEmailMember.getProvider() == "google")) {
+        if ((duplicateEmailMember != null) & (duplicateEmailMember.getProvider().equals("google"))) {
             log.info("구글 로그인을 한적이 있습니다. 이미 회원가입 되어있습니다.");
             log.info("[END] - GoogleLogic.joinCheck / [email : " + googleUser.getEmail() + "]  email 중복여부 체크 및 회원가입 로직 종료 ----------------------------------------------------------------------------------------------------------------------------------------------------------");
             return duplicateEmailMember;
