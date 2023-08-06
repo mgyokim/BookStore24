@@ -4,6 +4,7 @@ import bookstore24.v2.auth.oauth.dto.token.GoogleOauthTokenDto;
 import bookstore24.v2.auth.oauth.dto.token.KakaoOauthTokenDto;
 import bookstore24.v2.auth.oauth.dto.token.NaverOauthTokenDto;
 import bookstore24.v2.domain.Member;
+import bookstore24.v2.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,6 +23,8 @@ public class LoginSubController {
     private final KakaoLogicSub kakaoLogicSub;
     private final NaverLogicSub naverLogicSub;
     private final GoogleLogicSub googleLogicSub;
+
+    private final MemberRepository memberRepository;
 
     /**
      * 개발용 테스트용 컨트롤러
@@ -127,6 +132,12 @@ public class LoginSubController {
 
             return failResponseJwt;
         }
+    }
+
+    @GetMapping("/member/list/sub")
+    public List<Member> memberListSub() {
+        List<Member> all = memberRepository.findAll();
+        return all;
     }
 
     @GetMapping("/home")
