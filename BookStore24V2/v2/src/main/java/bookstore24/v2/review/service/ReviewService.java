@@ -29,4 +29,10 @@ public class ReviewService {
         Review duplicateReviewTitle = reviewRepository.findByTitle(title);
         return duplicateReviewTitle;
     }
+
+    // 리뷰 글 작성자의 loginId 와 리뷰 글의 제목 title 을 이용하여 리뷰 글 찾기
+    public Review findByLoginIdAndTitle(String loginId, String title) {
+        Review review = reviewRepository.findByMemberLoginIdAndTitle(loginId, title);
+        return review;
+    }
 }

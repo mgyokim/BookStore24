@@ -62,4 +62,16 @@ public class Review extends BaseEntity {
         this.score = score;
     }
 
+    // 리뷰 글 작성후 리뷰 글의 상세를 최초 조회시 조회수를 1로 초기화
+    public void initView() {
+        // 값에 1을 더해서 설정
+        this.view = 0L;
+    }
+
+    // 조회수를 1 증가시키기
+    public void setView(Long view) {
+        // 값에 1을 더해서 설정
+        this.view = view + 1;
+    }
+
 }
