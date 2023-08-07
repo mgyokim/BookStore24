@@ -40,6 +40,10 @@ public class Review extends BaseEntity {
     @JoinColumn(name = "book_id")
     private Book book;
 
+    protected Review() {
+        //// JPA 에서 사용하기 위해 protected 생성자 유지
+    }
+
     //==연관관계 편의 메서드 C==//
     public void connectingReviewAndMember(Member member) {
         this.member = member;
@@ -50,6 +54,12 @@ public class Review extends BaseEntity {
     public void connectingReviewAndBook(Book book) {
         this.book = book;
         book.getReviews().add(this);
+    }
+
+    public Review(String title, String content, Long score) {
+        this.title = title;
+        this.content = content;
+        this.score = score;
     }
 
 }
