@@ -41,6 +41,7 @@ public class MemberService {
         return member;
     }
 
+    @Transactional
     // member 저장
     public Member saveMember(Member member) {
         Member savedMember = memberRepository.save(member);
