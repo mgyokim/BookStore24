@@ -70,6 +70,8 @@ public class ReviewController {
             // ReviewPostSaveResponseDto 에 리뷰 글의 제목 입력
             reviewPostSaveResponseDto.setTitle(title);
 
+            log.info("[도서명 : " + bookTitle + "] 는 DB에 저장되어 있으므로 리뷰 글만 저장 완료");
+            log.info("[END] - ReviewController.reviewPostSave / 도서 리뷰글 작성 저장 요청 종료");
             return ResponseEntity.status(HttpStatus.OK).body(reviewPostSaveResponseDto);
         } else if ((existStatusBook == null) & (duplicateTitleReview == null)){    // 데이터베이스에 해당 책을 추가 등록
             // 데이터베이스에 해당 책 저장
@@ -91,8 +93,14 @@ public class ReviewController {
             // ReviewPostSaveResponseDto 에 리뷰 글의 제목 입력
             reviewPostSaveResponseDto.setTitle(title);
 
+            log.info("[도서명 : " + bookTitle + "] 는 DB에 저장되어 있지 않으므로 도서 + 리뷰 글 함께 저장 완료");
+            log.info("[END] - ReviewController.reviewPostSave / 도서 리뷰글 작성 저장 요청 종료");
             return ResponseEntity.status(HttpStatus.OK).body(reviewPostSaveResponseDto);
         }
+        log.info("리뷰 글 제목 중복으로 저장 실패");
+        log.info("[END] - ReviewController.reviewPostSave / 도서 리뷰글 작성 저장 요청 종료");
         return ResponseEntity.status(HttpStatus.CONFLICT).body("리뷰 글 제목 중복으로 저장 실패");
     }
+
+
 }
