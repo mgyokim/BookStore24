@@ -189,9 +189,17 @@ public class ReviewController {
 
         // 조건에 해당하는 리뷰 글이 존재한다면, 이 요청을 요청한 회원(JwtLoginId)이 해당 리뷰 글 작성자인지 확인(해당 글을 수정할 권한이 이 요청을 요청한 회원에게 있는지)
         if (matchReviewPost == null) {  // 조건에 해당하는 리뷰 글이 없다면, 수정 데이터 접근 거절
+
+            log.info("요청 Body 의 조건에 해당하는 리뷰 글이 없음");
+            log.info("도서 리뷰 글 수정 데이터 접근 실패");
+            log.info("[END] - ReviewController.reviewPostEdit / 도서 리뷰 글 수정 데이터 접근 요청 종료");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("리뷰 글 수정 데이터 접근을 요청한 바디 조건에 해당하는 리뷰 글이 존재하지 않음");
         } else {    // 조건에 해당하는 리뷰 글이 존재한다면
             if (!(matchReviewPost.getMember().getLoginId().equals(JwtLoginId))) {     // 이 요청을 요청한 회원(JwtLoginId)이 해당 리뷰 글 작성자가 아님 (리뷰 글 수정 데이터 접근 권한 X)
+
+                log.info("리뷰글 수정 데이터 접근을 요청한 회원 != 해당 리뷰 글 작성자");
+                log.info("도서 리뷰 글 수정 데이터 접근 실패");
+                log.info("[END] - ReviewController.reviewPostEdit / 도서 리뷰 글 수정 데이터 접근 요청 종료");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("리뷰 글 수정 데이터 접근을 요청한 회원은 해당 리뷰 글의 작성자가 아님");
             } else {    // 이 요청을 요청한 회원(JwtLoginId)이 해당 리뷰 글 작성자임 (리뷰 글 수정 데이터 접근 권한 O)
                 // 해당 리뷰글의 상세 데이터를 반환
@@ -219,6 +227,8 @@ public class ReviewController {
                 reviewPostEditResponseDto.setCoverImg(coverImg);
                 reviewPostEditResponseDto.setIsbn(isbn);
 
+                log.info("도서 리뷰 글 수정 데이터 접근 성공");
+                log.info("[END] - ReviewController.reviewPostEdit / 도서 리뷰 글 수정 데이터 접근 요청 종료");
                 return ResponseEntity.status(HttpStatus.OK).body(reviewPostEditResponseDto);
             }
         }
