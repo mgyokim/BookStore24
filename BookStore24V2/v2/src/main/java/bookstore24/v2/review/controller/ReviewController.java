@@ -6,10 +6,7 @@ import bookstore24.v2.domain.Member;
 import bookstore24.v2.domain.Review;
 import bookstore24.v2.domain.ReviewComment;
 import bookstore24.v2.member.service.MemberService;
-import bookstore24.v2.review.dto.ReviewPostDetailRequestDto;
-import bookstore24.v2.review.dto.ReviewPostDetailResponseDto;
-import bookstore24.v2.review.dto.ReviewPostSaveRequestDto;
-import bookstore24.v2.review.dto.ReviewPostSaveResponseDto;
+import bookstore24.v2.review.dto.*;
 import bookstore24.v2.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -175,4 +172,55 @@ public class ReviewController {
         }
     }
 
+    @GetMapping("/review/post/edit")
+    public ResponseEntity<?> reviewPostEdit(Authentication authentication, @RequestBody @Valid ReviewPostEditRequestDto reviewPostEditRequestDto) {
+        log.info("[START] - ReviewController.reviewPostEdit / 도서 리뷰 글 수정 데이터 접근 요청 시작");
+
+        // JWT 를 이용하여 요청한 회원 확인
+        String JwtLoginId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(JwtLoginId);
+
+        // ReviewPostEditRequestDto 에서 수정 데이터 접근을 요청한 리뷰 글의 작성자 loginId 과 title 을 얻기
+        String reviewPostWriterLoginId = reviewPostEditRequestDto.getLoginId();
+        String reviewPostTitle = reviewPostEditRequestDto.getTitle();
+
+        // ReviewPostWriterLoginId 과 ReviewPostTitle 를 이용하여 해당하는 리뷰 글이 존재하는지 확인하기
+        Review matchReviewPost = reviewService.findByLoginIdAndTitle(reviewPostWriterLoginId, reviewPostTitle);
+
+        // 조건에 해당하는 리뷰 글이 존재한다면, 이 요청을 요청한 회원(JwtLoginId)이 해당 리뷰 글 작성자인지 확인(해당 글을 수정할 권한이 이 요청을 요청한 회원에게 있는지)
+        if (matchReviewPost == null) {  // 조건에 해당하는 리뷰 글이 없다면, 수정 데이터 접근 거절
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("리뷰 글 수정 데이터 접근을 요청한 바디 조건에 해당하는 리뷰 글이 존재하지 않음");
+        } else {    // 조건에 해당하는 리뷰 글이 존재한다면
+            if (!(matchReviewPost.getMember().getLoginId().equals(JwtLoginId))) {     // 이 요청을 요청한 회원(JwtLoginId)이 해당 리뷰 글 작성자가 아님 (리뷰 글 수정 데이터 접근 권한 X)
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("리뷰 글 수정 데이터 접근을 요청한 회원은 해당 리뷰 글의 작성자가 아님");
+            } else {    // 이 요청을 요청한 회원(JwtLoginId)이 해당 리뷰 글 작성자임 (리뷰 글 수정 데이터 접근 권한 O)
+                // 해당 리뷰글의 상세 데이터를 반환
+                String title = matchReviewPost.getTitle();       // 리뷰 글 제목
+                String content = matchReviewPost.getContent();   // 리뷰 글 본문
+                Long score = matchReviewPost.getScore();     // 리뷰 글 평점
+                LocalDateTime createdDate = matchReviewPost.getCreatedDate();    // 리뷰 글 작성일
+                String writerNickname = matchReviewPost.getMember().getNickname(); // 리뷰 글 작성자 닉네임
+
+                String bookTitle = matchReviewPost.getBook().getTitle(); // 리뷰 도서 제목
+                String author = matchReviewPost.getBook().getAuthor();   // 리뷰 도서 저자
+                String publisher = matchReviewPost.getBook().getPublisher(); // 리뷰 도서 출판사
+                String coverImg = matchReviewPost.getBook().getCoverImg();   // 리뷰 도서 커버이미지
+                Long isbn = matchReviewPost.getBook().getIsbn(); // 리뷰 도서 isbn
+
+                ReviewPostEditResponseDto reviewPostEditResponseDto = new ReviewPostEditResponseDto();
+                reviewPostEditResponseDto.setTitle(title);
+                reviewPostEditResponseDto.setContent(content);
+                reviewPostEditResponseDto.setScore(score);
+                reviewPostEditResponseDto.setCreatedDate(createdDate);
+                reviewPostEditResponseDto.setNickname(writerNickname);
+                reviewPostEditResponseDto.setBookTitle(bookTitle);
+                reviewPostEditResponseDto.setAuthor(author);
+                reviewPostEditResponseDto.setPublisher(publisher);
+                reviewPostEditResponseDto.setCoverImg(coverImg);
+                reviewPostEditResponseDto.setIsbn(isbn);
+
+                return ResponseEntity.status(HttpStatus.OK).body(reviewPostEditResponseDto);
+            }
+        }
+    }
 }
