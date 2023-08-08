@@ -74,4 +74,14 @@ public class Review extends BaseEntity {
         this.view = view + 1;
     }
 
+    // 리뷰 글의 본문 수정
+    public void editContent(String content) {
+        this.content = content;
+    }
+
+    // 리뷰 글의 평점 수정
+    public void editScore(Long score) {
+        this.score = score;
+    }
+
 }

@@ -233,4 +233,43 @@ public class ReviewController {
             }
         }
     }
+
+    @Transactional
+    @PostMapping("/review/post/edit/save")
+    public ResponseEntity<?> reviewPostEditSave(Authentication authentication, @RequestBody @Valid ReviewPostEditSaveRequestDto reviewPostEditSaveRequestDto) {
+        log.info("[START] - ReviewController.reviewPostEditSave / 도서 리뷰 글 수정 저장 요청 시작");
+
+        // JWT 를 이용하여 요청한 회원 확인
+        String JwtLoginId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(JwtLoginId);
+
+        // 리뷰 글 제목, 작성자로 해당 리뷰 글을 DB 에서 찾고,
+        // (이때 작성자 == JwtLoginId 이므로 이것을 이용하여 해당 리뷰글을 찾는 과정을 통해 (수정 요창자 == 해당 리뷰글 작성자) 임을 한번 더 검증 하는 방식을 취함)
+        String title = reviewPostEditSaveRequestDto.getTitle();
+
+        Review matchReview = reviewService.findByLoginIdAndTitle(JwtLoginId, title);
+
+        if (matchReview == null) {      // 만약 해당 조건에 매치된 리뷰 글이 존재하지 않으면 수정 거절
+
+            log.info("요청 조건에 맞는 리뷰 글이 존재하지 않음. 도서 리뷰 글 수정 저장 실패");
+            log.info("[END] - ReviewController.reviewPostEditSave / 도서 리뷰 글 수정 저장 요청 종료");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 리뷰글에 대한 수정 권한이 없는 회원의 수정 요청임");
+        } else {    // 만약 해당 조건에 매치된 리뷰 글이 존재하면 수정 진행
+            // 수정이 허용된 필드
+            String content = reviewPostEditSaveRequestDto.getContent(); // 리뷰 글의 본문
+            Long score = reviewPostEditSaveRequestDto.getScore();       // 리뷰 글의 평점
+
+            // 해당 리뷰 글에서 수정을 허용한 필드에 한해 각 필드에 set 으로 데이터를 수정해줌
+            matchReview.editContent(content);
+            matchReview.editScore(score);
+
+            ReviewPostEditSaveResponseDto reviewPostEditSaveResponseDto = new ReviewPostEditSaveResponseDto();
+            reviewPostEditSaveResponseDto.setLoginId(JwtLoginId);
+            reviewPostEditSaveResponseDto.setTitle(matchReview.getTitle());
+
+            log.info("작성자 아이디 : " + JwtLoginId + ", 리뷰 글 title : " + matchReview.getTitle() + "] 도서 리뷰 글 수정 저장 성공");
+            log.info("[END] - ReviewController.reviewPostEditSave / 도서 리뷰 글 수정 저장 요청 종료");
+            return ResponseEntity.status(HttpStatus.OK).body(reviewPostEditSaveResponseDto);
+        }
+    }
 }
