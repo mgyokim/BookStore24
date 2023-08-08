@@ -146,11 +146,16 @@ public class LoginSubController {
             dto.setLoginId(member.getLoginId());
             dto.setEmail(member.getEmail());
             dto.setProvider(member.getProvider());
-            dto.setNickname(member.getNickname());
-            dto.setResidence(member.getResidence().name());
+            if (member.getNickname() == null) {
+            } else {
+                dto.setNickname(member.getNickname());
+            }
+            if (member.getResidence() == null) {
+            } else {
+                dto.setResidence(member.getResidence().name());
+            }
             dto.setProfileImg(member.getProfileImg());
             dto.setRole(member.getRole());
-
             dtos.add(dto);
         }
 
