@@ -4,6 +4,7 @@ import bookstore24.v2.auth.oauth.dto.token.GoogleOauthTokenDto;
 import bookstore24.v2.auth.oauth.dto.token.KakaoOauthTokenDto;
 import bookstore24.v2.auth.oauth.dto.token.NaverOauthTokenDto;
 import bookstore24.v2.domain.Member;
+import bookstore24.v2.loginSub.dto.MemberListSubResponseDto;
 import bookstore24.v2.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -135,9 +137,24 @@ public class LoginSubController {
     }
 
     @GetMapping("/member/list/sub")
-    public List<Member> memberListSub() {
+    public List<MemberListSubResponseDto> memberListSub() {
         List<Member> all = memberRepository.findAll();
-        return all;
+        List<MemberListSubResponseDto> dtos = new ArrayList<>();
+
+        for (Member member : all) {
+            MemberListSubResponseDto dto = new MemberListSubResponseDto();
+            dto.setLoginId(member.getLoginId());
+            dto.setEmail(member.getEmail());
+            dto.setProvider(member.getProvider());
+            dto.setNickname(member.getNickname());
+            dto.setResidence(member.getResidence().name());
+            dto.setProfileImg(member.getProfileImg());
+            dto.setRole(member.getRole());
+
+            dtos.add(dto);
+        }
+
+        return dtos;
     }
 
     @GetMapping("/home")
