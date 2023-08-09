@@ -26,8 +26,8 @@ public class ReviewService {
 
     // review title 중복 확인
     public Review duplicateTitleReview(String title) {
-        Review duplicateReviewTitle = reviewRepository.findByTitle(title);
-        return duplicateReviewTitle;
+        Review duplicateTitleReview = reviewRepository.findByTitle(title);
+        return duplicateTitleReview;
     }
 
     // 리뷰 글 작성자의 loginId 와 리뷰 글의 제목 title 을 이용하여 리뷰 글 찾기
