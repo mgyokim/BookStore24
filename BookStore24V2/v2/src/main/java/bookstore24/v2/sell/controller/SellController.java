@@ -6,6 +6,8 @@ import bookstore24.v2.domain.Member;
 import bookstore24.v2.domain.Sell;
 import bookstore24.v2.domain.SellStatus;
 import bookstore24.v2.member.service.MemberService;
+import bookstore24.v2.sell.dto.SellPostDetailRequestDto;
+import bookstore24.v2.sell.dto.SellPostDetailResponseDto;
 import bookstore24.v2.sell.dto.SellPostSaveRequestDto;
 import bookstore24.v2.sell.dto.SellPostSaveResponseDto;
 import bookstore24.v2.sell.service.SellService;
@@ -15,11 +17,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor
@@ -102,5 +106,73 @@ public class SellController {
         log.info("판매 글 제목 중복으로 저장 실패");
         log.info("[END] - SellController.sellPostSave / 도서 판매글 작성 저장 요청 종료");
         return ResponseEntity.status(HttpStatus.CONFLICT).body("판매 글 제목 중복으로 저장 실패");
+    }
+
+    @Transactional
+    @GetMapping("/sell/post/detail")
+    public ResponseEntity<?> reviewPostDetail(Authentication authentication, @RequestBody @Valid SellPostDetailRequestDto sellPostDetailRequestDto) {
+        log.info("[START] - SellController.reviewPostDetail / 도서 판매글 상세 요청 시작");
+
+        // JWT 를 이용하여 요청한 회원 확인
+        String JwtLoginId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(JwtLoginId);
+
+        // SellPostDetailRequestDto 에서 판매글 작성자의 loginId, 리뷰글의 제목 title 을 얻기
+        String sellLoginId = sellPostDetailRequestDto.getLoginId();
+        String sellTitle = sellPostDetailRequestDto.getTitle();
+
+        // 판매글 작성자의 loginId, 판매글의 제목 title 을 이용하여 해당하는 Review 글 찾기
+        Sell sell = sellService.findByLoginIdAndTitle(sellLoginId, sellTitle);
+        log.info("로그인 아이디와 타이틀로 찾은 판매 : " + sell);
+
+        // 리뷰글 상세 데이터 반환하기
+        if (sell == null) {   // sellLoginId, sellTitle 으로 해당하는 판매 글이 존재하지 않음.
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 조건의 리뷰 글이 존재하지 않음");
+        } else {
+            // sellLoginId, sellTitle 으로 해당하는 판매 글의 조회수를 상세 글 데이터를 요청할 때마다 +1 해줌
+            Long view = sell.getView();
+            if (view == null) { // 만약 해당 판매 글의 상세를 최초로 조회하는 것이라면,
+                log.info("[판매 작성자의 로그인 아이디 : " + sellLoginId + ", 판매 글의 제목 : " + sellTitle + "] 도서 판매글 상세가 최초로 요청됨. 조회수 0으로 초기화 완료");
+                sell.initView();  // 해당 판매 글의 view 를 0 으로 초기화
+            }
+            Long inquiryView = sell.getView();    // 리뷰 글 상세를 조회하기 전의 view
+            sell.setView(inquiryView);            // 리뷰 글 상세를 조회 -> (리뷰 글 상세를 조회하기 전의 view)  + 1
+            log.info("[판매글 작성자의 로그인 아이디 : " + sellLoginId + ", 판매 글의 제목 : " + sellTitle + "] 판매 글 조회수 : " + sell.getView() + " 로 업데이트 완료");
+
+            // 해당 판매글의 상세 데이터를 반환
+            String title = sell.getTitle();// 판매 글 제목
+            String content = sell.getContent();// 판매 글 본문
+            Long nowView = sell.getView();// 판매 글 조회수
+            LocalDateTime createdDate = sell.getCreatedDate();// 판매 글 작성일
+            String writerNickname = sell.getMember().getNickname();// 판매글 작성자 닉네임
+            Long price = sell.getPrice();// 판매 글 가격
+            String talkUrl = sell.getTalkUrl();// 판매 글 채팅 url
+            SellStatus status = sell.getStatus();// 판매 글 상태
+
+            String bookTitle = sell.getBook().getTitle();// 판매 도서 제목
+            String author = sell.getBook().getAuthor();// 판매 도서 저자
+            String publisher = sell.getBook().getPublisher();// 판매 도서 출판사
+            String coverImg = sell.getBook().getCoverImg();// 판매 도서 커버이미지
+            Long isbn = sell.getBook().getIsbn();// 판매 도서 isbn
+
+            SellPostDetailResponseDto sellPostDetailResponseDto = new SellPostDetailResponseDto();
+            sellPostDetailResponseDto.setTitle(title);
+            sellPostDetailResponseDto.setContent(content);
+            sellPostDetailResponseDto.setView(nowView);
+            sellPostDetailResponseDto.setCreatedDate(createdDate);
+            sellPostDetailResponseDto.setNickname(writerNickname);
+            sellPostDetailResponseDto.setPrice(price);
+            sellPostDetailResponseDto.setTalkUrl(talkUrl);
+            sellPostDetailResponseDto.setStatus(status);
+            sellPostDetailResponseDto.setBookTitle(bookTitle);
+            sellPostDetailResponseDto.setAuthor(author);
+            sellPostDetailResponseDto.setPublisher(publisher);
+            sellPostDetailResponseDto.setCoverImg(coverImg);
+            sellPostDetailResponseDto.setIsbn(isbn);
+
+            log.info("[판매 작성자의 로그인 아이디 : " + sellLoginId + ", 판매 글의 제목 : " + sellTitle + "] 도서 판매글 상세 요청 성공");
+            log.info("[END] - SellController.reviewPostDetail / 도서 판매글 상세 요청 완료");
+            return ResponseEntity.status(HttpStatus.OK).body(sellPostDetailResponseDto);
+        }
     }
 }

@@ -30,4 +30,9 @@ public class SellService {
         return savedSell;
     }
 
+    // 판매 글 작성자의 loginId 와 판매 글의 제목 title 을 이용하여 판매 글 찾기
+    public Sell findByLoginIdAndTitle(String loginId, String title) {
+        Sell sell = sellRepository.findByMemberLoginIdAndTitle(loginId, title);
+        return sell;
+    }
 }
