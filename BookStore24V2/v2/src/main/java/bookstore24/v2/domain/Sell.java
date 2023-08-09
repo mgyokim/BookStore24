@@ -51,4 +51,16 @@ public class Sell extends BaseEntity {
         this.member = member;
         member.getSells().add(this);
     }
+
+    protected Sell() {
+        //// JPA 에서 사용하기 위해 protected 생성자 유지
+    }
+
+    public Sell(String title, String content, Long price, SellStatus status, String talkUrl) {
+        this.title = title;
+        this.content = content;
+        this.price = price;
+        this.talkUrl = talkUrl;
+        this.status = status;
+    }
 }
