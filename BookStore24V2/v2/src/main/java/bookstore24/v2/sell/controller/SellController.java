@@ -6,10 +6,7 @@ import bookstore24.v2.domain.Member;
 import bookstore24.v2.domain.Sell;
 import bookstore24.v2.domain.SellStatus;
 import bookstore24.v2.member.service.MemberService;
-import bookstore24.v2.sell.dto.SellPostDetailRequestDto;
-import bookstore24.v2.sell.dto.SellPostDetailResponseDto;
-import bookstore24.v2.sell.dto.SellPostSaveRequestDto;
-import bookstore24.v2.sell.dto.SellPostSaveResponseDto;
+import bookstore24.v2.sell.dto.*;
 import bookstore24.v2.sell.service.SellService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,10 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
@@ -79,7 +73,7 @@ public class SellController {
             log.info("[도서명 : " + bookTitle + "] 는 DB에 저장되어 있으므로 판매글만 저장 완료");
             log.info("[END] - SellController.sellPostSave / 도서 판매글 작성 저장 요청 종료");
             return ResponseEntity.status(HttpStatus.OK).body(sellPostSaveResponseDto);
-        } else if((existStatusBook == null) & (duplicateTitleSell == null)) {    // 데이터베이스에 해당 책을 추가 등록)
+        } else if ((existStatusBook == null) & (duplicateTitleSell == null)) {    // 데이터베이스에 해당 책을 추가 등록)
             // 데이터베이스에 해당 책 저장
             Book book = new Book(isbn, bookTitle, author, publisher, coverImg);
             Book savedBook = bookService.saveBook(book);
@@ -175,4 +169,63 @@ public class SellController {
             return ResponseEntity.status(HttpStatus.OK).body(sellPostDetailResponseDto);
         }
     }
+
+    @GetMapping("/sell/post/edit")
+    public ResponseEntity<?> sellPostEdit(Authentication authentication, @RequestParam(value = "loginId", required = true) String SellPostWriterLoginId, @RequestParam(value = "title", required = true) String SellPostTitle) {
+        log.info("[START] - SellController.sellPostEdit / 도서 판매글 수정 데이터 접근 요청 시작");
+
+        // JWT 를 이용하여 요청한 회원 확인
+        String JwtLoginId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(JwtLoginId);
+
+        // SellPostWriterLoginId 과 SellPostTitle 를 이용하여 해당하는 판매 글이 존재하는지 확인하기
+        Sell matchSellPost = sellService.findByLoginIdAndTitle(SellPostWriterLoginId, SellPostTitle);
+
+        // 조건에 해당하는 판매 글이 존재한다면, 이 요청을 요청한 회원(JwtLoginId)이 해당 판매 글 작성자인지 확인(해당 글을 수정할 권한이 이 요청을 요청한 회원에게 있는지)
+        if (matchSellPost == null) {  // 조건에 해당하는 판매 글이 없다면, 수정 데이터 접근 거절
+            log.info("요청 Body 의 조건에 해당하는 판매 글이 없음");
+            log.info("도서 판매 글 수정 데이터 접근 실패");
+            log.info("[END] - SellController.sellPostEdit / 도서 판매글 수정 데이터 접근 요청 종료");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("판매 글 수정 데이터 접근을 요청한 바디 조건에 해당하는 판매 글이 존재하지 않음");
+        } else {
+            if (!(matchSellPost.getMember().getLoginId().equals(JwtLoginId))) {     // 이 요청을 요청한 회원(JwtLoginId)이 해당 판매 글 작성자가 아님 (판매 글 수정 데이터 접근 권한 X)
+                log.info("판매 글 수정 데이터 접근을 요청한 회원 != 해당 판매 글 작성자");
+                log.info("도서 판매 글 수정 데이터 접근 실패");
+                log.info("[END] - SellController.sellPostEdit / 도서 판매글 수정 데이터 접근 요청 종료");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("판매 글 수정 데이터 접근을 요청한 회원은 해당 판매 글의 작성자가 아님");
+            } else {    // 이 요청을 요청한 회원(JwtLoginId)이 해당 판매 글 작성자임 (판매 글 수정 데이터 접근 권한 O)
+                // 해당 판매글의 데이터를 반환
+                String title = matchSellPost.getTitle();
+                String bookTitle = matchSellPost.getBook().getTitle();
+                String author = matchSellPost.getBook().getAuthor();
+                String publisher = matchSellPost.getBook().getPublisher();
+                String coverImg = matchSellPost.getBook().getCoverImg();
+                Long isbn = matchSellPost.getBook().getIsbn();
+                String content = matchSellPost.getContent();
+                Long price = matchSellPost.getPrice();
+                String talkUrl = matchSellPost.getTalkUrl();
+                LocalDateTime createdDate = matchSellPost.getCreatedDate();
+                String writerNickname = matchSellPost.getMember().getNickname();
+
+                SellPostEditResponseDto sellPostEditResponseDto = new SellPostEditResponseDto();
+                sellPostEditResponseDto.setTitle(title);
+                sellPostEditResponseDto.setBookTitle(bookTitle);
+                sellPostEditResponseDto.setAuthor(author);
+                sellPostEditResponseDto.setPublisher(publisher);
+                sellPostEditResponseDto.setCoverImg(coverImg);
+                sellPostEditResponseDto.setIsbn(isbn);
+                sellPostEditResponseDto.setContent(content);
+                sellPostEditResponseDto.setPrice(price);
+                sellPostEditResponseDto.setTalkUrl(talkUrl);
+                sellPostEditResponseDto.setCreatedDate(createdDate);
+                sellPostEditResponseDto.setNickname(writerNickname);
+
+                log.info("도서 판매 글 수정 데이터 접근 성공");
+                log.info("[END] - SellController.sellPostEdit / 도서 판매글 수정 데이터 접근 요청 종료");
+                return ResponseEntity.status(HttpStatus.OK).body(sellPostEditResponseDto);
+            }
+        }
+    }
 }
+
+
