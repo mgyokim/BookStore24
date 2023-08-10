@@ -104,24 +104,24 @@ public class SellController {
 
     @Transactional
     @GetMapping("/sell/post/detail")
-    public ResponseEntity<?> reviewPostDetail(Authentication authentication, @RequestBody @Valid SellPostDetailRequestDto sellPostDetailRequestDto) {
-        log.info("[START] - SellController.reviewPostDetail / 도서 판매글 상세 요청 시작");
+    public ResponseEntity<?> sellPostDetail(Authentication authentication, @RequestBody @Valid SellPostDetailRequestDto sellPostDetailRequestDto) {
+        log.info("[START] - SellController.sellPostDetail / 도서 판매글 상세 요청 시작");
 
         // JWT 를 이용하여 요청한 회원 확인
         String JwtLoginId = authentication.getName();
         Member member = memberService.findMemberByLoginId(JwtLoginId);
 
-        // SellPostDetailRequestDto 에서 판매글 작성자의 loginId, 리뷰글의 제목 title 을 얻기
+        // SellPostDetailRequestDto 에서 판매글 작성자의 loginId, 판매글의 제목 title 을 얻기
         String sellLoginId = sellPostDetailRequestDto.getLoginId();
         String sellTitle = sellPostDetailRequestDto.getTitle();
 
-        // 판매글 작성자의 loginId, 판매글의 제목 title 을 이용하여 해당하는 Review 글 찾기
+        // 판매글 작성자의 loginId, 판매글의 제목 title 을 이용하여 해당하는 Sell 글 찾기
         Sell sell = sellService.findByLoginIdAndTitle(sellLoginId, sellTitle);
         log.info("로그인 아이디와 타이틀로 찾은 판매 : " + sell);
 
-        // 리뷰글 상세 데이터 반환하기
+        // 판매글 상세 데이터 반환하기
         if (sell == null) {   // sellLoginId, sellTitle 으로 해당하는 판매 글이 존재하지 않음.
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 조건의 리뷰 글이 존재하지 않음");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 조건의 판매 글이 존재하지 않음");
         } else {
             // sellLoginId, sellTitle 으로 해당하는 판매 글의 조회수를 상세 글 데이터를 요청할 때마다 +1 해줌
             Long view = sell.getView();
@@ -129,8 +129,8 @@ public class SellController {
                 log.info("[판매 작성자의 로그인 아이디 : " + sellLoginId + ", 판매 글의 제목 : " + sellTitle + "] 도서 판매글 상세가 최초로 요청됨. 조회수 0으로 초기화 완료");
                 sell.initView();  // 해당 판매 글의 view 를 0 으로 초기화
             }
-            Long inquiryView = sell.getView();    // 리뷰 글 상세를 조회하기 전의 view
-            sell.setView(inquiryView);            // 리뷰 글 상세를 조회 -> (리뷰 글 상세를 조회하기 전의 view)  + 1
+            Long inquiryView = sell.getView();    // 판매 글 상세를 조회하기 전의 view
+            sell.setView(inquiryView);            // 판매 글 상세를 조회 -> (판매 글 상세를 조회하기 전의 view)  + 1
             log.info("[판매글 작성자의 로그인 아이디 : " + sellLoginId + ", 판매 글의 제목 : " + sellTitle + "] 판매 글 조회수 : " + sell.getView() + " 로 업데이트 완료");
 
             // 해당 판매글의 상세 데이터를 반환
@@ -165,7 +165,7 @@ public class SellController {
             sellPostDetailResponseDto.setIsbn(isbn);
 
             log.info("[판매 작성자의 로그인 아이디 : " + sellLoginId + ", 판매 글의 제목 : " + sellTitle + "] 도서 판매글 상세 요청 성공");
-            log.info("[END] - SellController.reviewPostDetail / 도서 판매글 상세 요청 완료");
+            log.info("[END] - SellController.sellPostDetail / 도서 판매글 상세 요청 완료");
             return ResponseEntity.status(HttpStatus.OK).body(sellPostDetailResponseDto);
         }
     }
