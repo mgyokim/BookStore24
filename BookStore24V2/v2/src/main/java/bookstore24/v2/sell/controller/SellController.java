@@ -167,7 +167,7 @@ public class SellController {
     }
 
     @GetMapping("/sell/post/edit")
-    public ResponseEntity<?> sellPostEdit(Authentication authentication, @RequestParam(value = "sellPostWriterLoginId", required = true) String sellPostWriterLoginId, @RequestParam(value = "sellPostTitle", required = true) String sellPostTitle) {
+    public ResponseEntity<?> sellPostEdit(Authentication authentication, @RequestParam(value = "loginId", required = true) String sellPostWriterLoginId, @RequestParam(value = "title", required = true) String sellPostTitle) {
         log.info("[START] - SellController.sellPostEdit / 도서 판매글 수정 데이터 접근 요청 시작");
 
         // JWT 를 이용하여 요청한 회원 확인
