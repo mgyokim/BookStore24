@@ -104,19 +104,15 @@ public class SellController {
 
     @Transactional
     @GetMapping("/sell/post/detail")
-    public ResponseEntity<?> sellPostDetail(Authentication authentication, @RequestBody @Valid SellPostDetailRequestDto sellPostDetailRequestDto) {
+    public ResponseEntity<?> sellPostDetail(Authentication authentication, @RequestParam(value = "loginId", required = true) String sellPostWriterLoginId, @RequestParam(value = "title", required = true) String sellPostTitle) {
         log.info("[START] - SellController.sellPostDetail / 도서 판매글 상세 요청 시작");
 
         // JWT 를 이용하여 요청한 회원 확인
         String JwtLoginId = authentication.getName();
         Member member = memberService.findMemberByLoginId(JwtLoginId);
 
-        // SellPostDetailRequestDto 에서 판매글 작성자의 loginId, 판매글의 제목 title 을 얻기
-        String sellLoginId = sellPostDetailRequestDto.getLoginId();
-        String sellTitle = sellPostDetailRequestDto.getTitle();
-
         // 판매글 작성자의 loginId, 판매글의 제목 title 을 이용하여 해당하는 Sell 글 찾기
-        Sell sell = sellService.findByLoginIdAndTitle(sellLoginId, sellTitle);
+        Sell sell = sellService.findByLoginIdAndTitle(sellPostWriterLoginId, sellPostTitle);
         log.info("로그인 아이디와 타이틀로 찾은 판매 : " + sell);
 
         // 판매글 상세 데이터 반환하기
@@ -126,12 +122,12 @@ public class SellController {
             // sellLoginId, sellTitle 으로 해당하는 판매 글의 조회수를 상세 글 데이터를 요청할 때마다 +1 해줌
             Long view = sell.getView();
             if (view == null) { // 만약 해당 판매 글의 상세를 최초로 조회하는 것이라면,
-                log.info("[판매 작성자의 로그인 아이디 : " + sellLoginId + ", 판매 글의 제목 : " + sellTitle + "] 도서 판매글 상세가 최초로 요청됨. 조회수 0으로 초기화 완료");
+                log.info("[판매 작성자의 로그인 아이디 : " + sellPostWriterLoginId + ", 판매 글의 제목 : " + sellPostTitle + "] 도서 판매글 상세가 최초로 요청됨. 조회수 0으로 초기화 완료");
                 sell.initView();  // 해당 판매 글의 view 를 0 으로 초기화
             }
             Long inquiryView = sell.getView();    // 판매 글 상세를 조회하기 전의 view
             sell.setView(inquiryView);            // 판매 글 상세를 조회 -> (판매 글 상세를 조회하기 전의 view)  + 1
-            log.info("[판매글 작성자의 로그인 아이디 : " + sellLoginId + ", 판매 글의 제목 : " + sellTitle + "] 판매 글 조회수 : " + sell.getView() + " 로 업데이트 완료");
+            log.info("[판매글 작성자의 로그인 아이디 : " + sellPostWriterLoginId + ", 판매 글의 제목 : " + sellPostTitle + "] 판매 글 조회수 : " + sell.getView() + " 로 업데이트 완료");
 
             // 해당 판매글의 상세 데이터를 반환
             String title = sell.getTitle();// 판매 글 제목
@@ -164,14 +160,14 @@ public class SellController {
             sellPostDetailResponseDto.setCoverImg(coverImg);
             sellPostDetailResponseDto.setIsbn(isbn);
 
-            log.info("[판매 작성자의 로그인 아이디 : " + sellLoginId + ", 판매 글의 제목 : " + sellTitle + "] 도서 판매글 상세 요청 성공");
+            log.info("[판매 작성자의 로그인 아이디 : " + sellPostWriterLoginId + ", 판매 글의 제목 : " + sellPostTitle + "] 도서 판매글 상세 요청 성공");
             log.info("[END] - SellController.sellPostDetail / 도서 판매글 상세 요청 완료");
             return ResponseEntity.status(HttpStatus.OK).body(sellPostDetailResponseDto);
         }
     }
 
     @GetMapping("/sell/post/edit")
-    public ResponseEntity<?> sellPostEdit(Authentication authentication, @RequestParam(value = "loginId", required = true) String SellPostWriterLoginId, @RequestParam(value = "title", required = true) String SellPostTitle) {
+    public ResponseEntity<?> sellPostEdit(Authentication authentication, @RequestParam(value = "sellPostWriterLoginId", required = true) String sellPostWriterLoginId, @RequestParam(value = "sellPostTitle", required = true) String sellPostTitle) {
         log.info("[START] - SellController.sellPostEdit / 도서 판매글 수정 데이터 접근 요청 시작");
 
         // JWT 를 이용하여 요청한 회원 확인
@@ -179,7 +175,7 @@ public class SellController {
         Member member = memberService.findMemberByLoginId(JwtLoginId);
 
         // SellPostWriterLoginId 과 SellPostTitle 를 이용하여 해당하는 판매 글이 존재하는지 확인하기
-        Sell matchSellPost = sellService.findByLoginIdAndTitle(SellPostWriterLoginId, SellPostTitle);
+        Sell matchSellPost = sellService.findByLoginIdAndTitle(sellPostWriterLoginId, sellPostTitle);
 
         // 조건에 해당하는 판매 글이 존재한다면, 이 요청을 요청한 회원(JwtLoginId)이 해당 판매 글 작성자인지 확인(해당 글을 수정할 권한이 이 요청을 요청한 회원에게 있는지)
         if (matchSellPost == null) {  // 조건에 해당하는 판매 글이 없다면, 수정 데이터 접근 거절
