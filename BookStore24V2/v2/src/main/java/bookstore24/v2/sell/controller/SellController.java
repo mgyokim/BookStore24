@@ -226,6 +226,47 @@ public class SellController {
             }
         }
     }
+
+    @Transactional
+    @PostMapping("/sell/post/edit/save")
+    public ResponseEntity<?> sellPostEditSave(Authentication authentication, @RequestBody @Valid SellPostEditSaveRequestDto sellPostEditSaveRequestDto) {
+        log.info("[START] - SellController.sellPostEditSave / 도서 판매글 수정 저장 요청 시작");
+
+        // JWT 를 이용하여 요청한 회원 확인
+        String JwtLoginId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(JwtLoginId);
+
+        // 판매 글 제목, 작성자로 해당 판매 글을 DB 에서 찾고,
+        // (이때 작성자 == JwtLoginId 이므로 이것을 이용하여 해당 판매글을 찾는 과정을 통해 (수정 요창자 == 해당 판매글 작성자) 임을 한번 더 검증 하는 방식을 취함)
+        String title = sellPostEditSaveRequestDto.getTitle();
+
+        Sell matchSell = sellService.findByLoginIdAndTitle(JwtLoginId, title);
+
+        if (matchSell == null) {    // 만약 해당 조건에 매치된 판매 글이 존재하지 않으면 수정 거
+
+            log.info("요청 조건에 맞는 판매 글이 존재하지 않음. 도서 판매 글 수정 저장 실패");
+            log.info("[END] - SellController.sellPostEditSave / 도서 판매 글 수정 저장 요청 종료");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 판매글에 대한 수정 권한이 없는 회원의 수정 요청임");
+        } else {    // 만약 해당 조건에 매치된 판매 글이 존재하면 수정 진행
+            // 수정이 허용된 필드
+            String content = sellPostEditSaveRequestDto.getContent(); // 판매 글의 본문
+            Long price = sellPostEditSaveRequestDto.getPrice();       // 판매 글의 가격
+            String talkUrl = sellPostEditSaveRequestDto.getTalkUrl();       // 판매 글의 채팅
+
+            // 해당 판매 글에서 수정을 허용한 필드에 한해 각 필드에 set 으로 데이터를 수정해줌
+            matchSell.editContent(content);
+            matchSell.editPrice(price);
+            matchSell.editTalkUrl(talkUrl);
+
+            SellPostEditSaveResponseDto sellPostEditSaveResponseDto = new SellPostEditSaveResponseDto();
+            sellPostEditSaveResponseDto.setLoginId(JwtLoginId);
+            sellPostEditSaveResponseDto.setTitle(matchSell.getTitle());
+
+            log.info("작성자 아이디 : " + JwtLoginId + ", 판매 글 title : " + matchSell.getTitle() + "] 도서 판매 글 수정 저장 성공");
+            log.info("[END] - SellController.sellPostEditSave / 도서 판매 글 수정 저장 요청 종료");
+            return ResponseEntity.status(HttpStatus.OK).body(sellPostEditSaveResponseDto);
+        }
+    }
 }
 
 

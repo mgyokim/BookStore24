@@ -75,4 +75,19 @@ public class Sell extends BaseEntity {
         // 값에 1을 더해서 설정
         this.view = view + 1;
     }
+
+    // 판매 글의 본문 수정
+    public void editContent(String content) {
+        this.content = content;
+    }
+
+    // 판매 글의 가격 수정
+    public void editPrice(Long price) {
+        this.price = price;
+    }
+
+    // 판매 글의 채팅 수정
+    public void editTalkUrl(String talkUrl) {
+        this.talkUrl = talkUrl;
+    }
 }
