@@ -112,7 +112,7 @@ public class ReviewController {
         Member member = memberService.findMemberByLoginId(JwtLoginId);
 
         // 리뷰글 작성자의 loginId, 리뷰글의 제목 title 을 이용하여 해당하는 Review 글 찾기
-        Review review = reviewService.findByLoginIdAndTitle(reviewPostWriterLoginId, reviewPostWriterLoginId);
+        Review review = reviewService.findByLoginIdAndTitle(reviewPostWriterLoginId, reviewPostTitle);
         log.info("로그인 아이디와 타이틀로 찾은 리뷰 : " + review);
 
         // 리뷰글 상세 데이터 반환하기
@@ -122,12 +122,12 @@ public class ReviewController {
             // reviewLoginId, reviewTitle 으로 해당하는 리뷰 글의 조회수를 상세 글 데이터를 요청할 때마다 +1 해줌
             Long view = review.getView();
             if (view == null) { // 만약 해당 리뷰 글의 상세를 최초로 조회하는 것이라면,
-                log.info("[리뷰 작성자의 로그인 아이디 : " + reviewPostWriterLoginId + ", 리뷰 글의 제목 : " + reviewPostWriterLoginId + "] 도서 리뷰글 상세가 최초로 요청됨. 조회수 0으로 초기화 완료");
+                log.info("[리뷰 작성자의 로그인 아이디 : " + reviewPostWriterLoginId + ", 리뷰 글의 제목 : " + reviewPostTitle + "] 도서 리뷰글 상세가 최초로 요청됨. 조회수 0으로 초기화 완료");
                 review.initView();  // 해당 리뷰 글의 view 를 0 으로 초기화
             }
             Long inquiryView = review.getView();    // 리뷰 글 상세를 조회하기 전의 view
             review.setView(inquiryView);            // 리뷰 글 상세를 조회 -> (리뷰 글 상세를 조회하기 전의 view)  + 1
-            log.info("[리뷰 작성자의 로그인 아이디 : " + reviewPostWriterLoginId + ", 리뷰 글의 제목 : " + reviewPostWriterLoginId + "] 리뷰 글 조회수 : " + review.getView() + " 로 업데이트 완료");
+            log.info("[리뷰 작성자의 로그인 아이디 : " + reviewPostWriterLoginId + ", 리뷰 글의 제목 : " + reviewPostTitle + "] 리뷰 글 조회수 : " + review.getView() + " 로 업데이트 완료");
 
             // 해당 리뷰글의 상세 데이터를 반환
             String title = review.getTitle();       // 리뷰 글 제목
@@ -166,16 +166,12 @@ public class ReviewController {
     }
 
     @GetMapping("/review/post/edit")
-    public ResponseEntity<?> reviewPostEdit(Authentication authentication, @RequestBody @Valid ReviewPostEditRequestDto reviewPostEditRequestDto) {
+    public ResponseEntity<?> reviewPostEdit(Authentication authentication, @RequestParam(value = "loginId", required = true) String reviewPostWriterLoginId, @RequestParam(value = "title", required = true) String reviewPostTitle) {
         log.info("[START] - ReviewController.reviewPostEdit / 도서 리뷰 글 수정 데이터 접근 요청 시작");
 
         // JWT 를 이용하여 요청한 회원 확인
         String JwtLoginId = authentication.getName();
         Member member = memberService.findMemberByLoginId(JwtLoginId);
-
-        // ReviewPostEditRequestDto 에서 수정 데이터 접근을 요청한 리뷰 글의 작성자 loginId 과 title 을 얻기
-        String reviewPostWriterLoginId = reviewPostEditRequestDto.getLoginId();
-        String reviewPostTitle = reviewPostEditRequestDto.getTitle();
 
         // ReviewPostWriterLoginId 과 ReviewPostTitle 를 이용하여 해당하는 리뷰 글이 존재하는지 확인하기
         Review matchReviewPost = reviewService.findByLoginIdAndTitle(reviewPostWriterLoginId, reviewPostTitle);
