@@ -36,14 +36,15 @@ public class LoginSubController {
      * https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=e435f34295d28879dfabc32de2bd7546&redirect_uri=http://localhost:8080/auth/kakao/callback
      * - AWS EC2
      * https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=e435f34295d28879dfabc32de2bd7546&redirect_uri=http://52.79.234.227/auth/kakao/callback
-     * <p>
-     * <p>
-     * <p>
+     *
      * [네이버 로컬 개발용]
      * GET
+     * - local:8080
      * https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=B3RGNtinEp3Va8fysxkN&redirect_uri=http://localhost:8080/auth/naver/callback&state='test'
-     * <p>
-     * <p>
+     *  - AWS EC2
+     * https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=B3RGNtinEp3Va8fysxkN&redirect_uri=http://52.79.234.227/auth/naver/callback&state='test'
+     *
+     *
      * [구글 로컬 개발용]
      * GET
      * https://accounts.google.com/o/oauth2/v2/auth?client_id=766446517759-t82jo5h4vk9rmj30bld1d30su7sqdde1.apps.googleusercontent.com&redirect_uri=http://localhost:8080/auth/google/callback&response_type=code&scope=openid%20email%20profile
