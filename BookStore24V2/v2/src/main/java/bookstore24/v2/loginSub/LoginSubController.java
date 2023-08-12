@@ -32,7 +32,10 @@ public class LoginSubController {
      * 개발용 테스트용 컨트롤러
      * [카카오 로컬개발용]
      * GET
+     * - local:8080
      * https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=e435f34295d28879dfabc32de2bd7546&redirect_uri=http://localhost:8080/auth/kakao/callback
+     * - AWS EC2
+     * https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=e435f34295d28879dfabc32de2bd7546&redirect_uri=http://52.79.234.227/auth/kakao/callback
      * <p>
      * <p>
      * <p>
