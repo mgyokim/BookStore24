@@ -34,7 +34,7 @@ public class KakaoLogicSub {
     private String clientId;
 
     final String KAKAO_REDIRECT_URI = "http://localhost:8080/auth/kakao/callback";    // 외부에서 로컬 개발용
-//    final String KAKAO_REDIRECT_URI = "http://52.79.234.227/auth/kakao/callback";    // AWS
+//    final String KAKAO_REDIRECT_URI = "http://bookstore24.shop/auth/kakao/callback";    // AWS EC2
 
     final String KAKAO_TOKEN_REQUEST_URI = "https://kauth.kakao.com/oauth/token";
 

@@ -35,7 +35,7 @@ public class LoginSubController {
      * - local:8080
      * https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=e435f34295d28879dfabc32de2bd7546&redirect_uri=http://localhost:8080/auth/kakao/callback
      * - AWS EC2
-     * https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=e435f34295d28879dfabc32de2bd7546&redirect_uri=http://52.79.234.227/auth/kakao/callback
+     * https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=e435f34295d28879dfabc32de2bd7546&redirect_uri=http://bookstore24.shop/auth/kakao/callback
      *
      * [네이버 로컬 개발용]
      * GET
