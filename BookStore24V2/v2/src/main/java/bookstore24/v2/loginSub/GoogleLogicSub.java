@@ -37,6 +37,7 @@ public class GoogleLogicSub {
     private String clientSecret;
 
     final String GOOGLE_REDIRECT_URI = "http://localhost:8080/auth/google/callback";    // 로컬 개발용
+//    final String GOOGLE_REDIRECT_URI = "http://bookstore24.shop/auth/google/callback";    // AWS EC2
 
     final String GOOGLE_TOKEN_REQUEST_URI = "https://oauth2.googleapis.com/token";
 

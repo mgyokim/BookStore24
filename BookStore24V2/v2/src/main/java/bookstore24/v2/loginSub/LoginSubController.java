@@ -47,7 +47,10 @@ public class LoginSubController {
      *
      * [구글 로컬 개발용]
      * GET
+     * - local:8080
      * https://accounts.google.com/o/oauth2/v2/auth?client_id=766446517759-t82jo5h4vk9rmj30bld1d30su7sqdde1.apps.googleusercontent.com&redirect_uri=http://localhost:8080/auth/google/callback&response_type=code&scope=openid%20email%20profile
+     * - AWS EC2
+     * https://accounts.google.com/o/oauth2/v2/auth?client_id=766446517759-t82jo5h4vk9rmj30bld1d30su7sqdde1.apps.googleusercontent.com&redirect_uri=http://bookstore24.shop/auth/google/callback&response_type=code&scope=openid%20email%20profile
      */
 
     @GetMapping("/auth/kakao/callback")
