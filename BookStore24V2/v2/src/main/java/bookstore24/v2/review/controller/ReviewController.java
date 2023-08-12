@@ -14,10 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
@@ -107,19 +104,15 @@ public class ReviewController {
 
     @Transactional
     @GetMapping("/review/post/detail")
-    public ResponseEntity<?> reviewPostDetail(Authentication authentication, @RequestBody @Valid ReviewPostDetailRequestDto reviewPostDetailRequestDto) {
+    public ResponseEntity<?> reviewPostDetail(Authentication authentication, @RequestParam(value = "loginId", required = true) String reviewPostWriterLoginId, @RequestParam(value = "title", required = true) String reviewPostTitle) {
         log.info("[START] - ReviewController.reviewPostDetail / 도서 리뷰글 상세 요청 시작");
 
         // JWT 를 이용하여 요청한 회원 확인
         String JwtLoginId = authentication.getName();
         Member member = memberService.findMemberByLoginId(JwtLoginId);
 
-        // ReviewPostDetailRequestDto 에서 리뷰글 작성자의 loginId, 리뷰글의 제목 title 을 얻기
-        String reviewLoginId = reviewPostDetailRequestDto.getLoginId();
-        String reviewTitle = reviewPostDetailRequestDto.getTitle();
-
         // 리뷰글 작성자의 loginId, 리뷰글의 제목 title 을 이용하여 해당하는 Review 글 찾기
-        Review review = reviewService.findByLoginIdAndTitle(reviewLoginId, reviewTitle);
+        Review review = reviewService.findByLoginIdAndTitle(reviewPostWriterLoginId, reviewPostWriterLoginId);
         log.info("로그인 아이디와 타이틀로 찾은 리뷰 : " + review);
 
         // 리뷰글 상세 데이터 반환하기
@@ -129,12 +122,12 @@ public class ReviewController {
             // reviewLoginId, reviewTitle 으로 해당하는 리뷰 글의 조회수를 상세 글 데이터를 요청할 때마다 +1 해줌
             Long view = review.getView();
             if (view == null) { // 만약 해당 리뷰 글의 상세를 최초로 조회하는 것이라면,
-                log.info("[리뷰 작성자의 로그인 아이디 : " + reviewLoginId + ", 리뷰 글의 제목 : " + reviewTitle + "] 도서 리뷰글 상세가 최초로 요청됨. 조회수 0으로 초기화 완료");
+                log.info("[리뷰 작성자의 로그인 아이디 : " + reviewPostWriterLoginId + ", 리뷰 글의 제목 : " + reviewPostWriterLoginId + "] 도서 리뷰글 상세가 최초로 요청됨. 조회수 0으로 초기화 완료");
                 review.initView();  // 해당 리뷰 글의 view 를 0 으로 초기화
             }
             Long inquiryView = review.getView();    // 리뷰 글 상세를 조회하기 전의 view
             review.setView(inquiryView);            // 리뷰 글 상세를 조회 -> (리뷰 글 상세를 조회하기 전의 view)  + 1
-            log.info("[리뷰 작성자의 로그인 아이디 : " + reviewLoginId + ", 리뷰 글의 제목 : " + reviewTitle + "] 리뷰 글 조회수 : " + review.getView() + " 로 업데이트 완료");
+            log.info("[리뷰 작성자의 로그인 아이디 : " + reviewPostWriterLoginId + ", 리뷰 글의 제목 : " + reviewPostWriterLoginId + "] 리뷰 글 조회수 : " + review.getView() + " 로 업데이트 완료");
 
             // 해당 리뷰글의 상세 데이터를 반환
             String title = review.getTitle();       // 리뷰 글 제목
@@ -166,7 +159,7 @@ public class ReviewController {
             reviewPostDetailResponseDto.setCoverImg(coverImg);
             reviewPostDetailResponseDto.setIsbn(isbn);
 
-            log.info("[리뷰 작성자의 로그인 아이디 : " + reviewLoginId + ", 리뷰 글의 제목 : " + reviewTitle + "] 도서 리뷰글 상세 요청 성공");
+            log.info("[리뷰 작성자의 로그인 아이디 : " + reviewPostWriterLoginId + ", 리뷰 글의 제목 : " + reviewPostWriterLoginId + "] 도서 리뷰글 상세 요청 성공");
             log.info("[END] - ReviewController.reviewPostDetail / 도서 리뷰글 상세 요청 완료");
             return ResponseEntity.status(HttpStatus.OK).body(reviewPostDetailResponseDto);
         }
