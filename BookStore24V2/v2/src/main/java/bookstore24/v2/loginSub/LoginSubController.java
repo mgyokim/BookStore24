@@ -42,7 +42,7 @@ public class LoginSubController {
      * - local:8080
      * https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=B3RGNtinEp3Va8fysxkN&redirect_uri=http://localhost:8080/auth/naver/callback&state='test'
      *  - AWS EC2
-     * https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=B3RGNtinEp3Va8fysxkN&redirect_uri=http://52.79.234.227/auth/naver/callback&state='test'
+     * https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=B3RGNtinEp3Va8fysxkN&redirect_uri=http://bookstore24.shop/auth/naver/callback&state='test'
      *
      *
      * [구글 로컬 개발용]

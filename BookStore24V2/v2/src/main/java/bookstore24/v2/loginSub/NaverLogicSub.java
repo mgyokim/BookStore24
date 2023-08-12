@@ -40,7 +40,7 @@ public class NaverLogicSub {
     private String clientSecret;
 
     final String NAVER_REDIRECT_URI = "http://localhost:8080/auth/naver/callback";    // 로컬 개발용
-//    final String NAVER_REDIRECT_URI = "http://52.79.234.227/auth/naver/callback";    // AWS EC2
+//    final String NAVER_REDIRECT_URI = "http://bookstore24.shop/auth/naver/callback";    // AWS EC2
 
     final String NAVER_TOKEN_REQUEST_URI = "https://nid.naver.com/oauth2.0/token";
 
