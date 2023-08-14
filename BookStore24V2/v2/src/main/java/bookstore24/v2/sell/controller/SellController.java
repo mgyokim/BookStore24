@@ -263,6 +263,51 @@ public class SellController {
             return ResponseEntity.status(HttpStatus.OK).body(sellPostEditSaveResponseDto);
         }
     }
+
+    @Transactional
+    @PostMapping("/sell/post/status/edit/save")
+    public ResponseEntity<?> sellPostStatusEditSave(Authentication authentication, @RequestBody @Valid SellPostStatusEditSaveRequestDto sellPostStatusEditSaveRequestDto) {
+        log.info("[START] - SellController.sellPostStatusEditSave / 도서 판매글 상태 수정 저장 요청 시작");
+
+        // JWT 를 이용하여 요청한 회원 확인
+        String JwtLoginId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(JwtLoginId);
+
+        // 상태 변경을 요청한 판매 글의 작성자의 로그인 아이디와 제목
+        String sellPostWriterLoginId = sellPostStatusEditSaveRequestDto.getLoginId();
+        String sellPostTitle = sellPostStatusEditSaveRequestDto.getTitle();
+
+        // 상태 변경을 요청한 판매 글 찾기
+        Sell matchSellPost = sellService.findByLoginIdAndTitle(sellPostWriterLoginId, sellPostTitle);
+
+        if (matchSellPost == null) {    // 상태 변경을 요청한 판매 글이 존재하지 않으면
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("판매 상태 수정 요청 조건에 해당하는 판매 글이 존재하지 않음");
+        } else {    // 상태 변경을 요청한 판매 글이 존재하면
+            // 상태 수정을 요청한 회원과 상태 수정을 요청한 글의 작성자가 동일인인지 확인
+            if (!(JwtLoginId.equals(sellPostWriterLoginId))) {  // 만약 동일인이 아니면 수정권한 없음
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 유저는 해당 판매 글의 상태 수정 권한이 없음");
+            } else {    // 동일인이면 수정권한 있음.
+                // 판매글의 현재 상태
+                SellStatus status = matchSellPost.getStatus();
+                if (status.equals(SellStatus.on)) {  // 기존의 판매 상태가 on 이면
+                    log.info("기존의 판매 상태가 on 이어서 off 로 변경");
+                    matchSellPost.editSellStatusToOff();    // 판매 상태를 off 로 변경
+                    SellPostStatusEditSaveResponseDto sellPostStatusEditSaveResponseDto = new SellPostStatusEditSaveResponseDto();
+                    sellPostStatusEditSaveResponseDto.setLoginId(sellPostWriterLoginId);
+                    sellPostStatusEditSaveResponseDto.setTitle(sellPostTitle);
+                    return ResponseEntity.status(HttpStatus.OK).body(sellPostStatusEditSaveResponseDto);
+                } else {    // 기존의 판매 상태가 off 이면
+                    log.info("기존의 판매 상태가 off 이어서 on 로 변경");
+                    matchSellPost.editSellStatusToOn();     // 판매 상태를 on 으로 변경
+                    SellPostStatusEditSaveResponseDto sellPostStatusEditSaveResponseDto = new SellPostStatusEditSaveResponseDto();
+                    sellPostStatusEditSaveResponseDto.setLoginId(sellPostWriterLoginId);
+                    sellPostStatusEditSaveResponseDto.setTitle(sellPostTitle);
+                    return ResponseEntity.status(HttpStatus.OK).body(sellPostStatusEditSaveResponseDto);
+                }
+            }
+        }
+    }
 }
 
 

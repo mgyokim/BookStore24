@@ -90,4 +90,14 @@ public class Sell extends BaseEntity {
     public void editTalkUrl(String talkUrl) {
         this.talkUrl = talkUrl;
     }
+
+    // 판매 글의 상태를 on 으로 수정
+    public void editSellStatusToOn() {
+        this.status = SellStatus.on;
+    }
+
+    // 판매 글의 상태를 off 로 수정
+    public void editSellStatusToOff() {
+        this.status = SellStatus.off;
+    }
 }
