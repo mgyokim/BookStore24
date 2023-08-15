@@ -3,7 +3,10 @@ package bookstore24.v2.loginSub;
 import bookstore24.v2.auth.oauth.dto.token.GoogleOauthTokenDto;
 import bookstore24.v2.auth.oauth.dto.token.KakaoOauthTokenDto;
 import bookstore24.v2.auth.oauth.dto.token.NaverOauthTokenDto;
+import bookstore24.v2.book.repository.BookRepository;
+import bookstore24.v2.domain.Book;
 import bookstore24.v2.domain.Member;
+import bookstore24.v2.loginSub.dto.BookListSubResponseDto;
 import bookstore24.v2.loginSub.dto.MemberListSubResponseDto;
 import bookstore24.v2.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,8 @@ public class LoginSubController {
     private final GoogleLogicSub googleLogicSub;
 
     private final MemberRepository memberRepository;
+
+    private final BookRepository bookRepository;
 
     /**
      * 개발용 테스트용 컨트롤러
@@ -165,7 +170,24 @@ public class LoginSubController {
             dto.setRole(member.getRole());
             dtos.add(dto);
         }
+        return dtos;
+    }
 
+    @GetMapping("/book/list/sub")
+    public List<BookListSubResponseDto> bookListSub() {
+        List<Book> all = bookRepository.findAll();
+        ArrayList<BookListSubResponseDto> dtos = new ArrayList<>();
+
+        for (Book book : all) {
+            BookListSubResponseDto dto = new BookListSubResponseDto();
+            dto.setTitle(book.getTitle());
+            dto.setAuthor(book.getAuthor());
+            dto.setPublisher(book.getPublisher());
+            dto.setCoverImg(book.getCoverImg());
+            dto.setIsbn(book.getIsbn());
+            dto.setCreatedDate(book.getCreatedDate());
+            dtos.add(dto);
+        }
         return dtos;
     }
 

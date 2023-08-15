@@ -60,6 +60,7 @@ public class SecurityConfig {
                 .antMatchers("/auth/naver/callback").permitAll() //  네이버 로그인은 인증 없이 접근 가능하도록 설정
                 .antMatchers("/auth/google/callback").permitAll() // 구글 로그인은 인증 없이 접근 가능하도록 설정
                 .antMatchers("/member/list/sub").permitAll() // 개발용 설정임(Member 목록 반환)
+                .antMatchers("/book/list/sub").permitAll() // 개발용 설정임(Book 목록 반환)
 
                 .anyRequest().authenticated()    // 그 외의 모든 요청은 인증을 요구
                 .and()
