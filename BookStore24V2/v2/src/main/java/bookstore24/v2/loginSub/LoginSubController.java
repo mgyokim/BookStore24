@@ -7,11 +7,14 @@ import bookstore24.v2.book.repository.BookRepository;
 import bookstore24.v2.domain.Book;
 import bookstore24.v2.domain.Member;
 import bookstore24.v2.domain.Review;
+import bookstore24.v2.domain.Sell;
 import bookstore24.v2.loginSub.dto.BookListSubResponseDto;
 import bookstore24.v2.loginSub.dto.MemberListSubResponseDto;
 import bookstore24.v2.loginSub.dto.ReviewListSubResponseDto;
+import bookstore24.v2.loginSub.dto.SellListSubResponseDto;
 import bookstore24.v2.member.repository.MemberRepository;
 import bookstore24.v2.review.repository.ReviewRepository;
+import bookstore24.v2.sell.repository.SellRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +40,8 @@ public class LoginSubController {
     private final BookRepository bookRepository;
 
     private final ReviewRepository reviewRepository;
+
+    private final SellRepository sellRepository;
 
     /**
      * 개발용 테스트용 컨트롤러
@@ -213,6 +218,28 @@ public class LoginSubController {
             dto.setCreatedDate(review.getCreatedDate());
             dto.setBookId(review.getBook().getId());
             dto.setMemberId(review.getMember().getId());
+
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
+    @GetMapping("/sell/list/sub")
+    public List<SellListSubResponseDto> sellListSub() {
+        List<Sell> all = sellRepository.findAll();
+        ArrayList<SellListSubResponseDto> dtos = new ArrayList<>();
+
+        for (Sell sell : all) {
+            SellListSubResponseDto dto = new SellListSubResponseDto();
+            dto.setId(sell.getId());
+            dto.setTitle(sell.getTitle());
+            dto.setContent(sell.getContent());
+            dto.setStatus(sell.getStatus());
+            dto.setPrice(sell.getPrice());
+            dto.setView(sell.getView());
+            dto.setCreatedDate(sell.getCreatedDate());
+            dto.setBookId(sell.getBook().getId());
+            dto.setMemberId(sell.getMember().getId());
 
             dtos.add(dto);
         }
