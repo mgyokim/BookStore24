@@ -33,6 +33,8 @@ public class LoginSubController {
 
     private final BookRepository bookRepository;
 
+    private final ReviewRepository reviewRepository;
+
     /**
      * 개발용 테스트용 컨트롤러
      * [카카오 로컬개발용]
@@ -180,6 +182,7 @@ public class LoginSubController {
 
         for (Book book : all) {
             BookListSubResponseDto dto = new BookListSubResponseDto();
+            dto.setId(book.getId());
             dto.setTitle(book.getTitle());
             dto.setAuthor(book.getAuthor());
             dto.setPublisher(book.getPublisher());

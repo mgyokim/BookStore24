@@ -9,6 +9,9 @@ import java.time.LocalDateTime;
 public class BookListSubResponseDto {
 
     @NotNull
+    private Long id;
+
+    @NotNull
     private String title;
 
     @NotNull
