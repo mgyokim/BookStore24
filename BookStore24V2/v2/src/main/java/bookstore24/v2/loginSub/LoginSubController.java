@@ -6,9 +6,12 @@ import bookstore24.v2.auth.oauth.dto.token.NaverOauthTokenDto;
 import bookstore24.v2.book.repository.BookRepository;
 import bookstore24.v2.domain.Book;
 import bookstore24.v2.domain.Member;
+import bookstore24.v2.domain.Review;
 import bookstore24.v2.loginSub.dto.BookListSubResponseDto;
 import bookstore24.v2.loginSub.dto.MemberListSubResponseDto;
+import bookstore24.v2.loginSub.dto.ReviewListSubResponseDto;
 import bookstore24.v2.member.repository.MemberRepository;
+import bookstore24.v2.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -189,6 +192,27 @@ public class LoginSubController {
             dto.setCoverImg(book.getCoverImg());
             dto.setIsbn(book.getIsbn());
             dto.setCreatedDate(book.getCreatedDate());
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
+    @GetMapping("/review/list/sub")
+    public List<ReviewListSubResponseDto> reviewListSub() {
+        List<Review> all = reviewRepository.findAll();
+        ArrayList<ReviewListSubResponseDto> dtos = new ArrayList<>();
+
+        for (Review review : all) {
+            ReviewListSubResponseDto dto = new ReviewListSubResponseDto();
+            dto.setId(review.getId());
+            dto.setTitle(review.getTitle());
+            dto.setContent(review.getContent());
+            dto.setScore(review.getScore());
+            dto.setView(review.getView());
+            dto.setCreatedDate(review.getCreatedDate());
+            dto.setBookId(review.getBook().getId());
+            dto.setMemberId(review.getMember().getId());
+
             dtos.add(dto);
         }
         return dtos;
