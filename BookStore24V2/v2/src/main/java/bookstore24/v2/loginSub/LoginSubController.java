@@ -160,6 +160,7 @@ public class LoginSubController {
 
         for (Member member : all) {
             MemberListSubResponseDto dto = new MemberListSubResponseDto();
+            dto.setId(member.getId());
             dto.setLoginId(member.getLoginId());
             dto.setEmail(member.getEmail());
             dto.setProvider(member.getProvider());

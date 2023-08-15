@@ -5,6 +5,8 @@ import lombok.Data;
 @Data
 public class MemberListSubResponseDto {
 
+    private Long id;
+
     private String loginId;
 
     private String email;
