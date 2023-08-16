@@ -10,6 +10,9 @@ import java.time.LocalDateTime;
 public class SellPostDetailResponseDto {
 
     @NotNull
+    private Long id;
+
+    @NotNull
     private String title;   // 판매 글 제목
 
     @NotNull

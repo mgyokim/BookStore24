@@ -130,6 +130,7 @@ public class SellController {
             log.info("[판매글 작성자의 로그인 아이디 : " + sellPostWriterLoginId + ", 판매 글의 제목 : " + sellPostTitle + "] 판매 글 조회수 : " + sell.getView() + " 로 업데이트 완료");
 
             // 해당 판매글의 상세 데이터를 반환
+            Long id = sell.getId(); // 판매 글 아이디
             String title = sell.getTitle();// 판매 글 제목
             String content = sell.getContent();// 판매 글 본문
             Long nowView = sell.getView();// 판매 글 조회수
@@ -147,6 +148,7 @@ public class SellController {
             Long isbn = sell.getBook().getIsbn();// 판매 도서 isbn
 
             SellPostDetailResponseDto sellPostDetailResponseDto = new SellPostDetailResponseDto();
+            sellPostDetailResponseDto.setId(id);
             sellPostDetailResponseDto.setTitle(title);
             sellPostDetailResponseDto.setContent(content);
             sellPostDetailResponseDto.setView(nowView);
