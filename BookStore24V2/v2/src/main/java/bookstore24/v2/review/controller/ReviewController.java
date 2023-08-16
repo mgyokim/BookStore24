@@ -136,6 +136,7 @@ public class ReviewController {
             Long score = review.getScore();     // 리뷰 글 평점
             LocalDateTime createdDate = review.getCreatedDate();    // 리뷰 글 작성일
             String writerNickname = review.getMember().getNickname(); // 리뷰 글 작성자 닉네임
+            String writerLoginId = review.getMember().getLoginId(); // 리뷰 글 작성자 로그인 아이디
             List<ReviewComment> reviewComments = review.getReviewComments();    // 리뷰 글 댓글
 
             String bookTitle = review.getBook().getTitle(); // 리뷰 도서 제목
@@ -152,6 +153,7 @@ public class ReviewController {
             reviewPostDetailResponseDto.setScore(score);
             reviewPostDetailResponseDto.setCreatedDate(createdDate);
             reviewPostDetailResponseDto.setNickname(writerNickname);
+            reviewPostDetailResponseDto.setLoginId(writerLoginId);
             reviewPostDetailResponseDto.setReviewComments(reviewComments);
             reviewPostDetailResponseDto.setBookTitle(bookTitle);
             reviewPostDetailResponseDto.setAuthor(author);
