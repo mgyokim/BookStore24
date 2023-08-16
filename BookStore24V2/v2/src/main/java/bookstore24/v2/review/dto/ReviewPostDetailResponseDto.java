@@ -11,6 +11,9 @@ import java.util.List;
 public class ReviewPostDetailResponseDto {
 
     @NotNull
+    private Long id;    // 리뷰 글의 아이디
+
+    @NotNull
     private String title;       // 리뷰 글 제목
 
     @NotNull

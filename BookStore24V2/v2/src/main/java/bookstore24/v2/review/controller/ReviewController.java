@@ -130,6 +130,7 @@ public class ReviewController {
             log.info("[리뷰 작성자의 로그인 아이디 : " + reviewPostWriterLoginId + ", 리뷰 글의 제목 : " + reviewPostTitle + "] 리뷰 글 조회수 : " + review.getView() + " 로 업데이트 완료");
 
             // 해당 리뷰글의 상세 데이터를 반환
+            Long id = review.getId();   // 리뷰 글 아이디
             String title = review.getTitle();       // 리뷰 글 제목
             String content = review.getContent();   // 리뷰 글 본문
             Long nowView = review.getView();    // 리뷰 글 조회수
@@ -147,6 +148,7 @@ public class ReviewController {
 
 
             ReviewPostDetailResponseDto reviewPostDetailResponseDto = new ReviewPostDetailResponseDto();
+            reviewPostDetailResponseDto.setId(id);
             reviewPostDetailResponseDto.setTitle(title);
             reviewPostDetailResponseDto.setContent(content);
             reviewPostDetailResponseDto.setView(nowView);
