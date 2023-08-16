@@ -10,42 +10,45 @@ import java.time.LocalDateTime;
 public class SellPostDetailResponseDto {
 
     @NotNull
-    private String title;
+    private String title;   // 판매 글 제목
 
     @NotNull
-    private String content;
+    private String content; // 판매 글 본문
 
     @NotNull
-    private Long view;
+    private Long view;      // 판매 글 조회수
 
     @NotNull
-    private LocalDateTime createdDate;
+    private LocalDateTime createdDate;  // 판매 글 작성 날짜
 
     @NotNull
-    private String nickname;
+    private String nickname;    // 판매 글 작성자의 닉네임
 
     @NotNull
-    private Long price;
+    private String loginId;     // 판매 글 작성자의 로그인 아이디
 
     @NotNull
-    private String talkUrl;
+    private Long price;     // 판매 글 가격
 
     @NotNull
-    private SellStatus status;
+    private String talkUrl; // 판매 글 채팅
 
     @NotNull
-    private String bookTitle;
+    private SellStatus status;  // 판매 글 상태
 
     @NotNull
-    private String author;
+    private String bookTitle;   // 판매 글 도서 제목
 
     @NotNull
-    private String publisher;
+    private String author;  // 판매 글 도서 저자
 
     @NotNull
-    private String coverImg;
+    private String publisher;   // 판매 글 도서 출판사
 
     @NotNull
-    private Long isbn;
+    private String coverImg;    // 판매 글 도서 커버이미지
+
+    @NotNull
+    private Long isbn;  // 판매 글 도서 isbn
 
 }

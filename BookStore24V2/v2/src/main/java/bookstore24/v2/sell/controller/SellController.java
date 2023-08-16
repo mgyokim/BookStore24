@@ -135,6 +135,7 @@ public class SellController {
             Long nowView = sell.getView();// 판매 글 조회수
             LocalDateTime createdDate = sell.getCreatedDate();// 판매 글 작성일
             String writerNickname = sell.getMember().getNickname();// 판매글 작성자 닉네임
+            String writerLoginId = sell.getMember().getLoginId();   // 판매글 작성자 로그인 아이디
             Long price = sell.getPrice();// 판매 글 가격
             String talkUrl = sell.getTalkUrl();// 판매 글 채팅 url
             SellStatus status = sell.getStatus();// 판매 글 상태
@@ -151,6 +152,7 @@ public class SellController {
             sellPostDetailResponseDto.setView(nowView);
             sellPostDetailResponseDto.setCreatedDate(createdDate);
             sellPostDetailResponseDto.setNickname(writerNickname);
+            sellPostDetailResponseDto.setLoginId(writerLoginId);
             sellPostDetailResponseDto.setPrice(price);
             sellPostDetailResponseDto.setTalkUrl(talkUrl);
             sellPostDetailResponseDto.setStatus(status);
