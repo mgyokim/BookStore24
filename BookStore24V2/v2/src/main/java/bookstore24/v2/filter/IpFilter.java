@@ -26,7 +26,6 @@ public class IpFilter extends GenericFilterBean {
         allowedIpAddresses.add("172.30.1.254");     // B
         allowedIpAddresses.add("61.79.215.100");    // K
         allowedIpAddresses.add("39.123.221.236");   // L
-//        allowedIpAddresses.add("119.196.140.27");   // aws
         allowedIpAddresses.add("52.79.234.227");   // aws
     }
 
