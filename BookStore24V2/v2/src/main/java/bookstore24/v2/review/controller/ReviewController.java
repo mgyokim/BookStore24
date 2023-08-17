@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -73,7 +74,7 @@ public class ReviewController {
             log.info("[도서명 : " + bookTitle + "] 는 DB에 저장되어 있으므로 리뷰 글만 저장 완료");
             log.info("[END] - ReviewController.reviewPostSave / 도서 리뷰글 작성 저장 요청 종료");
             return ResponseEntity.status(HttpStatus.OK).body(reviewPostSaveResponseDto);
-        } else if ((existStatusBook == null) & (duplicateTitleReview == null)){    // 데이터베이스에 해당 책을 추가 등록
+        } else if ((existStatusBook == null) & (duplicateTitleReview == null)) {    // 데이터베이스에 해당 책을 추가 등록
             // 데이터베이스에 해당 책 저장
             Book book = new Book(isbn, bookTitle, author, publisher, coverImg);
             Book savedBook = bookService.saveBook(book);
@@ -146,8 +147,33 @@ public class ReviewController {
             String coverImg = review.getBook().getCoverImg();   // 리뷰 도서 커버이미지
             Long isbn = review.getBook().getIsbn(); // 리뷰 도서 isbn
 
-
+            // ReviewPostDetailResponseDto
             ReviewPostDetailResponseDto reviewPostDetailResponseDto = new ReviewPostDetailResponseDto();
+
+            // ReviewPostDetailResponseDto 들을 담을 ArrayList -> ReviewPostDetailReviewCommentResponseDtos
+            ArrayList<ReviewPostDetailReviewCommentResponseDto> ReviewPostDetailReviewCommentResponseDtos = new ArrayList<>();
+            for (ReviewComment reviewComment : reviewComments) {
+                // ReviewPostDetailReviewCommentResponseDtos 에 넣을 ReviewPostDetailReviewCommentResponseDto
+                ReviewPostDetailReviewCommentResponseDto reviewPostDetailReviewCommentResponseDto = new ReviewPostDetailReviewCommentResponseDto();
+
+                Long reviewCommentId = reviewComment.getId();
+                String reviewCommentContent = reviewComment.getContent();
+                LocalDateTime reviewCommentCreatedDate = reviewComment.getCreatedDate();
+                String reviewCommentWriterNickname = reviewComment.getMember().getNickname();
+                String reviewCommentWriterLoginId = reviewComment.getMember().getLoginId();
+                Long reviewId = reviewComment.getReview().getId();
+
+                reviewPostDetailReviewCommentResponseDto.setId(reviewCommentId);
+                reviewPostDetailReviewCommentResponseDto.setContent(reviewCommentContent);
+                reviewPostDetailReviewCommentResponseDto.setCreatedDate(reviewCommentCreatedDate);
+                reviewPostDetailReviewCommentResponseDto.setNickname(reviewCommentWriterNickname);
+                reviewPostDetailReviewCommentResponseDto.setLoginId(reviewCommentWriterLoginId);
+                reviewPostDetailReviewCommentResponseDto.setReviewId(reviewId);
+
+                ReviewPostDetailReviewCommentResponseDtos.add(reviewPostDetailReviewCommentResponseDto);
+            }
+
+
             reviewPostDetailResponseDto.setId(id);
             reviewPostDetailResponseDto.setTitle(title);
             reviewPostDetailResponseDto.setContent(content);
@@ -156,7 +182,7 @@ public class ReviewController {
             reviewPostDetailResponseDto.setCreatedDate(createdDate);
             reviewPostDetailResponseDto.setNickname(writerNickname);
             reviewPostDetailResponseDto.setLoginId(writerLoginId);
-            reviewPostDetailResponseDto.setReviewComments(reviewComments);
+            reviewPostDetailResponseDto.setReviewComments(ReviewPostDetailReviewCommentResponseDtos);
             reviewPostDetailResponseDto.setBookTitle(bookTitle);
             reviewPostDetailResponseDto.setAuthor(author);
             reviewPostDetailResponseDto.setPublisher(publisher);

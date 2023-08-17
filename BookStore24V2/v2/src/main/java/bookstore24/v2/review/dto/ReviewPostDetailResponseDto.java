@@ -49,6 +49,6 @@ public class ReviewPostDetailResponseDto {
     @NotNull
     private String loginId;    // 리뷰 글 작성자 로그인 아이디
 
-    private List<ReviewComment> reviewComments; // 리뷰 글 댓글
+    private List<ReviewPostDetailReviewCommentResponseDto> reviewComments; // 리뷰 글 댓글
 
 }
