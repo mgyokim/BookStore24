@@ -1,6 +1,5 @@
 package bookstore24.v2.domain;
 
-
 import lombok.Getter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -40,6 +39,14 @@ public class ReviewComment extends BaseEntity {
     public void connectingReviewCommentAndMember(Member member) {
         this.member = member;
         member.getReviewComments().add(this);
+    }
+
+    protected ReviewComment() {
+        //// JPA 에서 사용하기 위해 protected 생성자 유지
+    }
+
+    public ReviewComment(String content) {
+        this.content = content;
     }
 
 }
