@@ -1,6 +1,5 @@
 package bookstore24.v2.review.dto;
 
-import bookstore24.v2.domain.ReviewComment;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
