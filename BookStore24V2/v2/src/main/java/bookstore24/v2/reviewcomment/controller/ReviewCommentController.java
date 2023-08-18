@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,7 +34,7 @@ public class ReviewCommentController {
     @Transactional
     @PostMapping("/comment/post/save")
     public ResponseEntity<?> reviewCommentPostSave(Authentication authentication, @RequestBody @Valid ReviewCommentPostSaveRequestDto reviewCommentPostSaveRequestDto) {
-        log.info("[START] - ReviewCommentController.commentPostSave / 댓글 작성 저장 요청 시작");
+        log.info("[START] - ReviewCommentController.reviewCommentPostSave / 댓글 작성 저장 요청 시작");
 
         // JWT 를 이용하여 요청한 회원 확인
         String JwtLoginId = authentication.getName();
@@ -50,7 +52,7 @@ public class ReviewCommentController {
         if (!(matchPost.getId().equals(requestBodyId))) {   // 만약 matchPost 의 id 가 requestBodyId 와 일치하지 않으면 검증 실패
 
             log.info("[댓글 작성 게시글 id: " + requestBodyId + ", 작성 댓글 내용 : " + requestBodyContent + "] 저장 실패");
-            log.info("[END] - ReviewCommentController.commentPostSave / 댓글 작성 저장 요청 종료");
+            log.info("[END] - ReviewCommentController.reviewCommentPostSave / 댓글 작성 저장 요청 종료");
             // 댓글 저장 요청 실패 응답 반환
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("댓글 작성 저장을 요청한 Body 의 조건에 해당하는 게시 글이 없음");
         } else {    // matchPost 의 id 가 requestBodyId 와 일치하여 검증 성공
@@ -65,8 +67,45 @@ public class ReviewCommentController {
             reviewCommentPostSaveResponseDto.setTitle(requestBodyTitle);
 
             log.info("[댓글 작성 게시글 id: " + requestBodyId + ", 작성 댓글 내용 : " + requestBodyContent + "] 저장 성공");
-            log.info("[END] - ReviewCommentController.commentPostSave / 댓글 작성 저장 요청 종료");
+            log.info("[END] - ReviewCommentController.reviewCommentPostSave / 댓글 작성 저장 요청 종료");
             return ResponseEntity.status(HttpStatus.OK).body(reviewCommentPostSaveResponseDto);
+        }
+    }
+
+    @GetMapping("/comment/post/edit")
+    public ResponseEntity<?> reviewCommentPostEdit(Authentication authentication, @RequestParam(value = "reviewId", required = true) Long reviewId, @RequestParam(value = "reviewCommentId", required = true) Long reviewCommentId) {
+        log.info("[START] - ReviewCommentController.reviewCommentPostEdit / 댓글 작성 저장 요청 시작");
+
+        // JWT 를 이용하여 요청한 회원 확인
+        String JwtLoginId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(JwtLoginId);
+
+        // 요청 params 로 보낸 reviewId 와 reviewCommentId 를 이용하여 이중 검증 진행
+        // 검증 1. reviewId 의 reviewComments 에 요청 param 의 reviewCommentId 에 해당하는 댓글이 있는지 확인
+        Optional<Review> matchReview = reviewService.findById(reviewId);
+        if (!(matchReview.isPresent())) {   // matchReview 값이 존재하지 않으면, 잘못된 요청임
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("요청으로 보낸 params 조건이 비정상");
+        } else {
+            List<ReviewComment> reviewComments = matchReview.get().getReviewComments();
+
+            Optional<ReviewComment> targetReviewCommentOptional = reviewComments.stream()
+                    .filter(reviewComment -> reviewComment.getId().equals(reviewCommentId))
+                    .findFirst();
+
+            if (targetReviewCommentOptional.isPresent()) {  // 수정을 요청한 reviewComment 를 찾은 경우 -> // 검증 1을 통과임
+                ReviewComment targetReviewComment = targetReviewCommentOptional.get();
+
+                // 검증 2. reviewCommentId 에 해당하는 댓글을 작성한 사람의 loginId 가 JwtLoginId 와 같은지 검증(해당 댓글 작성자의 수정 요청인지 확인)
+                String commentWriterLoginId = targetReviewComment.getMember().getLoginId();
+                if (!(commentWriterLoginId.equals(JwtLoginId))) {   // 해당 댓글의 작성자 loginId 와 수정 요청을 한 회원의 loginId(JwtLoginId) 가 일치하지 않음
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("댓글 수정을 요청한 회원은 해당 댓글의 작성자가 아님");
+                } else {    // 해당 댓글의 작성자 loginId 와 수정 요청을 한 회원의 loginId(JwtLoginId) 가 일치함
+                    return ResponseEntity.status(HttpStatus.OK).body("해당 댓글 작성자의 수정 요청임");
+                }
+            } else {    // 수정을 요청한 reviewComment 를 찾지 못한 경우
+                // 해당 reviewCommentId에 해당하는 ReviewComment 를 찾지 못한 경우
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 reviewCommentId에 해당하는 ReviewComment 를 찾을 수 없음");
+            }
         }
     }
 }

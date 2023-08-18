@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -33,6 +35,12 @@ public class ReviewService {
     // 리뷰 글 작성자의 loginId 와 리뷰 글의 제목 title 을 이용하여 리뷰 글 찾기
     public Review findByLoginIdAndTitle(String loginId, String title) {
         Review review = reviewRepository.findByMemberLoginIdAndTitle(loginId, title);
+        return review;
+    }
+
+    // 리뷰 글의 id 를 이용하여 리뷰 글 찾기
+    public Optional<Review> findById(Long id) {
+        Optional<Review> review = reviewRepository.findById(id);
         return review;
     }
 }
