@@ -33,7 +33,7 @@ public class ReviewCommentController {
     private final ReviewCommentService reviewCommentService;
 
     @Transactional
-    @PostMapping("/comment/post/save")
+    @PostMapping("review/comment/post/save")
     public ResponseEntity<?> reviewCommentPostSave(Authentication authentication, @RequestBody @Valid ReviewCommentPostSaveRequestDto reviewCommentPostSaveRequestDto) {
         log.info("[START] - ReviewCommentController.reviewCommentPostSave / 댓글 작성 저장 요청 시작");
 
