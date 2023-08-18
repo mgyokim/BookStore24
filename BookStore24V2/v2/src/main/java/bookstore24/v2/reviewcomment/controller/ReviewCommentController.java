@@ -73,7 +73,7 @@ public class ReviewCommentController {
 
     @GetMapping("/review/comment/post/edit")
     public ResponseEntity<?> reviewCommentPostEdit(Authentication authentication, @RequestParam(value = "reviewId", required = true) Long reviewId, @RequestParam(value = "reviewCommentId", required = true) Long reviewCommentId) {
-        log.info("[START] - ReviewCommentController.reviewCommentPostEdit / 댓글 작성 저장 요청 시작");
+        log.info("[START] - ReviewCommentController.reviewCommentPostEdit / 댓글 수정 권한 확인 요청 시작");
 
         // JWT 를 이용하여 요청한 회원 확인
         String JwtLoginId = authentication.getName();
@@ -83,6 +83,9 @@ public class ReviewCommentController {
         // 검증 1. reviewId 의 reviewComments 에 요청 param 의 reviewCommentId 에 해당하는 댓글이 있는지 확인
         Optional<Review> matchReview = reviewService.findById(reviewId);
         if (!(matchReview.isPresent())) {   // matchReview 값이 존재하지 않으면, 잘못된 요청임
+
+            log.info("해당 reviewId 에 해당하는 Review 가 존재하지 않음 -> 수정 권한 없음");
+            log.info("[END] - ReviewCommentController.reviewCommentPostEdit / 댓글 수정 권한 확인 요청 종료");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 reviewId 에 해당하는 Review 가 존재하지 않음");
         } else {
             List<ReviewComment> reviewComments = matchReview.get().getReviewComments();
@@ -97,6 +100,9 @@ public class ReviewCommentController {
                 // 검증 2. reviewCommentId 에 해당하는 댓글을 작성한 사람의 loginId 가 JwtLoginId 와 같은지 검증(해당 댓글 작성자의 수정 요청인지 확인)
                 String commentWriterLoginId = targetReviewComment.getMember().getLoginId();
                 if (!(commentWriterLoginId.equals(JwtLoginId))) {   // 해당 댓글의 작성자 loginId 와 수정 요청을 한 회원의 loginId(JwtLoginId) 가 일치하지 않음
+
+                    log.info("댓글 수정을 요청한 회원은 해당 댓글의 작성자가 아님 -> 수정 권한 없음");
+                    log.info("[END] - ReviewCommentController.reviewCommentPostEdit / 댓글 수정 권한 확인 요청 종료");
                     return ResponseEntity.status(HttpStatus.FORBIDDEN).body("댓글 수정을 요청한 회원은 해당 댓글의 작성자가 아님");
                 } else {    // 해당 댓글의 작성자 loginId 와 수정 요청을 한 회원의 loginId(JwtLoginId) 가 일치함
 
@@ -115,10 +121,13 @@ public class ReviewCommentController {
                     reviewCommentPostEditResponseDto.setReviewCommentLoginId(reviewCommentLoginId);
                     reviewCommentPostEditResponseDto.setReviewCommentContent(reviewCommentContent);
 
+                    log.info("[reviewCommentId : " + reviewCommentId + "] 를 [JwtLoginId : " + JwtLoginId +"] 가 수정 가능 -> 수정 권한 OK");
+                    log.info("[END] - ReviewCommentController.reviewCommentPostEdit / 댓글 수정 권한 확인 요청 종료");
                     return ResponseEntity.status(HttpStatus.OK).body(reviewCommentPostEditResponseDto);
                 }
             } else {    // 수정을 요청한 reviewComment 를 찾지 못한 경우
                 // 해당 reviewCommentId에 해당하는 ReviewComment 를 찾지 못한 경우
+                log.info("[END] - ReviewCommentController.reviewCommentPostEdit / 댓글 수정 권한 확인 요청 종료");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 reviewCommentId 에 해당하는 ReviewComment 를 찾을 수 없음");
             }
         }
