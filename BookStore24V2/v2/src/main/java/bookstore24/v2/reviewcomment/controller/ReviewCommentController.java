@@ -1,6 +1,7 @@
 package bookstore24.v2.reviewcomment.controller;
 
 import bookstore24.v2.domain.ReviewComment;
+import bookstore24.v2.reviewcomment.dto.ReviewCommentPostEditResponseDto;
 import bookstore24.v2.reviewcomment.dto.ReviewCommentPostSaveRequestDto;
 import bookstore24.v2.domain.Member;
 import bookstore24.v2.domain.Review;
@@ -72,7 +73,7 @@ public class ReviewCommentController {
         }
     }
 
-    @GetMapping("/comment/post/edit")
+    @GetMapping("/review/comment/post/edit")
     public ResponseEntity<?> reviewCommentPostEdit(Authentication authentication, @RequestParam(value = "reviewId", required = true) Long reviewId, @RequestParam(value = "reviewCommentId", required = true) Long reviewCommentId) {
         log.info("[START] - ReviewCommentController.reviewCommentPostEdit / 댓글 작성 저장 요청 시작");
 
@@ -84,7 +85,7 @@ public class ReviewCommentController {
         // 검증 1. reviewId 의 reviewComments 에 요청 param 의 reviewCommentId 에 해당하는 댓글이 있는지 확인
         Optional<Review> matchReview = reviewService.findById(reviewId);
         if (!(matchReview.isPresent())) {   // matchReview 값이 존재하지 않으면, 잘못된 요청임
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("요청으로 보낸 params 조건이 비정상");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 reviewId 에 해당하는 Review 가 존재하지 않음");
         } else {
             List<ReviewComment> reviewComments = matchReview.get().getReviewComments();
 
@@ -100,11 +101,27 @@ public class ReviewCommentController {
                 if (!(commentWriterLoginId.equals(JwtLoginId))) {   // 해당 댓글의 작성자 loginId 와 수정 요청을 한 회원의 loginId(JwtLoginId) 가 일치하지 않음
                     return ResponseEntity.status(HttpStatus.FORBIDDEN).body("댓글 수정을 요청한 회원은 해당 댓글의 작성자가 아님");
                 } else {    // 해당 댓글의 작성자 loginId 와 수정 요청을 한 회원의 loginId(JwtLoginId) 가 일치함
-                    return ResponseEntity.status(HttpStatus.OK).body("해당 댓글 작성자의 수정 요청임");
+
+                    // 리뷰 글 id (Params)
+                    String reviewTitle = matchReview.get().getTitle();// 리뷰 글 title
+                    String reviewLoginId = matchReview.get().getMember().getLoginId();    // 리뷰 글 작성자 loginId
+                    // 리뷰 댓글 id (Params)
+                    String reviewCommentLoginId = targetReviewComment.getMember().getLoginId();// 리뷰 댓글 작성자 loginId
+                    String reviewCommentContent = targetReviewComment.getContent();     // 리뷰 댓글 content
+
+                    ReviewCommentPostEditResponseDto reviewCommentPostEditResponseDto = new ReviewCommentPostEditResponseDto();
+                    reviewCommentPostEditResponseDto.setReviewId(reviewId);
+                    reviewCommentPostEditResponseDto.setReviewTitle(reviewTitle);
+                    reviewCommentPostEditResponseDto.setReviewLoginId(reviewLoginId);
+                    reviewCommentPostEditResponseDto.setReviewCommentId(reviewCommentId);
+                    reviewCommentPostEditResponseDto.setReviewCommentLoginId(reviewCommentLoginId);
+                    reviewCommentPostEditResponseDto.setReviewCommentContent(reviewCommentContent);
+
+                    return ResponseEntity.status(HttpStatus.OK).body(reviewCommentPostEditResponseDto);
                 }
             } else {    // 수정을 요청한 reviewComment 를 찾지 못한 경우
                 // 해당 reviewCommentId에 해당하는 ReviewComment 를 찾지 못한 경우
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 reviewCommentId에 해당하는 ReviewComment 를 찾을 수 없음");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 reviewCommentId 에 해당하는 ReviewComment 를 찾을 수 없음");
             }
         }
     }
