@@ -49,4 +49,9 @@ public class ReviewComment extends BaseEntity {
         this.content = content;
     }
 
+    // 리뷰 댓글의 본문 수정
+    public void editContent(String content) {
+        this.content = content;
+    }
+
 }

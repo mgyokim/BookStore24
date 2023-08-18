@@ -1,13 +1,11 @@
 package bookstore24.v2.reviewcomment.controller;
 
-import bookstore24.v2.domain.ReviewComment;
-import bookstore24.v2.reviewcomment.dto.ReviewCommentPostEditResponseDto;
-import bookstore24.v2.reviewcomment.dto.ReviewCommentPostSaveRequestDto;
 import bookstore24.v2.domain.Member;
 import bookstore24.v2.domain.Review;
+import bookstore24.v2.domain.ReviewComment;
 import bookstore24.v2.member.service.MemberService;
 import bookstore24.v2.review.service.ReviewService;
-import bookstore24.v2.reviewcomment.dto.ReviewCommentPostSaveResponseDto;
+import bookstore24.v2.reviewcomment.dto.*;
 import bookstore24.v2.reviewcomment.service.ReviewCommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -125,4 +123,70 @@ public class ReviewCommentController {
             }
         }
     }
+
+    @Transactional
+    @PostMapping("/review/comment/post/edit/save")
+    public ResponseEntity<?> reviewCommentPostEditSave(Authentication authentication, @RequestBody @Valid ReviewCommentPostEditSaveRequestDto reviewCommentPostEditSaveRequestDto) {
+        log.info("[START] - ReviewCommentController.reviewCommentPostEditSave / 댓글 수정 저장 요청 시작");
+
+        // JWT 를 이용하여 요청한 회원 확인
+        String JwtLoginId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(JwtLoginId);
+
+        // 요청 바디로 보낸 데이터
+        Long requestBodyReviewId = reviewCommentPostEditSaveRequestDto.getReviewId(); // 댓글을 달려고 하는 글의 id
+        String requestBodyLoginId = reviewCommentPostEditSaveRequestDto.getLoginId(); //  댓글을 달려고 하는 글의 작성자 loginId
+        String requestBodyTitle = reviewCommentPostEditSaveRequestDto.getTitle(); // 수정하려는 댓글이 존재하는 글의 제목
+        Long requestBodyReviewCommentId = reviewCommentPostEditSaveRequestDto.getReviewCommentId(); // 수정하려는 댓글의 id
+        String requestBodyContent = reviewCommentPostEditSaveRequestDto.getContent(); // 댓글 본문
+
+        // 요청 params 로 보낸 reviewId 와 reviewCommentId 를 이용하여 이중 검증 진행
+        // 검증 1. reviewId 의 reviewComments 에 요청 param 의 reviewCommentId 에 해당하는 댓글이 있는지 확인
+        Optional<Review> matchReview = reviewService.findById(requestBodyReviewId);
+
+        if (!(matchReview.isPresent())) {   // matchReview 값이 존재하지 않으면, 잘못된 요청임
+
+            log.info("해당 reviewId 에 해당하는 Review 가 존재하지 않음 -> 댓글 수정 실패");
+            log.info("[END] - ReviewCommentController.reviewCommentPostEditSave / 댓글 수정 저장 요청 종료");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 reviewId 에 해당하는 Review 가 존재하지 않음");
+        } else {
+            List<ReviewComment> reviewComments = matchReview.get().getReviewComments();
+
+            Optional<ReviewComment> targetReviewCommentOptional = reviewComments.stream()
+                    .filter(reviewComment -> reviewComment.getId().equals(requestBodyReviewCommentId))
+                    .findFirst();
+
+            if (targetReviewCommentOptional.isPresent()) {  // 수정을 요청한 reviewComment 를 찾은 경우 -> // 검증 1을 통과임
+                ReviewComment targetReviewComment = targetReviewCommentOptional.get();
+
+                // 검증 2. reviewCommentId 에 해당하는 댓글을 작성한 사람의 loginId 가 JwtLoginId 와 같은지 검증(해당 댓글 작성자의 수정 요청인지 확인)
+                String commentWriterLoginId = targetReviewComment.getMember().getLoginId();
+                if (!(commentWriterLoginId.equals(JwtLoginId))) {   // 해당 댓글의 작성자 loginId 와 수정 요청을 한 회원의 loginId(JwtLoginId) 가 일치하지 않음
+
+                    log.info("댓글 수정을 요청한 회원은 해당 댓글의 작성자가 아님 -> 댓글 수정 실패");
+                    log.info("[END] - ReviewCommentController.reviewCommentPostEditSave / 댓글 수정 저장 요청 종료");
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("댓글 수정을 요청한 회원은 해당 댓글의 작성자가 아님");
+                } else {    // 해당 댓글의 작성자 loginId 와 수정 요청을 한 회원의 loginId(JwtLoginId) 가 일치함
+
+                    // 댓글 수정 저장을 진행
+                    targetReviewComment.editContent(requestBodyContent);
+
+                    ReviewCommentPostEditSaveResponseDto reviewCommentPostEditSaveResponseDto = new ReviewCommentPostEditSaveResponseDto();
+                    reviewCommentPostEditSaveResponseDto.setLoginId(requestBodyLoginId);
+                    reviewCommentPostEditSaveResponseDto.setTitle(requestBodyTitle);
+
+                    log.info("[reviewCommentId : " + requestBodyReviewCommentId + "] 에 대한 댓글 수정 완료함 -> 댓글 수정 성공");
+                    log.info("[END] - ReviewCommentController.reviewCommentPostEditSave / 댓글 수정 저장 요청 종료");
+                    return ResponseEntity.status(HttpStatus.OK).body(reviewCommentPostEditSaveResponseDto);
+                }
+            } else {    // 수정을 요청한 reviewComment 를 찾지 못한 경우
+                // 해당 reviewCommentId에 해당하는 ReviewComment 를 찾지 못한 경우
+
+                log.info("해당 reviewCommentId 에 해당하는 ReviewComment 를 찾을 수 없음 -> 댓글 수정 실패");
+                log.info("[END] - ReviewCommentController.reviewCommentPostEditSave / 댓글 수정 저장 요청 종료");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 reviewCommentId 에 해당하는 ReviewComment 를 찾을 수 없음");
+            }
+        }
+    }
+
 }
