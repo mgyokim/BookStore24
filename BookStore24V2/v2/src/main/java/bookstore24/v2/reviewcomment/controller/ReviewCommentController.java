@@ -14,9 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -33,7 +31,7 @@ public class ReviewCommentController {
 
     @Transactional
     @PostMapping("/comment/post/save")
-    public ResponseEntity<?> commentPostSave(Authentication authentication, @RequestBody @Valid ReviewCommentPostSaveRequestDto reviewCommentPostSaveRequestDto) {
+    public ResponseEntity<?> reviewCommentPostSave(Authentication authentication, @RequestBody @Valid ReviewCommentPostSaveRequestDto reviewCommentPostSaveRequestDto) {
         log.info("[START] - ReviewCommentController.commentPostSave / 댓글 작성 저장 요청 시작");
 
         // JWT 를 이용하여 요청한 회원 확인
