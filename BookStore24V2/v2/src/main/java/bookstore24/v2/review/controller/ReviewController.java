@@ -10,6 +10,9 @@ import bookstore24.v2.review.dto.*;
 import bookstore24.v2.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -292,9 +295,23 @@ public class ReviewController {
         }
     }
 
-//    @GetMapping("/review/post/list")
-//    public ResponseEntity<?> reviewPostList() {
-//
-//
-//    }
+    @GetMapping("/review/post/list")
+    public Page<ReviewPostListResponseDto> reviewPostList(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return reviewService.getReviewList(pageable)
+                .map(review -> {
+                    ReviewPostListResponseDto reviewPostListResponseDto = new ReviewPostListResponseDto();
+                    reviewPostListResponseDto.setId(review.getId());
+                    reviewPostListResponseDto.setTitle(review.getTitle());
+                    reviewPostListResponseDto.setScore(review.getScore());
+                    reviewPostListResponseDto.setCoverImg(review.getBook().getCoverImg());
+                    reviewPostListResponseDto.setBookTitle(review.getBook().getTitle());
+                    reviewPostListResponseDto.setAuthor(review.getBook().getAuthor());
+                    reviewPostListResponseDto.setPublisher(review.getBook().getPublisher());
+                    reviewPostListResponseDto.setNickname(review.getMember().getNickname());
+                    reviewPostListResponseDto.setCreatedDate(review.getCreatedDate());
+                    reviewPostListResponseDto.setView(review.getView());
+                    return reviewPostListResponseDto;
+                });
+    }
 }

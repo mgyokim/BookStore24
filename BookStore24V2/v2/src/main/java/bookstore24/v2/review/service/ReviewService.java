@@ -5,6 +5,8 @@ import bookstore24.v2.domain.Member;
 import bookstore24.v2.domain.Review;
 import bookstore24.v2.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,5 +44,10 @@ public class ReviewService {
     public Optional<Review> findById(Long id) {
         Optional<Review> review = reviewRepository.findById(id);
         return review;
+    }
+
+    // 전체 리뷰 글을 페이징하여 반환
+    public Page<Review> getReviewList(Pageable pageable) {
+        return reviewRepository.findAll(pageable);
     }
 }
