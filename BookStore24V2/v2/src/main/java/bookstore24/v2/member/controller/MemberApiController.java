@@ -180,9 +180,8 @@ public class MemberApiController {
         // 등록을 요청한 닉네임 중복 여부 검사
         Member duplicateNiname = memberService.findByNickname(nickname);
 
-        if (duplicateNiname == null) {
-            member.setNickname(nickname);
-        } else {
+        if (duplicateNiname == null) {  // 닉네임 중복 검사 통과시 다음 로직 진행
+        } else {    // 닉네임 중복 검사 불통과시 리턴
             log.info("닉네임 및 거주지 정보 저장 실패 [Cause : 닉네임 중복]");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("duplicate Nickname");
         }
@@ -200,6 +199,7 @@ public class MemberApiController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid Region");
         }
 
+        member.setNickname(nickname);
         Member saveMember = memberService.saveMember(member);
 
         SaveNicknameAndResidenceResponseDto saveNicknameAndResidenceResponseDto = new SaveNicknameAndResidenceResponseDto();
