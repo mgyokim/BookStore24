@@ -4,16 +4,11 @@ import bookstore24.v2.auth.oauth.dto.token.GoogleOauthTokenDto;
 import bookstore24.v2.auth.oauth.dto.token.KakaoOauthTokenDto;
 import bookstore24.v2.auth.oauth.dto.token.NaverOauthTokenDto;
 import bookstore24.v2.book.repository.BookRepository;
-import bookstore24.v2.domain.Book;
-import bookstore24.v2.domain.Member;
-import bookstore24.v2.domain.Review;
-import bookstore24.v2.domain.Sell;
-import bookstore24.v2.loginSub.dto.BookListSubResponseDto;
-import bookstore24.v2.loginSub.dto.MemberListSubResponseDto;
-import bookstore24.v2.loginSub.dto.ReviewListSubResponseDto;
-import bookstore24.v2.loginSub.dto.SellListSubResponseDto;
+import bookstore24.v2.domain.*;
+import bookstore24.v2.loginSub.dto.*;
 import bookstore24.v2.member.repository.MemberRepository;
 import bookstore24.v2.review.repository.ReviewRepository;
+import bookstore24.v2.reviewcomment.repository.ReviewCommentRepository;
 import bookstore24.v2.sell.repository.SellRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +37,8 @@ public class LoginSubController {
     private final ReviewRepository reviewRepository;
 
     private final SellRepository sellRepository;
+
+    private final ReviewCommentRepository reviewCommentRepository;
 
     /**
      * 개발용 테스트용 컨트롤러
@@ -245,6 +242,25 @@ public class LoginSubController {
         }
         return dtos;
     }
+
+    @GetMapping("/reviewcomment/list/sub")
+    public List<ReviewCommentListSubResponseDto> reviewcommentListSub() {
+        List<ReviewComment> all = reviewCommentRepository.findAll();
+        ArrayList<ReviewCommentListSubResponseDto> dtos = new ArrayList<>();
+
+        for (ReviewComment reviewComment : all) {
+            ReviewCommentListSubResponseDto dto = new ReviewCommentListSubResponseDto();
+            dto.setId(reviewComment.getId());
+            dto.setCreatedDate(reviewComment.getCreatedDate());
+            dto.setContent(reviewComment.getContent());
+            dto.setMemberId(reviewComment.getMember().getId());
+            dto.setReviewId(reviewComment.getReview().getId());
+
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
 
     @GetMapping("/home")
     public @ResponseBody

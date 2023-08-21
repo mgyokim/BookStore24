@@ -63,6 +63,7 @@ public class SecurityConfig {
                 .antMatchers("/book/list/sub").permitAll() // 개발용 설정임(Book 목록 반환)
                 .antMatchers("/review/list/sub").permitAll() // 개발용 설정임(Review 목록 반환)
                 .antMatchers("/sell/list/sub").permitAll() // 개발용 설정임(Sell 목록 반환)
+                .antMatchers("/reviewcomment/list/sub").permitAll() // 개발용 설정임(ReviewComment 목록 반환)
 
                 .anyRequest().authenticated()    // 그 외의 모든 요청은 인증을 요구
                 .and()
