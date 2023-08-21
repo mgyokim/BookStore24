@@ -163,7 +163,7 @@ public class ReviewController {
                 String reviewCommentWriterLoginId = reviewComment.getMember().getLoginId();
                 Long reviewId = reviewComment.getReview().getId();
 
-                reviewPostDetailReviewCommentResponseDto.setId(reviewCommentId);
+                reviewPostDetailReviewCommentResponseDto.setReviewCommentId(reviewCommentId);
                 reviewPostDetailReviewCommentResponseDto.setContent(reviewCommentContent);
                 reviewPostDetailReviewCommentResponseDto.setCreatedDate(reviewCommentCreatedDate);
                 reviewPostDetailReviewCommentResponseDto.setNickname(reviewCommentWriterNickname);
@@ -291,4 +291,10 @@ public class ReviewController {
             return ResponseEntity.status(HttpStatus.OK).body(reviewPostEditSaveResponseDto);
         }
     }
+
+//    @GetMapping("/review/post/list")
+//    public ResponseEntity<?> reviewPostList() {
+//
+//
+//    }
 }

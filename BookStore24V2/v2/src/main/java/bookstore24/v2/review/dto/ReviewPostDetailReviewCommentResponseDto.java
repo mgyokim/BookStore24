@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class ReviewPostDetailReviewCommentResponseDto {
 
     @NotNull
-    private Long id;    // 댓글 id
+    private Long reviewCommentId;    // 댓글 id
 
     @NotNull
     private String content;     // 댓글 본문
@@ -24,7 +24,7 @@ public class ReviewPostDetailReviewCommentResponseDto {
     private String loginId;    // 댓글 작성자 로그인 아이디
 
     @NotNull
-    private Long ReviewId;    // 리뷰 id
+    private Long reviewId;    // 리뷰 id
 
 
 
