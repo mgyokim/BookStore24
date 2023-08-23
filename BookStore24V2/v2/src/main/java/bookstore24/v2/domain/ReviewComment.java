@@ -19,8 +19,6 @@ public class ReviewComment extends BaseEntity {
 
     private String content;
 
-    private boolean deleted = Boolean.FALSE;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_id")
     private Review review;

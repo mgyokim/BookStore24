@@ -43,8 +43,6 @@ public class Member extends BaseEntity {
 
     private String profileImg;  // 프로필 사진
 
-    private boolean deleted = Boolean.FALSE;    // 삭제 여부
-
     @OneToMany(mappedBy = "member")
     private List<ReviewComment> reviewComments = new ArrayList<>();
 

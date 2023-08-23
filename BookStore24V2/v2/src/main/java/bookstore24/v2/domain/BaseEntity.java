@@ -21,4 +21,6 @@ public abstract class BaseEntity {
     @Column(insertable = false)
     private LocalDateTime modifiedDate;
 
+    private boolean deleted = Boolean.FALSE;
+
 }

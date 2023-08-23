@@ -30,8 +30,6 @@ public class Sell extends BaseEntity {
 
     private String talkUrl;
 
-    private boolean deleted = Boolean.FALSE;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;

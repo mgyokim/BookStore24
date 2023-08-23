@@ -27,8 +27,6 @@ public class Review extends BaseEntity {
 
     private Long score;
 
-    private boolean deleted = Boolean.FALSE;
-
     @OneToMany(mappedBy = "review")
     private List<ReviewComment> reviewComments = new ArrayList<>();
 
