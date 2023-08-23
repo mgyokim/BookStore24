@@ -1,6 +1,8 @@
 package bookstore24.v2.sell.repository;
 
 import bookstore24.v2.domain.Sell;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SellRepository extends JpaRepository<Sell, Long> {
@@ -10,4 +12,7 @@ public interface SellRepository extends JpaRepository<Sell, Long> {
 
     // SELECT r FROM Sell r WHERE r.loginId = ?1 AND r.title = ?2
     public Sell findByMemberLoginIdAndTitle(String loginId, String title);
+
+    // SELECT * FROM sell LIMIT ? OFFSET ?
+    Page<Sell> findAll(Pageable pageable);
 }

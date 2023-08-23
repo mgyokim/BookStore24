@@ -10,6 +10,9 @@ import bookstore24.v2.sell.dto.*;
 import bookstore24.v2.sell.service.SellService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -311,6 +314,27 @@ public class SellController {
                 }
             }
         }
+    }
+
+    @GetMapping("/sell/post/list")
+    public Page<SellPostListResponseDto> sellPostList(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return sellService.getSellList(pageable)
+                .map(sell -> {
+                    SellPostListResponseDto sellPostListResponseDto = new SellPostListResponseDto();
+                    sellPostListResponseDto.setId(sell.getId());
+                    sellPostListResponseDto.setTitle(sell.getTitle());
+                    sellPostListResponseDto.setStatus(sell.getStatus());
+                    sellPostListResponseDto.setCoverImg(sell.getBook().getCoverImg());
+                    sellPostListResponseDto.setBookTitle(sell.getBook().getTitle());
+                    sellPostListResponseDto.setAuthor(sell.getBook().getAuthor());
+                    sellPostListResponseDto.setPublisher(sell.getBook().getPublisher());
+                    sellPostListResponseDto.setPrice(sell.getPrice());
+                    sellPostListResponseDto.setNickname(sell.getMember().getNickname());
+                    sellPostListResponseDto.setCreatedDate(sell.getCreatedDate());
+                    sellPostListResponseDto.setView(sell.getView());
+                    return sellPostListResponseDto;
+                });
     }
 }
 

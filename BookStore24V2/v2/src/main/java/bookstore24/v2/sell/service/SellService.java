@@ -5,6 +5,8 @@ import bookstore24.v2.domain.Member;
 import bookstore24.v2.domain.Sell;
 import bookstore24.v2.sell.repository.SellRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,5 +36,10 @@ public class SellService {
     public Sell findByLoginIdAndTitle(String loginId, String title) {
         Sell sell = sellRepository.findByMemberLoginIdAndTitle(loginId, title);
         return sell;
+    }
+
+    // 전체 판매 글을 페이징하여 반환
+    public Page<Sell> getSellList(Pageable pageable) {
+        return sellRepository.findAll(pageable);
     }
 }
