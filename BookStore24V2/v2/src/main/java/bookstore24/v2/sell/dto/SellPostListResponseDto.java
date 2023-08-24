@@ -37,6 +37,9 @@ public class SellPostListResponseDto {
     private String nickname;    // 판매 글 등록 회원 닉네임
 
     @NotNull
+    private String loginId; // 판매 글 등록 회원 로그인아이디
+
+    @NotNull
     private LocalDateTime createdDate;    // 판매 글 작성 날짜
 
     @NotNull

@@ -33,6 +33,9 @@ public class ReviewPostListResponseDto {
     private String nickname;    // 리뷰 글 등록 회원 닉네임
 
     @NotNull
+    private String loginId;     // 리뷰 글 등록 회원 로그인아이디
+
+    @NotNull
     private LocalDateTime createdDate;    // 리뷰 글 작성 날짜
 
     @NotNull

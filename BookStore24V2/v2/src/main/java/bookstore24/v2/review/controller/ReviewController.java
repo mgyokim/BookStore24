@@ -309,6 +309,7 @@ public class ReviewController {
                     reviewPostListResponseDto.setAuthor(review.getBook().getAuthor());
                     reviewPostListResponseDto.setPublisher(review.getBook().getPublisher());
                     reviewPostListResponseDto.setNickname(review.getMember().getNickname());
+                    reviewPostListResponseDto.setLoginId(review.getMember().getLoginId());
                     reviewPostListResponseDto.setCreatedDate(review.getCreatedDate());
                     reviewPostListResponseDto.setView(review.getView());
                     return reviewPostListResponseDto;

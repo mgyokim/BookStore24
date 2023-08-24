@@ -331,6 +331,7 @@ public class SellController {
                     sellPostListResponseDto.setPublisher(sell.getBook().getPublisher());
                     sellPostListResponseDto.setPrice(sell.getPrice());
                     sellPostListResponseDto.setNickname(sell.getMember().getNickname());
+                    sellPostListResponseDto.setLoginId(sell.getMember().getLoginId());
                     sellPostListResponseDto.setCreatedDate(sell.getCreatedDate());
                     sellPostListResponseDto.setView(sell.getView());
                     return sellPostListResponseDto;
