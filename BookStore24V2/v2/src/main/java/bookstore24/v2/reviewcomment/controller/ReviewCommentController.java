@@ -217,6 +217,8 @@ public class ReviewCommentController {
             ReviewComment reviewComment = reviewCommentById.get();
             Long matchReviewId = reviewComment.getReview().getId();
             if (!(matchReviewId.equals(reviewId))) {   // 요청 Body 의 reviewId 와 matchReviewId 가 다르면 잘못된 요청임
+                log.info("[END] - ReviewCommentController.reviewCommentPostDelete / 댓글 단건 삭제 요청 종료");
+                log.info("reviewId 와 reviewCommentId 매칭 실패, 댓글 삭제 실패");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("reviewId 와 reviewCommentId 매칭 실패");
             }
             // reviewComment 를 활용한 로직 수행
@@ -227,12 +229,18 @@ public class ReviewCommentController {
                 ReviewCommentPostDeleteResponseDto reviewCommentPostDeleteResponseDto = new ReviewCommentPostDeleteResponseDto();
                 reviewCommentPostDeleteResponseDto.setLoginId(reviewLoginId);
                 reviewCommentPostDeleteResponseDto.setTitle(reviewTitle);
+                log.info("댓글 삭제 성공");
+                log.info("[END] - ReviewCommentController.reviewCommentPostDelete / 댓글 단건 삭제 요청 종료");
                 return ResponseEntity.status(HttpStatus.OK).body(reviewCommentPostDeleteResponseDto);
             } else {    // 해당 reviewComment 를 작성한 작성자의 요청이 아님
+                log.info("해당 댓글에 대한 삭제 권한이 없는 회원의 요청임, 댓글 삭제 실패");
+                log.info("[END] - ReviewCommentController.reviewCommentPostDelete / 댓글 단건 삭제 요청 종료");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("해당 댓글에 대한 삭제 권한이 없는 회원의 요청임");
             }
         } else {
             // reviewCommentId에 해당하는 ReviewComment 가 존재하지 않는 경우에 대한 처리
+            log.info("ReviewComment NotFound 로 댓글 삭제 실패");
+            log.info("[END] - ReviewCommentController.reviewCommentPostDelete / 댓글 단건 삭제 요청 종료");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ReviewComment NotFound");
         }
     }
