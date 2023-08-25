@@ -322,7 +322,10 @@ public class SellController {
 
     @GetMapping("/sell/post/list")
     public Page<SellPostListResponseDto> sellPostList(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
+        log.info("[START] - SellController.sellPostList / 도서 판매글 목록 요청 시작");
+
         Pageable pageable = PageRequest.of(page, size);
+        log.info("[END] - SellController.sellPostList / 도서 판매글 목록 요청 종료");
         return sellService.getSellList(pageable)
                 .map(sell -> {
                     SellPostListResponseDto sellPostListResponseDto = new SellPostListResponseDto();
