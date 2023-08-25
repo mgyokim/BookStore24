@@ -50,4 +50,16 @@ public class ReviewService {
     public Page<Review> getReviewList(Pageable pageable) {
         return reviewRepository.findAll(pageable);
     }
+
+    @Transactional
+    // review 삭제
+    public void deleteReviewById(Long reviewId) {
+        Optional<Review> optionalReview = reviewRepository.findById(reviewId);
+        if (optionalReview.isPresent()) {
+            Review review = optionalReview.get();
+            review.logicalDelete();     // review 엔티티 deleted 필드를 true 로 변경하여 논리적 삭제 진행
+            reviewRepository.save(review);
+        }
+    }
+
 }
