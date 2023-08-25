@@ -293,23 +293,27 @@ public class SellController {
         } else {    // 상태 변경을 요청한 판매 글이 존재하면
             // 상태 수정을 요청한 회원과 상태 수정을 요청한 글의 작성자가 동일인인지 확인
             if (!(JwtLoginId.equals(sellPostWriterLoginId))) {  // 만약 동일인이 아니면 수정권한 없음
+                log.info("해당 유저는 해당 판매 글의 상태 수정 권한이 없음, 판매글 상태 수정 실패");
+                log.info("[END] - SellController.sellPostStatusEditSave / 도서 판매글 상태 수정 저장 요청 종료");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("해당 유저는 해당 판매 글의 상태 수정 권한이 없음");
             } else {    // 동일인이면 수정권한 있음.
                 // 판매글의 현재 상태
                 SellStatus status = matchSellPost.getStatus();
                 if (status.equals(SellStatus.on)) {  // 기존의 판매 상태가 on 이면
-                    log.info("기존의 판매 상태가 on 이어서 off 로 변경");
                     matchSellPost.editSellStatusToOff();    // 판매 상태를 off 로 변경
                     SellPostStatusEditSaveResponseDto sellPostStatusEditSaveResponseDto = new SellPostStatusEditSaveResponseDto();
                     sellPostStatusEditSaveResponseDto.setLoginId(sellPostWriterLoginId);
                     sellPostStatusEditSaveResponseDto.setTitle(sellPostTitle);
+                    log.info("판매글 상태 수정 성공(on -> off)");
+                    log.info("[END] - SellController.sellPostStatusEditSave / 도서 판매글 상태 수정 저장 요청 종료");
                     return ResponseEntity.status(HttpStatus.OK).body(sellPostStatusEditSaveResponseDto);
                 } else {    // 기존의 판매 상태가 off 이면
-                    log.info("기존의 판매 상태가 off 이어서 on 로 변경");
                     matchSellPost.editSellStatusToOn();     // 판매 상태를 on 으로 변경
                     SellPostStatusEditSaveResponseDto sellPostStatusEditSaveResponseDto = new SellPostStatusEditSaveResponseDto();
                     sellPostStatusEditSaveResponseDto.setLoginId(sellPostWriterLoginId);
                     sellPostStatusEditSaveResponseDto.setTitle(sellPostTitle);
+                    log.info("판매글 상태 수정 성공(off -> on)");
+                    log.info("[END] - SellController.sellPostStatusEditSave / 도서 판매글 상태 수정 저장 요청 종료");
                     return ResponseEntity.status(HttpStatus.OK).body(sellPostStatusEditSaveResponseDto);
                 }
             }
@@ -337,6 +341,9 @@ public class SellController {
                     return sellPostListResponseDto;
                 });
     }
+
+//    @PostMapping("/sell/post/delete")
+//    public ResponseEntity<?> sellPostDelete(Authentication authentication, @RequestBody @Valid SellPostDeleteRequestDto sellPostDeleteRequestDto)
 }
 
 
