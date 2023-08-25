@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -42,4 +44,15 @@ public class SellService {
     public Page<Sell> getSellList(Pageable pageable) {
         return sellRepository.findAll(pageable);
     }
+
+    @Transactional
+    // Sell 삭제
+    public void deleteSellById(Long sellId) {
+        Optional<Sell> optionalReview = sellRepository.findById(sellId);
+        if (optionalReview.isPresent()) {
+            Sell sell = optionalReview.get();
+            sell.logicalDelete();     // sell 엔티티 deleted 필드를 true 로 변경하여 논리적 삭제 진행
+        }
+    }
+
 }
