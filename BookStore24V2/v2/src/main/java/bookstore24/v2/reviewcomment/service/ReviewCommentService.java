@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -22,6 +24,22 @@ public class ReviewCommentService {
         reviewComment.connectingReviewCommentAndMember(member);
         reviewComment.connectingReviewCommentAndReview(review);
         return savedReviewComment;
+    }
+
+    // reviewId 로 reviewComment 조회
+    public Optional<ReviewComment> findReviewCommentById(Long id) {
+        Optional<ReviewComment> optionalReviewComment = reviewCommentRepository.findById(id);
+        return optionalReviewComment;
+    }
+
+    @Transactional
+    // ReviewComment 삭제
+    public void deleteReviewCommentById(Long reviewCommentId) {
+        Optional<ReviewComment> optionalReview = reviewCommentRepository.findById(reviewCommentId);
+        if (optionalReview.isPresent()) {
+            ReviewComment reviewComment = optionalReview.get();
+            reviewComment.logicalDelete();     // ReviewComment 엔티티 deleted 필드를 true 로 변경하여 논리적 삭제 진행
+        }
     }
 
 }

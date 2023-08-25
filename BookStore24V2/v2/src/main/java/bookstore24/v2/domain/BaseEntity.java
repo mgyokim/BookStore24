@@ -23,4 +23,16 @@ public abstract class BaseEntity {
 
     private boolean deleted = Boolean.FALSE;
 
+    public void logicalDelete() {   // 논리적 삭제
+        this.deleted = true;
+    }
+
+    public void logicalUnDelete() {  // 논리적 복구
+        this.deleted = false;
+    }
+
+    public boolean isDeleted() {    // 회원 탈퇴 및 복구 상태 확인
+        return deleted;
+    }
+
 }

@@ -198,4 +198,43 @@ public class ReviewCommentController {
         }
     }
 
+    @PostMapping("/review/comment/post/delete")
+    public ResponseEntity<?> reviewCommentPostDelete(Authentication authentication, @RequestBody @Valid ReviewCommentPostDeleteRequestDto reviewCommentPostDeleteRequestDto) {
+        log.info("[START] - ReviewCommentController.reviewCommentPostDelete / 댓글 단건 삭제 요청 시작");
+
+        // JWT 를 이용하여 요청한 회원 확인
+        String JwtLoginId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(JwtLoginId);
+
+        Long reviewCommentId = reviewCommentPostDeleteRequestDto.getReviewCommentId();  // 삭제 요청하는 reviewComment 의 id
+        Long reviewId = reviewCommentPostDeleteRequestDto.getReviewId();        // 삭제 요청하는 댓글이 저장되어 있는 review 의 id
+        String reviewLoginId = reviewCommentPostDeleteRequestDto.getLoginId();    // 삭제 요청하는 댓글이 저장되어 있는 review 작성자의 loginId
+        String reviewTitle = reviewCommentPostDeleteRequestDto.getTitle();      // 삭제 요청하는 댓글이 저장되어 있는 review 의 title
+
+        // 요청으로 전달받은 reviewCommentId 를 이용하여 해당하는 reviewComment 찾기
+        Optional<ReviewComment> reviewCommentById = reviewCommentService.findReviewCommentById(reviewCommentId);
+        if (reviewCommentById.isPresent()) {
+            ReviewComment reviewComment = reviewCommentById.get();
+            Long matchReviewId = reviewComment.getReview().getId();
+            if (!(matchReviewId.equals(reviewId))) {   // 요청 Body 의 reviewId 와 matchReviewId 가 다르면 잘못된 요청임
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("reviewId 와 reviewCommentId 매칭 실패");
+            }
+            // reviewComment 를 활용한 로직 수행
+            // 해당 reviewComment 의 작성자가 JwtLoginId 와 일치하는지 검증
+            String reviewCommentLoginId = reviewComment.getMember().getLoginId();
+            if (JwtLoginId.equals(reviewCommentLoginId)) {  // 해당 reviewComment 를 작성한 작성자의 요청이면
+                reviewCommentService.deleteReviewCommentById(reviewCommentId);
+                ReviewCommentPostDeleteResponseDto reviewCommentPostDeleteResponseDto = new ReviewCommentPostDeleteResponseDto();
+                reviewCommentPostDeleteResponseDto.setLoginId(reviewLoginId);
+                reviewCommentPostDeleteResponseDto.setTitle(reviewTitle);
+                return ResponseEntity.status(HttpStatus.OK).body(reviewCommentPostDeleteResponseDto);
+            } else {    // 해당 reviewComment 를 작성한 작성자의 요청이 아님
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("해당 댓글에 대한 삭제 권한이 없는 회원의 요청임");
+            }
+        } else {
+            // reviewCommentId에 해당하는 ReviewComment 가 존재하지 않는 경우에 대한 처리
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ReviewComment NotFound");
+        }
+    }
+
 }
