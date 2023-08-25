@@ -297,7 +297,10 @@ public class ReviewController {
 
     @GetMapping("/review/post/list")
     public Page<ReviewPostListResponseDto> reviewPostList(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
+        log.info("[START] - ReviewController.reviewPostList / 도서 리뷰 글 목록 요청 시작");
+
         Pageable pageable = PageRequest.of(page, size);
+        log.info("[END] - ReviewController.reviewPostList / 도서 리뷰 글 목록 요청 종료");
         return reviewService.getReviewList(pageable)
                 .map(review -> {
                     ReviewPostListResponseDto reviewPostListResponseDto = new ReviewPostListResponseDto();
