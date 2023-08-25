@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -345,8 +346,52 @@ public class SellController {
                 });
     }
 
-//    @PostMapping("/sell/post/delete")
-//    public ResponseEntity<?> sellPostDelete(Authentication authentication, @RequestBody @Valid SellPostDeleteRequestDto sellPostDeleteRequestDto)
+    @Transactional
+    @PostMapping("/sell/post/delete")
+    public ResponseEntity<?> sellPostDelete(Authentication authentication, @RequestBody @Valid SellPostDeleteRequestDto sellPostDeleteRequestDto) {
+        log.info("[START] - SellController.sellPostDelete / 도서 판매 글 삭제 요청 시작");
+
+        // JWT 를 이용하여 요청한 회원 확인
+        String JwtLoginId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(JwtLoginId);
+
+        Long sellId = sellPostDeleteRequestDto.getSellId(); // 삭제를 요청하는 sell 의 id
+        String sellLoginId = sellPostDeleteRequestDto.getLoginId(); // 삭제를 요청하는 sell 의 작성자 loginId
+        String sellTitle = sellPostDeleteRequestDto.getTitle(); // 삭제를 요청하는 sell 의 title
+
+        // 삭제를 요청한 sell 이 실제로 존재하는지 검증
+        Optional<Sell> optionalSell = Optional.ofNullable(sellService.findByLoginIdAndTitle(sellLoginId, sellTitle));
+        if (optionalSell.isPresent()) {
+            Sell matchSell = optionalSell.get();
+            Long matchSellId = matchSell.getId();
+            // Body 의 loginId 와 title 로 찾은 matchSell 의 id 가 Body 데이터의 sellId 와 같은지 검증
+            if (!(matchSellId.equals(sellId))) {    // 유효하지 않은 요청으로 판단
+                log.info("loginId 와 title 을 이용하여 찾은 sell 의 id 와 sellId 가 일치하지않음, 판매 글 삭제 실패");
+                log.info("[END] - SellController.sellPostDelete / 도서 판매 글 삭제 요청 종료");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("loginId 와 title 을 이용하여 찾은 sell 의 id 가 sellId 와 일치하지 않음");
+            } else {    //  검증 통과
+                // 삭제 권한 확인
+                String matchSellLoginId = matchSell.getMember().getLoginId();
+                if (!(matchSellLoginId.equals(JwtLoginId))) {   // 삭제 권한이 없는 회원의 요청임
+                    log.info("해당 판매 글에 대한 삭제 권한이 없는 회원의 요청임, 판매 글 삭제 실패");
+                    log.info("[END] - SellController.sellPostDelete / 도서 판매 글 삭제 요청 종료");
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("해당 판매 글에 대한 삭제 권한이 없는 회원의 요청임");
+                } else {    // 삭제 권한 있는 회원의 요청이므로 삭제 진행
+                    sellService.deleteSellById(sellId);
+                    SellPostDeleteResponseDto sellPostDeleteResponseDto = new SellPostDeleteResponseDto();
+                    sellPostDeleteResponseDto.setLoginId(JwtLoginId);
+                    log.info("판매글 삭제 성공");
+                    log.info("[END] - SellController.sellPostDelete / 도서 판매 글 삭제 요청 종료");
+                    return ResponseEntity.status(HttpStatus.OK).body(sellPostDeleteResponseDto);
+                }
+            }
+        } else {
+            // 해당 조건을 만족하는 Sell 객체가 없는 경우의 처리
+            log.info("loginId 와 title 로 sell 을 찾을 수 없음, 판매 글 삭제 실패");
+            log.info("[END] - SellController.sellPostDelete / 도서 판매 글 삭제 요청 종료");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("loginId 와 title 에 해당되는 sell 이 존재하지 않음");
+        }
+    }
 }
 
 
