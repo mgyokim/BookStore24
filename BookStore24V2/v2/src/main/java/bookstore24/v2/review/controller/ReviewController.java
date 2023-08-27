@@ -8,6 +8,7 @@ import bookstore24.v2.domain.ReviewComment;
 import bookstore24.v2.member.service.MemberService;
 import bookstore24.v2.review.dto.*;
 import bookstore24.v2.review.service.ReviewService;
+import bookstore24.v2.reviewcomment.service.ReviewCommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,6 +33,7 @@ public class ReviewController {
     private final MemberService memberService;
     private final BookService bookService;
     private final ReviewService reviewService;
+    private final ReviewCommentService reviewCommentService;
 
     @Transactional
     @PostMapping("/review/post/save")
@@ -317,5 +319,59 @@ public class ReviewController {
                     reviewPostListResponseDto.setView(review.getView());
                     return reviewPostListResponseDto;
                 });
+    }
+
+    @Transactional
+    @PostMapping("/review/post/delete")
+    public ResponseEntity<?> reviewPostDelete(Authentication authentication, @RequestBody @Valid ReviewPostDeleteRequestDto reviewPostDeleteRequestDto) {
+        log.info("[START] - ReviewController.reviewPostDelete / 도서 리뷰 글 삭제 요청 시작");
+
+        // JWT 를 이용하여 요청한 회원 확인
+        String JwtLoginId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(JwtLoginId);
+
+        // RequestBody 로 데이터 받기
+        Long reviewId = reviewPostDeleteRequestDto.getId();   // 삭제를 요청하는 Review 의 id
+        String reviewLoginId = reviewPostDeleteRequestDto.getLoginId(); // 삭제를 요청하는 Review 작성자의 loginId
+        String reviewTitle = reviewPostDeleteRequestDto.getTitle(); // 삭제를 요청하는 Review 의 title
+        List<Long> reviewCommentIds = reviewPostDeleteRequestDto.getReviewCommentIds(); // 삭제를 요청하는 Review 에 저장된 ReviewComment 들의 id
+
+        // loginId 와 title 을 이용하여 Review 를 찾기
+        Review matchReview = reviewService.findByLoginIdAndTitle(reviewLoginId, reviewTitle);
+        if (matchReview == null) {  // 만약 loginId 와 title 로 Review 를 찾을 수 없다면 잘못된 요청임
+
+            log.info("[END] - ReviewController.reviewPostDelete / 도서 리뷰 글 삭제 요청 종료");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("요청 Body 의 loginId 와 title 로 매치되는 Review 가 없음");
+        } else { // 매치된 해당 Review 의 id 가 RequestBody 의 id 와 일치하는지 검사
+            Long matchReviewId = matchReview.getId();
+            if (!(matchReviewId.equals(reviewId))) {    // 일치하지 않으면 잘못된 요청임
+
+                log.info("[END] - ReviewController.reviewPostDelete / 도서 리뷰 글 삭제 요청 종료");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("loginId 와 title 로 매치되는 Review 는 찾았으나 id 가 매치되지 않음");
+            } else {    // 일치하면 다음 로직 진행
+                // 해당 회원이 삭제를 요청한 Review 의 작성자인지 검증
+                if (!(reviewLoginId.equals(JwtLoginId))) {  // 해당 글 삭제에 대한 권한이 없음
+
+                    log.info("[END] - ReviewController.reviewPostDelete / 도서 리뷰 글 삭제 요청 종료");
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("해당 Review 에 대한 삭제 권한이 없는 회원임");
+                } else {    // 해당 Review 에 대한 삭제 권한이 있는 회원임
+                    // 테이블 관계를 고려하여 Review 를 논리삭제 하기전에, 해당 Review 에 등록되어 있는 댓글이 있다면 해당 댓글들을 먼저 논리삭제 처리 해주어야함
+                    // 해당 Review 에 등록된 ReviewComment 가 있는지 확인
+                    if (reviewCommentIds != null) {     // 만약 등록된 댓글이 있다면 해당 댓글들을 논리삭제 진행
+                        for (Long reviewCommentId : reviewCommentIds) {
+                            reviewCommentService.deleteReviewCommentById(reviewCommentId);
+                        }
+                    }
+                    // 해당 Review 논리삭제 진행
+                    reviewService.deleteReviewById(reviewId);
+
+                    ReviewPostDeleteResponseDto reviewPostDeleteResponseDto = new ReviewPostDeleteResponseDto();
+                    reviewPostDeleteResponseDto.setLoginId(JwtLoginId);
+
+                    log.info("[END] - ReviewController.reviewPostDelete / 도서 리뷰 글 삭제 요청 종료");
+                    return ResponseEntity.status(HttpStatus.OK).body(reviewPostDeleteResponseDto);
+                }
+            }
+        }
     }
 }
