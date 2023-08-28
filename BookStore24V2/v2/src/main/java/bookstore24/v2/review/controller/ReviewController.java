@@ -359,6 +359,7 @@ public class ReviewController {
                     // 해당 Review 에 등록된 ReviewComment 가 있는지 확인
                     if (reviewCommentIds != null) {     // 만약 등록된 댓글이 있다면 해당 댓글들을 논리삭제 진행
                         for (Long reviewCommentId : reviewCommentIds) {
+                            log.info("[ReviewId : " + reviewId + "] 에 저장된 [ReviewCommentId : " + reviewCommentId + "] 논리 삭제 완료");
                             reviewCommentService.deleteReviewCommentById(reviewCommentId);
                         }
                     }
