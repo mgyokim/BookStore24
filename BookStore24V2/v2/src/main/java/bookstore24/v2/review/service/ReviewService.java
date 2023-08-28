@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -60,6 +61,11 @@ public class ReviewService {
             review.logicalDelete();     // review 엔티티 deleted 필드를 true 로 변경하여 논리적 삭제 진행
             reviewRepository.save(review);
         }
+    }
+
+    // 특정 bookId 를 포함하는 Review 찾기
+    public List<Review> findReviewsByBookId(Long bookId) {
+        return reviewRepository.findAllByBook_Id(bookId);
     }
 
 }

@@ -1,14 +1,12 @@
 package bookstore24.v2.review.controller;
 
 import bookstore24.v2.book.service.BookService;
-import bookstore24.v2.domain.Book;
-import bookstore24.v2.domain.Member;
-import bookstore24.v2.domain.Review;
-import bookstore24.v2.domain.ReviewComment;
+import bookstore24.v2.domain.*;
 import bookstore24.v2.member.service.MemberService;
 import bookstore24.v2.review.dto.*;
 import bookstore24.v2.review.service.ReviewService;
 import bookstore24.v2.reviewcomment.service.ReviewCommentService;
+import bookstore24.v2.sell.service.SellService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -34,6 +32,7 @@ public class ReviewController {
     private final BookService bookService;
     private final ReviewService reviewService;
     private final ReviewCommentService reviewCommentService;
+    private final SellService sellService;
 
     @Transactional
     @PostMapping("/review/post/save")
@@ -363,8 +362,27 @@ public class ReviewController {
                             reviewCommentService.deleteReviewCommentById(reviewCommentId);
                         }
                     }
+
                     // 해당 Review 논리삭제 진행
                     reviewService.deleteReviewById(reviewId);
+
+                    // 해당 Review 에 등록한 책 데이터 삭제 여부 검사
+                    Long bookId = matchReview.getBook().getId();
+
+                    // 해당 Review 를 삭제해도, 다른 Review 또는 Sell 에 등록된 책인 경우 아무것도 안함
+                    // bookId 로 찾은 Sell
+                    List<Sell> sellsByBookId = sellService.findSellsByBookId(bookId);
+                    // bookId 로 찾은 Review
+                    List<Review> reviewsByBookId = reviewService.findReviewsByBookId(bookId);
+
+                    log.info(String.valueOf("sellsByBookId :" + sellsByBookId));
+                    log.info(String.valueOf("reviewsByBookId : " + reviewsByBookId));
+
+                    // 해당 Review 만 삭제하면 필요없어지는 책 데이터인 경우 -> 책 테이블에서 해당 책 데이터 논리 삭제
+                    if ((sellsByBookId.size() == 0) & (reviewsByBookId.size() == 0)) {
+                        log.info("[BookId : " + bookId + "] 데이터가 더이상 필요하지 않아서 논리 삭제");
+                        bookService.deleteBookById(bookId);
+                    }
 
                     ReviewPostDeleteResponseDto reviewPostDeleteResponseDto = new ReviewPostDeleteResponseDto();
                     reviewPostDeleteResponseDto.setLoginId(JwtLoginId);

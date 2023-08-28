@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     // select * from review where title = ?
@@ -15,5 +17,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     // SELECT * FROM review LIMIT ? OFFSET ?
     Page<Review> findAll(Pageable pageable);
+
+    // SELECT r FROM Review r WHERE r.book.id = :bookId
+    List<Review> findAllByBook_Id(Long bookId);
 
 }
