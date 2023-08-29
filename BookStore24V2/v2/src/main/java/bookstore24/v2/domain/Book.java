@@ -1,6 +1,8 @@
 package bookstore24.v2.domain;
 
 import lombok.Getter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -8,6 +10,8 @@ import java.util.List;
 
 @Entity
 @Getter
+@SQLDelete(sql = "UPDATE Book SET deleted = true WHERE id=?")
+@Where(clause = "deleted = false")
 public class Book extends BaseEntity {
 
     @Id

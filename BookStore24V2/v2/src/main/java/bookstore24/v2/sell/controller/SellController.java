@@ -1,11 +1,9 @@
 package bookstore24.v2.sell.controller;
 
 import bookstore24.v2.book.service.BookService;
-import bookstore24.v2.domain.Book;
-import bookstore24.v2.domain.Member;
-import bookstore24.v2.domain.Sell;
-import bookstore24.v2.domain.SellStatus;
+import bookstore24.v2.domain.*;
 import bookstore24.v2.member.service.MemberService;
+import bookstore24.v2.review.service.ReviewService;
 import bookstore24.v2.sell.dto.*;
 import bookstore24.v2.sell.service.SellService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -31,6 +30,7 @@ public class SellController {
     private final MemberService memberService;
     private final BookService bookService;
     private final SellService sellService;
+    private final ReviewService reviewService;
 
 
     @Transactional
@@ -378,6 +378,25 @@ public class SellController {
                     return ResponseEntity.status(HttpStatus.FORBIDDEN).body("해당 판매 글에 대한 삭제 권한이 없는 회원의 요청임");
                 } else {    // 삭제 권한 있는 회원의 요청이므로 삭제 진행
                     sellService.deleteSellById(sellId);
+
+                    // 해당 Review 에 등록한 책 데이터 삭제 여부 검사
+                    Long bookId = matchSell.getBook().getId();
+
+                    // 해당 Review 를 삭제해도, 다른 Review 또는 Sell 에 등록된 책인 경우 아무것도 안함
+                    // bookId 로 찾은 Sell
+                    List<Sell> sellsByBookId = sellService.findSellsByBookId(bookId);
+                    // bookId 로 찾은 Review
+                    List<Review> reviewsByBookId = reviewService.findReviewsByBookId(bookId);
+
+                    log.info(String.valueOf("sellsByBookId :" + sellsByBookId));
+                    log.info(String.valueOf("reviewsByBookId : " + reviewsByBookId));
+
+                    // 해당 Review 만 삭제하면 필요없어지는 책 데이터인 경우 -> 책 테이블에서 해당 책 데이터 논리 삭제
+                    if ((sellsByBookId.size() == 0) & (reviewsByBookId.size() == 0)) {
+                        log.info("[BookId : " + bookId + "] 데이터가 더이상 필요하지 않아서 논리 삭제");
+                        bookService.deleteBookById(bookId);
+                    }
+
                     SellPostDeleteResponseDto sellPostDeleteResponseDto = new SellPostDeleteResponseDto();
                     sellPostDeleteResponseDto.setLoginId(JwtLoginId);
                     log.info("판매글 삭제 성공");

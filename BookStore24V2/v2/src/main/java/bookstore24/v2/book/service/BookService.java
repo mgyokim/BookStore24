@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -24,5 +26,15 @@ public class BookService {
     public Book findByIsbn(Long isbn) {
         Book book = bookRepository.findByIsbn(isbn);
         return book;
+    }
+
+    @Transactional
+    // Book 삭제
+    public void deleteBookById(Long bookId) {
+        Optional<Book> optionalReview = bookRepository.findById(bookId);
+        if (optionalReview.isPresent()) {
+            Book book = optionalReview.get();
+            book.logicalDelete();     // book 엔티티 deleted 필드를 true 로 변경하여 논리적 삭제 진행
+        }
     }
 }
