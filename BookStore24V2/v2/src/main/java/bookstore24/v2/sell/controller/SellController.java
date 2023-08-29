@@ -379,10 +379,10 @@ public class SellController {
                 } else {    // 삭제 권한 있는 회원의 요청이므로 삭제 진행
                     sellService.deleteSellById(sellId);
 
-                    // 해당 Review 에 등록한 책 데이터 삭제 여부 검사
+                    // 해당 Sell 에 등록한 책 데이터 삭제 여부 검사
                     Long bookId = matchSell.getBook().getId();
 
-                    // 해당 Review 를 삭제해도, 다른 Review 또는 Sell 에 등록된 책인 경우 아무것도 안함
+                    // 해당 Sell 를 삭제해도, 다른 Review 또는 Sell 에 등록된 책인 경우 아무것도 안함
                     // bookId 로 찾은 Sell
                     List<Sell> sellsByBookId = sellService.findSellsByBookId(bookId);
                     // bookId 로 찾은 Review
@@ -391,7 +391,7 @@ public class SellController {
                     log.info(String.valueOf("sellsByBookId :" + sellsByBookId));
                     log.info(String.valueOf("reviewsByBookId : " + reviewsByBookId));
 
-                    // 해당 Review 만 삭제하면 필요없어지는 책 데이터인 경우 -> 책 테이블에서 해당 책 데이터 논리 삭제
+                    // 해당 Sell 만 삭제하면 필요없어지는 책 데이터인 경우 -> 책 테이블에서 해당 책 데이터 논리 삭제
                     if ((sellsByBookId.size() == 0) & (reviewsByBookId.size() == 0)) {
                         log.info("[BookId : " + bookId + "] 데이터가 더이상 필요하지 않아서 논리 삭제");
                         bookService.deleteBookById(bookId);
