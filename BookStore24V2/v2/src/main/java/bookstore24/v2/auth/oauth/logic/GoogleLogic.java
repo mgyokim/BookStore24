@@ -43,7 +43,7 @@ public class GoogleLogic {
     final String GOOGLE_PROFILE_REQUEST_URI = "https://www.googleapis.com/oauth2/v1/userinfo";
 
     /**
-     * 구글 인가 코드 받기 (MemberApiController.googleLogin() 에서 처리)
+     * 구글 인가 코드 받기 (MemberController.googleLogin() 에서 처리)
      */
     // 요청 URL
     // 프론트에서

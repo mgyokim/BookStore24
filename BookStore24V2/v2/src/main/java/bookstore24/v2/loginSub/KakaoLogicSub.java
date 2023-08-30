@@ -41,7 +41,7 @@ public class KakaoLogicSub {
     final String KAKAO_PROFILE_REQUEST_URI = "https://kapi.kakao.com/v2/user/me";
 
     /**
-     * 카카오 인가 코드 받기 (MemberApiController.kakaoLogin() 에서 처리)
+     * 카카오 인가 코드 받기 (MemberController.kakaoLogin() 에서 처리)
      */
     // 요청 URL
     // 프론트에서

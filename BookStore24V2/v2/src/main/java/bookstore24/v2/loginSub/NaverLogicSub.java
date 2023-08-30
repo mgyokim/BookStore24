@@ -47,7 +47,7 @@ public class NaverLogicSub {
     final String NAVER_PROFILE_REQUEST_URI = "https://openapi.naver.com/v1/nid/me";
 
     /**
-     * 네이버 인가 코드 받기 (MemberApiController.naverLogin() 에서 처리)
+     * 네이버 인가 코드 받기 (MemberController.naverLogin() 에서 처리)
      */
     // 요청 URL
     // 프론트에서

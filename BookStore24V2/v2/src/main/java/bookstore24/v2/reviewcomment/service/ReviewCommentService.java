@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -40,6 +41,11 @@ public class ReviewCommentService {
             ReviewComment reviewComment = optionalReview.get();
             reviewComment.logicalDelete();     // ReviewComment 엔티티 deleted 필드를 true 로 변경하여 논리적 삭제 진행
         }
+    }
+
+    // memberId 로 reviewComment 들 조회
+    public List<ReviewComment> findAllReviewCommentsByMemberId(Long memberId) {
+        return reviewCommentRepository.findAllByMember_Id(memberId);
     }
 
 }

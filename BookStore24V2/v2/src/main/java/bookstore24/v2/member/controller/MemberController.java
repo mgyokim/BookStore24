@@ -5,10 +5,10 @@ import bookstore24.v2.auth.local.dto.LocalSignUpResponseDto;
 import bookstore24.v2.auth.local.logic.LocalLogic;
 import bookstore24.v2.auth.oauth.dto.token.GoogleOauthTokenDto;
 import bookstore24.v2.auth.oauth.dto.token.KakaoOauthTokenDto;
+import bookstore24.v2.auth.oauth.dto.token.NaverOauthTokenDto;
 import bookstore24.v2.auth.oauth.logic.GoogleLogic;
 import bookstore24.v2.auth.oauth.logic.KakaoLogic;
 import bookstore24.v2.auth.oauth.logic.NaverLogic;
-import bookstore24.v2.auth.oauth.dto.token.NaverOauthTokenDto;
 import bookstore24.v2.domain.Member;
 import bookstore24.v2.domain.Residence;
 import bookstore24.v2.member.dto.*;
@@ -27,7 +27,8 @@ import javax.validation.Valid;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class MemberApiController {
+@Transactional
+public class MemberController {
 
     private final KakaoLogic kakaoLogic;
     private final NaverLogic naverLogic;
@@ -160,11 +161,10 @@ public class MemberApiController {
         }
     }
 
-    @Transactional
     @PostMapping("/member/nicknameresidence/save")
     public ResponseEntity<?> saveNicknameAndResidence(Authentication authentication, @RequestBody @Valid SaveNicknameAndResidenceRequestDto saveNicknameAndResidenceRequestDto) {
 
-        log.info("[START] - MemberApiController.saveNickname / 닉네임 및 거주지 정보 저장 요청 시작");
+        log.info("[START] - MemberController.saveNickname / 닉네임 및 거주지 정보 저장 요청 시작");
         // JWT 를 이용하여 요청한 회원 확인
         String JwtLoginId = authentication.getName();
         Member member = memberService.findMemberByLoginId(JwtLoginId);
@@ -195,7 +195,7 @@ public class MemberApiController {
             member.setResidence(Residence.gyeonggi);
         } else {
             log.info("닉네임 및 거주지 정보 저장 실패 [Cause : 서비스 사용 불가 거주지]");
-            log.info("[END] - MemberApiController.saveNickname / 닉네임 및 거주지 정보 저장 요청 종료");
+            log.info("[END] - MemberController.saveNickname / 닉네임 및 거주지 정보 저장 요청 종료");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid Region");
         }
 
@@ -208,13 +208,13 @@ public class MemberApiController {
         saveNicknameAndResidenceResponseDto.setResidence(String.valueOf(saveMember.getResidence()));
 
         log.info("닉네임 및 거주지 정보 저장 성공");
-        log.info("[END] - MemberApiController.saveNickname / 닉네임 및 거주지 정보 저장 요청 종료");
+        log.info("[END] - MemberController.saveNickname / 닉네임 및 거주지 정보 저장 요청 종료");
         return ResponseEntity.status(HttpStatus.OK).body(saveNicknameAndResidenceResponseDto);
     }
 
     @GetMapping("/member/nicknameresidence/check")
     public ResponseEntity<String> checkNicknameAndResidence(Authentication authentication) {
-        log.info("[START] - MemberApiController.checkNicknameAndResidence / 닉네임 및 거주지 정보 조회 요청 시작");
+        log.info("[START] - MemberController.checkNicknameAndResidence / 닉네임 및 거주지 정보 조회 요청 시작");
 
         // JWT 를 이용하여 요청한 회원 확인
         String JwtLoginId = authentication.getName();
@@ -226,26 +226,26 @@ public class MemberApiController {
 
         if ((nickname != null) & (residence != null)) {
             log.info("닉네임, 거주지 둘다 NOT NULL");
-            log.info("[END] - MemberApiController.checkNicknameAndResidence / 닉네임 및 거주지 정보 조회 요청 완료");
+            log.info("[END] - MemberController.checkNicknameAndResidence / 닉네임 및 거주지 정보 조회 요청 완료");
             return ResponseEntity.status(HttpStatus.OK).body("[NICKNAME : " + nickname + ", RESIDENCE : " + residence + "]");
         } else if ((nickname == null) & (residence == null)) {
             log.info("닉네임, 거주지 둘다 NULL");
-            log.info("[END] - MemberApiController.checkNicknameAndResidence / 닉네임 및 거주지 정보 조회 요청 완료");
+            log.info("[END] - MemberController.checkNicknameAndResidence / 닉네임 및 거주지 정보 조회 요청 완료");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("[NICKNAME : NULL, RESIDENCE : NULL]");
         } else if ((nickname != null) & (residence == null)) {
             log.info("거주지만 NULL");
-            log.info("[END] - MemberApiController.checkNicknameAndResidence / 닉네임 및 거주지 정보 조회 요청 완료");
+            log.info("[END] - MemberController.checkNicknameAndResidence / 닉네임 및 거주지 정보 조회 요청 완료");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("[NICKNAME : " + nickname + ", RESIDENCE : NULL]");
         } else {
             log.info("닉네임만 NULL");
-            log.info("[END] - MemberApiController.checkNicknameAndResidence / 닉네임 및 거주지 정보 조회 요청 완료");
+            log.info("[END] - MemberController.checkNicknameAndResidence / 닉네임 및 거주지 정보 조회 요청 완료");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("[NICKNAME : NULL, RESIDENCE : " + residence + "]");
         }
     }
 
     @GetMapping("/member/profile/edit")
     public ResponseEntity<AccessProfileEditResponseDto> accessProfileEdit(Authentication authentication) {
-        log.info("[START] - MemberApiController.accessProfileEdit / 회원의 프로필 수정 접근(프로필 사진, 닉네임, 거주지역) 데이터 요청 시작");
+        log.info("[START] - MemberController.accessProfileEdit / 회원의 프로필 수정 접근(프로필 사진, 닉네임, 거주지역) 데이터 요청 시작");
 
         // JWT 를 이용하여 요청한 회원 확인
         String JwtLoginId = authentication.getName();
@@ -267,15 +267,14 @@ public class MemberApiController {
         accessProfileEditResponseDto.setResidence(String.valueOf(residence));
         accessProfileEditResponseDto.setProfileImg(profileImg);
 
-        log.info("[END] - MemberApiController.accessProfileEdit / 회원의 프로필 수정 접근(프로필 사진, 닉네임, 거주지역) 데이터 요청 완료");
+        log.info("[END] - MemberController.accessProfileEdit / 회원의 프로필 수정 접근(프로필 사진, 닉네임, 거주지역) 데이터 요청 완료");
 
         return ResponseEntity.status(HttpStatus.OK).body(accessProfileEditResponseDto);
     }
 
-    @Transactional
     @PostMapping("/member/profile/nickname/edit/save")
     public ResponseEntity<?> nicknameEditSave(Authentication authentication, @RequestBody @Valid NicknameEditSaveRequestDto nicknameEditSaveRequestDto) {
-        log.info("[START] - MemberApiController.nicknameEditSave / 회원의 프로필 닉네임 수정 저장 요청 시작");
+        log.info("[START] - MemberController.nicknameEditSave / 회원의 프로필 닉네임 수정 저장 요청 시작");
 
         // JWT 를 이용하여 요청한 회원 확인
         String JwtLoginId = authentication.getName();
@@ -293,26 +292,25 @@ public class MemberApiController {
             nicknameEditSaveResponseDto.setLoginId(JwtLoginId);
             nicknameEditSaveResponseDto.setNickname(requestEditNickname);
             log.info("닉네임 수정 성공");
-            log.info("[END] - MemberApiController.nicknameEditSave / 회원의 프로필 닉네임 수정 저장 요청 종료");
+            log.info("[END] - MemberController.nicknameEditSave / 회원의 프로필 닉네임 수정 저장 요청 종료");
             return ResponseEntity.status(HttpStatus.OK).body(nicknameEditSaveResponseDto);
         } else if ((duplicateNicknameMember != null) & (duplicateNicknameMember.getLoginId() == JwtLoginId)) {    // 회원의 기존 닉네임과 일치 -> 수정 실패
             log.info("회원의 기존 닉네임과 일치 -> 수정 실패");
-            log.info("[END] - MemberApiController.nicknameEditSave / 회원의 프로필 닉네임 수정 저장 요청 종료");
+            log.info("[END] - MemberController.nicknameEditSave / 회원의 프로필 닉네임 수정 저장 요청 종료");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("사용중인 기존 닉네임과 일치");
         } else if (duplicateNicknameMember != null) {   // 다른 회원과 닉네임 중복 -> 수정 실패
-            log.info("[END] - MemberApiController.nicknameEditSave / 회원의 프로필 닉네임 수정 저장 요청 종료");
+            log.info("[END] - MemberController.nicknameEditSave / 회원의 프로필 닉네임 수정 저장 요청 종료");
             log.info("다른 회원의 닉네임과 중복 -> 수정 실패");
             return ResponseEntity.status(HttpStatus.CONFLICT).body("다른 회원과 닉네임 중복");
         }
-        log.info("[END] - MemberApiController.nicknameEditSave / 회원의 프로필 닉네임 수정 저장 요청 종료");
+        log.info("[END] - MemberController.nicknameEditSave / 회원의 프로필 닉네임 수정 저장 요청 종료");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("닉네임 수정 실패 원인을 개발자에게 문의");
     }
 
-    @Transactional
     @PostMapping("/member/profile/residence/edit/save")
     public ResponseEntity<?> residenceEditSave(Authentication authentication, @RequestBody @Valid ResidenceEditSaveRequestDto residenceEditSaveRequestDto) {
 
-        log.info("[START] - MemberApiController.residenceEditSave / 회원의 프로필 거주지 수정 저장 요청 시작");
+        log.info("[START] - MemberController.residenceEditSave / 회원의 프로필 거주지 수정 저장 요청 시작");
         // JWT 를 이용하여 요청한 회원 확인
         String JwtLoginId = authentication.getName();
         Member member = memberService.findMemberByLoginId(JwtLoginId);
@@ -326,7 +324,7 @@ public class MemberApiController {
         // 요청 데이터를 처리하는 로직
         if (residence.name().equals(requestEditResidence)) {    // 수정을 요청한 거주지가 기존 거주지와 같으면, 수정 실패
             log.info("거주지 정보 수정 실패 [Cause : 기존 거주지와 일치]");
-            log.info("[END] - MemberApiController.residenceEditSave / 회원의 프로필 거주지 수정 저장 요청 종료");
+            log.info("[END] - MemberController.residenceEditSave / 회원의 프로필 거주지 수정 저장 요청 종료");
 
             return ResponseEntity.status(HttpStatus.CONFLICT).body("기존 거주지와 같은 거주지입니다. 수정 실패");
         } else {
@@ -337,24 +335,22 @@ public class MemberApiController {
                 residenceEditSaveResponseDto.setResidence(requestEditResidence);
 
                 log.info("거주지 정보 수정 성공 [LoginId : " + JwtLoginId + ", residence : " + requestEditResidence + "]");
-                log.info("[END] - MemberApiController.residenceEditSave / 회원의 프로필 거주지 수정 저장 요청 종료");
+                log.info("[END] - MemberController.residenceEditSave / 회원의 프로필 거주지 수정 저장 요청 종료");
 
                 return ResponseEntity.status(HttpStatus.OK).body(residenceEditSaveResponseDto);
-            }
-            else {
+            } else {
 
                 log.info("거주지 정보 수정 실패 [Cause : 서비스 사용 불가 거주지]");
-                log.info("[END] - MemberApiController.residenceEditSave / 회원의 프로필 거주지 수정 저장 요청 종료");
+                log.info("[END] - MemberController.residenceEditSave / 회원의 프로필 거주지 수정 저장 요청 종료");
 
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid Region");
             }
         }
     }
 
-    @Transactional
     @PostMapping("member/password/edit/save")
     public ResponseEntity<?> passwordEditSave(Authentication authentication, @RequestBody @Valid PasswordEditSaveRequestDto passwordEditSaveRequestDto) {
-        log.info("[START] - MemberApiController.passwordEditSave / 회원의 비밀번호 수정 저장 요청 시작");
+        log.info("[START] - MemberController.passwordEditSave / 회원의 비밀번호 수정 저장 요청 시작");
 
         // JWT 를 이용하여 요청한 회원 확인
         String JwtLoginId = authentication.getName();
@@ -374,7 +370,7 @@ public class MemberApiController {
 
         if (nowPasswordAndDbPasswordMatch == false) {   // 현재 비밀번호 검증이 실패하면 응답으로 401 반환
             log.info("loginId : " + JwtLoginId + " 의 비밀번호 수정 실패 [Cause : 입력한 현재 비밀번호가 틀림]");
-            log.info("[END] - MemberApiController.passwordEditSave / 회원의 비밀번호 수정 저장 요청 종료");
+            log.info("[END] - MemberController.passwordEditSave / 회원의 비밀번호 수정 저장 요청 종료");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("입력한 현재 loginPassword 가 틀림");
         } else {    // 현재 비밀번호를 잘 입력한 요청이라면,
             String password1 = passwordEditSaveRequestDto.getPassword1();
@@ -384,13 +380,13 @@ public class MemberApiController {
 
             if (nowPasswordAndPassword1Match == true) {     // 수정을 요청한 비밀번호가 기존 비밀번호와 일치하면 수정 실패
                 log.info("loginId : " + JwtLoginId + " 의 비밀번호 수정 실패 [Cause : 기존 비밀번호와 동일한 비밀번호로 수정 요청함]");
-                log.info("[END] - MemberApiController.passwordEditSave / 회원의 비밀번호 수정 저장 요청 종료");
+                log.info("[END] - MemberController.passwordEditSave / 회원의 비밀번호 수정 저장 요청 종료");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("기존 비밀번호와 동일한 비밀번호로 수정을 요청함");
             } else {    // 수정을 요청한 비밀번호가 기존 비밀번호와 일치하지 않으면
                 if (!(password1.equals(password2))) {   // 비밀번호1 과 비밀번호2 가 일치하지 않으면 수정 실패
 
                     log.info("loginId : " + JwtLoginId + " 의 비밀번호 수정 실패 [Cause : 비밀번호1, 비밀번호2 불일치]");
-                    log.info("[END] - MemberApiController.passwordEditSave / 회원의 비밀번호 수정 저장 요청 종료");
+                    log.info("[END] - MemberController.passwordEditSave / 회원의 비밀번호 수정 저장 요청 종료");
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("password1 와 password2 불일치");
                 } else {    // 비밀번호1 과 비밀번호2 가 일치하면 수정 성공
                     String encodedPassword = memberService.encodePassword(password1);
@@ -398,10 +394,35 @@ public class MemberApiController {
                     PasswordEditSaveResponseDto passwordEditSaveResponseDto = new PasswordEditSaveResponseDto();
                     passwordEditSaveResponseDto.setLoginId(JwtLoginId);
                     log.info("loginId : " + JwtLoginId + " 의 비밀번호 수정 성공");
-                    log.info("[END] - MemberApiController.passwordEditSave / 회원의 비밀번호 수정 저장 요청 종료");
+                    log.info("[END] - MemberController.passwordEditSave / 회원의 비밀번호 수정 저장 요청 종료");
                     return ResponseEntity.status(HttpStatus.OK).body(passwordEditSaveResponseDto);
                 }
             }
         }
+    }
+
+    @PostMapping("/member/withdraw")
+    public ResponseEntity<?> memberWithdraw(Authentication authentication) {
+        log.info("[START] - MemberController.memberWithdraw / 회원 탈퇴 요청 시작");
+
+        // JWT 를 이용하여 요청한 회원 확인
+        String JwtLoginId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(JwtLoginId);
+        Long memberId = member.getId();
+
+        // 해당 회원 탈퇴 처리 전에 관련 데이터 논리 삭제
+        memberService.deleteMemberAndRelationInfoById(memberId);
+
+        // 해당 회원 탈퇴 처리
+        memberService.deleteMemberById(memberId);
+
+        // 탈퇴 처리된 회원 정보 DTO 에 넣어서 응답
+        MemberWithdrawResponseDto memberWithdrawResponseDto = new MemberWithdrawResponseDto();
+        memberWithdrawResponseDto.setLoginId(JwtLoginId);
+        memberWithdrawResponseDto.setEmail(member.getEmail());
+
+        log.info("[loginId : " + JwtLoginId + "] 탈퇴처리 완료");
+        log.info("[END] - MemberController.memberWithdraw / 회원 탈퇴 요청 종료");
+        return ResponseEntity.status(HttpStatus.OK).body(memberWithdrawResponseDto);
     }
 }

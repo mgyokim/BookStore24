@@ -61,4 +61,9 @@ public class SellService {
         return sellRepository.findAllByBook_Id(bookId);
     }
 
+    // memberId 로 Sell 들 찾기
+    public List<Sell> findAllByMemberId(Long memberId) {
+        return sellRepository.findAllByMember_Id(memberId);
+    }
+
 }

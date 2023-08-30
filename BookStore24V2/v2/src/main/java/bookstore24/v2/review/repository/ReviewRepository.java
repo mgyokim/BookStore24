@@ -21,4 +21,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     // SELECT r FROM Review r WHERE r.book.id = :bookId
     List<Review> findAllByBook_Id(Long bookId);
 
+    // SELECT r FROM Review r WHERE r.member.id = :memberId
+    List<Review> findAllByMember_Id(Long memberId);
+
 }

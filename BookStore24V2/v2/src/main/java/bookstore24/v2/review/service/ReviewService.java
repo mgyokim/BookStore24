@@ -68,4 +68,9 @@ public class ReviewService {
         return reviewRepository.findAllByBook_Id(bookId);
     }
 
+    // memberId 로 Review 들 찾기
+    public List<Review> findAllReviewsByMemberId(Long memberId) {
+        return reviewRepository.findAllByMember_Id(memberId);
+    }
+
 }
