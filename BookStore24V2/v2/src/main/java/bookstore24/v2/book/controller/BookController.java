@@ -1,7 +1,11 @@
 package bookstore24.v2.book.controller;
 
 import bookstore24.v2.book.dto.BookInformationSearchResponseDto;
+import bookstore24.v2.book.dto.BookRankingScoreBookResponseDto;
+import bookstore24.v2.book.dto.BookRankingScoreResponseDto;
 import bookstore24.v2.book.dto.NaverBookSearchApiResponseDto;
+import bookstore24.v2.book.service.BookService;
+import bookstore24.v2.domain.Book;
 import bookstore24.v2.domain.Member;
 import bookstore24.v2.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -23,6 +28,7 @@ import java.util.List;
 @Slf4j
 public class BookController {
 
+    private final BookService bookService;
     private final MemberService memberService;
 
     @Value(("${spring.security.oauth2.client.registration.naver.client-id}"))
@@ -77,4 +83,42 @@ public class BookController {
         return ResponseEntity.status(HttpStatus.OK).body(bookItems);
     }
 
+    @GetMapping("/book/ranking/score")
+    public ResponseEntity<?> bookRankingScore() {
+        log.info("[START] - BookController.bookRankingScore / 도서 평점 랭킹 요청 시작");
+
+        List<Book> allBooksOrderByAverageScoreDesc = bookService.findTop10BooksOrderByAverageScoreDesc();
+
+        // ReviewPostDetailResponseDto
+        BookRankingScoreResponseDto bookRankingScoreResponseDto = new BookRankingScoreResponseDto();
+
+        // BookRankingScoreBookResponseDto 들을 담을 ArrayList -> BookRankingScoreBookResponseDtos
+        ArrayList<BookRankingScoreBookResponseDto> BookRankingScoreBookResponseDtos = new ArrayList<>();
+
+        for (Book book : allBooksOrderByAverageScoreDesc) {
+            BookRankingScoreBookResponseDto bookRankingScoreBookResponseDto = new BookRankingScoreBookResponseDto();
+
+            Long id = book.getId();
+            String title = book.getTitle();
+            String author = book.getAuthor();
+            String publisher = book.getPublisher();
+            Double avgScore = book.getAvgScore();
+            String coverImg = book.getCoverImg();
+            Long isbn = book.getIsbn();
+
+            bookRankingScoreBookResponseDto.setId(id);
+            bookRankingScoreBookResponseDto.setTitle(title);
+            bookRankingScoreBookResponseDto.setAuthor(author);
+            bookRankingScoreBookResponseDto.setPublisher(publisher);
+            bookRankingScoreBookResponseDto.setAvgScore(avgScore);
+            bookRankingScoreBookResponseDto.setCoverImg(coverImg);
+            bookRankingScoreBookResponseDto.setIsbn(isbn);
+
+            BookRankingScoreBookResponseDtos.add(bookRankingScoreBookResponseDto);
+        }
+        bookRankingScoreResponseDto.setBooks(BookRankingScoreBookResponseDtos);
+
+        log.info("[END] - BookController.bookRankingScore / 도서 평점 랭킹 요청 종료");
+        return ResponseEntity.status(HttpStatus.OK).body(bookRankingScoreResponseDto);
+    }
 }

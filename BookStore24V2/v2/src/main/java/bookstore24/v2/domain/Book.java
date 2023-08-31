@@ -29,6 +29,8 @@ public class Book extends BaseEntity {
 
     private String coverImg;
 
+    private Double avgScore;
+
     @OneToMany(mappedBy = "book")
     private List<Review> reviews = new ArrayList<>();
 
@@ -46,6 +48,16 @@ public class Book extends BaseEntity {
         this.author = author;
         this.publisher = publisher;
         this.coverImg = coverImg;
+    }
+
+    // 리뷰가 추가될 때 호출되어서 avgScore 업데이트
+    public void updateAvgScore() {
+        double totalScore = reviews.stream()
+                .mapToLong(Review::getScore)
+                .average()
+                .orElse(0.0);
+
+        this.avgScore = totalScore;
     }
 
 }

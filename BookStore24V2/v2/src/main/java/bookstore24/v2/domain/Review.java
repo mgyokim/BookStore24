@@ -52,6 +52,7 @@ public class Review extends BaseEntity {
     public void connectingReviewAndBook(Book book) {
         this.book = book;
         book.getReviews().add(this);
+        book.updateAvgScore(); // 책의 평균 점수 업데이트
     }
 
     public Review(String title, String content, Long score) {
