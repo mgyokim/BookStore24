@@ -123,7 +123,7 @@ public class BookController {
     public ResponseEntity<?> bookRankingViewReview() {
         log.info("[START] - BookController.bookRankingViewReview / 도서 리뷰 조회수 랭킹 요청 시작");
 
-        List<Book> allBooksOrderByTotalReviewViewDesc = bookService.findAllBooksOrderByTotalReviewViewDesc();
+        List<Book> allBooksOrderByTotalReviewViewDesc = bookService.findTop10BooksOrderByTotalReviewViewDesc();
 
         // BookRankingViewReviewResponseDto
         BookRankingViewReviewResponseDto bookRankingViewReviewResponseDto = new BookRankingViewReviewResponseDto();
