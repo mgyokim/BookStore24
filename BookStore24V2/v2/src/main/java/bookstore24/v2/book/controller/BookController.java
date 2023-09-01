@@ -157,4 +157,43 @@ public class BookController {
         log.info("[END] - BookController.bookRankingViewReview / 도서 리뷰 조회수 랭킹 요청 종료");
         return ResponseEntity.status(HttpStatus.OK).body(bookRankingViewReviewResponseDto);
     }
+
+    @GetMapping("/book/ranking/view/sell")
+    public ResponseEntity<?> bookRankingViewSell() {
+        log.info("[START] - BookController.bookRankingViewSell / 도서 판매 조회수 랭킹 요청 시작");
+
+        List<Book> allBooksOrderByTotalSellViewDesc = bookService.findTop10BooksOrderByTotalSellViewDesc();
+
+        // BookRankingViewSellResponseDto
+        BookRankingViewSellResponseDto bookRankingViewSellResponseDto = new BookRankingViewSellResponseDto();
+
+        // BookRankingViewReviewBookResponseDto 들을 담을 ArrayList -> BookRankingViewReviewBookResponseDtos
+        ArrayList<BookRankingViewSellBookResponseDto> bookRankingViewSellBookResponseDtos = new ArrayList<>();
+
+        for (Book book : allBooksOrderByTotalSellViewDesc) {
+            BookRankingViewSellBookResponseDto bookRankingViewSellBookResponseDto = new BookRankingViewSellBookResponseDto();
+
+            Long id = book.getId();
+            String title = book.getTitle();
+            String author = book.getAuthor();
+            String publisher = book.getPublisher();
+            Double avgScore = book.getAvgScore();
+            String coverImg = book.getCoverImg();
+            Long isbn = book.getIsbn();
+
+            bookRankingViewSellBookResponseDto.setId(id);
+            bookRankingViewSellBookResponseDto.setTitle(title);
+            bookRankingViewSellBookResponseDto.setAuthor(author);
+            bookRankingViewSellBookResponseDto.setPublisher(publisher);
+            bookRankingViewSellBookResponseDto.setAvgScore(avgScore);
+            bookRankingViewSellBookResponseDto.setCoverImg(coverImg);
+            bookRankingViewSellBookResponseDto.setIsbn(isbn);
+
+            bookRankingViewSellBookResponseDtos.add(bookRankingViewSellBookResponseDto);
+        }
+        bookRankingViewSellResponseDto.setBooks(bookRankingViewSellBookResponseDtos);
+
+        log.info("[END] - BookController.bookRankingViewSell / 도서 판매 조회수 랭킹 요청 종료");
+        return ResponseEntity.status(HttpStatus.OK).body(bookRankingViewSellResponseDto);
+    }
 }

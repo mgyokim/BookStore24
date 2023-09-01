@@ -33,4 +33,22 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             "LIMIT 10",
             nativeQuery = true)
     List<Book> findTop10ByOrderByTotalReviewViewDesc();
+
+
+    /**
+     * SELECT b.*, SUM(s.view) AS total_view
+     * FROM Book b
+     * JOIN Sell s ON b.book_id = s.book_id
+     * GROUP BY b.book_id
+     * ORDER BY total_view DESC
+     * LIMIT 10
+     */
+    @Query(value = "SELECT b.*, SUM(s.view) AS total_view " +
+            "FROM Book b " +
+            "JOIN Sell s ON b.book_id = s.book_id " +
+            "GROUP BY b.book_id " +
+            "ORDER BY total_view DESC " +
+            "LIMIT 10", // 10개의 결과만 제한
+            nativeQuery = true)
+    List<Book> findTop10ByOrderByTotalSellViewDesc();
 }

@@ -65,4 +65,9 @@ public class BookService {
     public List<Book> findTop10BooksOrderByTotalReviewViewDesc() {
         return bookRepository.findTop10ByOrderByTotalReviewViewDesc();
     }
+
+    // 판매들 중에서 동일한 책을 가진 판매의 view 값을 합산하여 Book 을 내림차순으로 정렬
+    public List<Book> findTop10BooksOrderByTotalSellViewDesc() {
+        return bookRepository.findTop10ByOrderByTotalSellViewDesc();
+    }
 }
