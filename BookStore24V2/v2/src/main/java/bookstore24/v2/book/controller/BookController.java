@@ -1,9 +1,6 @@
 package bookstore24.v2.book.controller;
 
-import bookstore24.v2.book.dto.BookInformationSearchResponseDto;
-import bookstore24.v2.book.dto.BookRankingScoreBookResponseDto;
-import bookstore24.v2.book.dto.BookRankingScoreResponseDto;
-import bookstore24.v2.book.dto.NaverBookSearchApiResponseDto;
+import bookstore24.v2.book.dto.*;
 import bookstore24.v2.book.service.BookService;
 import bookstore24.v2.domain.Book;
 import bookstore24.v2.domain.Member;
@@ -89,11 +86,11 @@ public class BookController {
 
         List<Book> allBooksOrderByAverageScoreDesc = bookService.findTop10BooksOrderByAverageScoreDesc();
 
-        // ReviewPostDetailResponseDto
+        // BookRankingScoreResponseDto
         BookRankingScoreResponseDto bookRankingScoreResponseDto = new BookRankingScoreResponseDto();
 
         // BookRankingScoreBookResponseDto 들을 담을 ArrayList -> BookRankingScoreBookResponseDtos
-        ArrayList<BookRankingScoreBookResponseDto> BookRankingScoreBookResponseDtos = new ArrayList<>();
+        ArrayList<BookRankingScoreBookResponseDto> bookRankingScoreBookResponseDtos = new ArrayList<>();
 
         for (Book book : allBooksOrderByAverageScoreDesc) {
             BookRankingScoreBookResponseDto bookRankingScoreBookResponseDto = new BookRankingScoreBookResponseDto();
@@ -114,11 +111,50 @@ public class BookController {
             bookRankingScoreBookResponseDto.setCoverImg(coverImg);
             bookRankingScoreBookResponseDto.setIsbn(isbn);
 
-            BookRankingScoreBookResponseDtos.add(bookRankingScoreBookResponseDto);
+            bookRankingScoreBookResponseDtos.add(bookRankingScoreBookResponseDto);
         }
-        bookRankingScoreResponseDto.setBooks(BookRankingScoreBookResponseDtos);
+        bookRankingScoreResponseDto.setBooks(bookRankingScoreBookResponseDtos);
 
         log.info("[END] - BookController.bookRankingScore / 도서 평점 랭킹 요청 종료");
         return ResponseEntity.status(HttpStatus.OK).body(bookRankingScoreResponseDto);
+    }
+
+    @GetMapping("/book/ranking/view/review")
+    public ResponseEntity<?> bookRankingViewReview() {
+        log.info("[START] - BookController.bookRankingViewReview / 도서 리뷰 조회수 랭킹 요청 시작");
+
+        List<Book> allBooksOrderByTotalReviewViewDesc = bookService.findAllBooksOrderByTotalReviewViewDesc();
+
+        // BookRankingViewReviewResponseDto
+        BookRankingViewReviewResponseDto bookRankingViewReviewResponseDto = new BookRankingViewReviewResponseDto();
+
+        // BookRankingViewReviewBookResponseDto 들을 담을 ArrayList -> BookRankingViewReviewBookResponseDtos
+        ArrayList<BookRankingViewReviewBookResponseDto> bookRankingViewReviewBookResponseDtos = new ArrayList<>();
+
+        for (Book book : allBooksOrderByTotalReviewViewDesc) {
+            BookRankingViewReviewBookResponseDto bookRankingViewReviewBookResponseDto = new BookRankingViewReviewBookResponseDto();
+
+            Long id = book.getId();
+            String title = book.getTitle();
+            String author = book.getAuthor();
+            String publisher = book.getPublisher();
+            Double avgScore = book.getAvgScore();
+            String coverImg = book.getCoverImg();
+            Long isbn = book.getIsbn();
+
+            bookRankingViewReviewBookResponseDto.setId(id);
+            bookRankingViewReviewBookResponseDto.setTitle(title);
+            bookRankingViewReviewBookResponseDto.setAuthor(author);
+            bookRankingViewReviewBookResponseDto.setPublisher(publisher);
+            bookRankingViewReviewBookResponseDto.setAvgScore(avgScore);
+            bookRankingViewReviewBookResponseDto.setCoverImg(coverImg);
+            bookRankingViewReviewBookResponseDto.setIsbn(isbn);
+
+            bookRankingViewReviewBookResponseDtos.add(bookRankingViewReviewBookResponseDto);
+        }
+        bookRankingViewReviewResponseDto.setBooks(bookRankingViewReviewBookResponseDtos);
+
+        log.info("[END] - BookController.bookRankingViewReview / 도서 리뷰 조회수 랭킹 요청 종료");
+        return ResponseEntity.status(HttpStatus.OK).body(bookRankingViewReviewResponseDto);
     }
 }

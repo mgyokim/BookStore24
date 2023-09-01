@@ -2,6 +2,7 @@ package bookstore24.v2.book.repository;
 
 import bookstore24.v2.domain.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -15,4 +16,19 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     // SELECT * FROM Book ORDER BY avg_score DESC LIMIT 10;
     List<Book> findTop10ByOrderByAvgScoreDesc();
+
+    /**
+     * SELECT b.*, SUM(r.view) AS total_view
+     * FROM Book b
+     * JOIN Review r ON b.book_id = r.book_id
+     * GROUP BY b.book_id
+     * ORDER BY total_view DESC
+     */
+    @Query(value = "SELECT b.*, SUM(r.view) AS total_view " +
+            "FROM Book b " +
+            "JOIN Review r ON b.book_id = r.book_id " +
+            "GROUP BY b.book_id " +
+            "ORDER BY total_view DESC",
+            nativeQuery = true)
+    List<Book> findAllByOrderByTotalReviewViewDesc();
 }

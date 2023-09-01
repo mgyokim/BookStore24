@@ -62,6 +62,7 @@ public class SecurityConfig {
                 .antMatchers("/review/post/list").permitAll() // 리뷰 글 목록은 인증 없이 접근 가능하도록 설정
                 .antMatchers("/sell/post/list").permitAll() // 판매 글 목록은 인증 없이 접근 가능하도록 설정
                 .antMatchers("/book/ranking/score").permitAll() // 도서 평점 랭킹은 인증 없이 접근 가능하도록 설정
+                .antMatchers("/book/ranking/view/review").permitAll() // 도서 리뷰 조회수 랭킹은 인증 없이 접근 가능하도록 설정
 
                 .antMatchers("/member/list/sub").permitAll() // 개발용 설정임(Member 목록 반환)
                 .antMatchers("/book/list/sub").permitAll() // 개발용 설정임(Book 목록 반환)

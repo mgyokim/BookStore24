@@ -60,4 +60,9 @@ public class BookService {
 
         return top10Books;
     }
+
+    // 리뷰들 중에서 동일한 책을 가진 리뷰의 view 값을 합산하여 Book 을 내림차순으로 정렬
+    public List<Book> findAllBooksOrderByTotalReviewViewDesc() {
+        return bookRepository.findAllByOrderByTotalReviewViewDesc();
+    }
 }
