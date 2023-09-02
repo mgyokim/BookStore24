@@ -27,7 +27,6 @@ import javax.validation.Valid;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
 public class MemberController {
 
     private final KakaoLogic kakaoLogic;
