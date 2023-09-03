@@ -19,6 +19,7 @@ public class CorsConfig {
         config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedOrigin("http://localhost:8080");
         config.addAllowedOrigin("http://bookstore24.shop");
+        config.addAllowedOrigin("https://yundevingv.github.io");
         config.addAllowedHeader("*");   // 모든 header 에 응답을 허용하겠다.
         config.addAllowedMethod("*");   // 모든 post, get, put, delete, patch 요청을 허용하겠다.
         config.addExposedHeader("Authorization");
