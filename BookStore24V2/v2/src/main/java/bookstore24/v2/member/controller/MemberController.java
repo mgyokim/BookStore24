@@ -160,6 +160,7 @@ public class MemberController {
         }
     }
 
+    @Transactional
     @PostMapping("/member/nicknameresidence/save")
     public ResponseEntity<?> saveNicknameAndResidence(Authentication authentication, @RequestBody @Valid SaveNicknameAndResidenceRequestDto saveNicknameAndResidenceRequestDto) {
 
@@ -271,6 +272,7 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(accessProfileEditResponseDto);
     }
 
+    @Transactional
     @PostMapping("/member/profile/nickname/edit/save")
     public ResponseEntity<?> nicknameEditSave(Authentication authentication, @RequestBody @Valid NicknameEditSaveRequestDto nicknameEditSaveRequestDto) {
         log.info("[START] - MemberController.nicknameEditSave / 회원의 프로필 닉네임 수정 저장 요청 시작");
@@ -306,6 +308,7 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("닉네임 수정 실패 원인을 개발자에게 문의");
     }
 
+    @Transactional
     @PostMapping("/member/profile/residence/edit/save")
     public ResponseEntity<?> residenceEditSave(Authentication authentication, @RequestBody @Valid ResidenceEditSaveRequestDto residenceEditSaveRequestDto) {
 
@@ -347,6 +350,7 @@ public class MemberController {
         }
     }
 
+    @Transactional
     @PostMapping("member/password/edit/save")
     public ResponseEntity<?> passwordEditSave(Authentication authentication, @RequestBody @Valid PasswordEditSaveRequestDto passwordEditSaveRequestDto) {
         log.info("[START] - MemberController.passwordEditSave / 회원의 비밀번호 수정 저장 요청 시작");
@@ -400,6 +404,7 @@ public class MemberController {
         }
     }
 
+    @Transactional
     @PostMapping("/member/withdraw")
     public ResponseEntity<?> memberWithdraw(Authentication authentication) {
         log.info("[START] - MemberController.memberWithdraw / 회원 탈퇴 요청 시작");
