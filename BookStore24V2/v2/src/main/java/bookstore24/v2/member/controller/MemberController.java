@@ -36,6 +36,11 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    @GetMapping("/")
+    public ResponseEntity<?> main() {
+        return ResponseEntity.status(HttpStatus.OK).body("OK");
+    }
+
     @PostMapping("/auth/kakao/callback")
     public ResponseEntity<String> kakaoLogin(@RequestParam(value = "Authorization_code", required = true) String code) {
 
