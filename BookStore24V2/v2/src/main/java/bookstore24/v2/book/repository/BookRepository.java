@@ -28,6 +28,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Query(value = "SELECT b.*, SUM(r.view) AS total_view " +
             "FROM book b " +
             "JOIN review r ON b.book_id = r.book_id " +
+            "WHERE b.deleted = false " +
             "GROUP BY b.book_id " +
             "ORDER BY total_view DESC " +
             "LIMIT 10",
@@ -46,6 +47,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Query(value = "SELECT b.*, SUM(s.view) AS total_view " +
             "FROM book b " +
             "JOIN sell s ON b.book_id = s.book_id " +
+            "WHERE b.deleted = false " +
             "GROUP BY b.book_id " +
             "ORDER BY total_view DESC " +
             "LIMIT 10", // 10개의 결과만 제한
