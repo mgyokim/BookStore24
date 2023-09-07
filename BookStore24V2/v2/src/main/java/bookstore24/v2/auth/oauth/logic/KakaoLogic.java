@@ -32,7 +32,8 @@ public class KakaoLogic {
     @Value(("${spring.security.oauth2.client.registration.kakao.client-id}"))
     private String clientId;
 
-    final String KAKAO_REDIRECT_URI = "http://localhost:3000/auth/kakao";    // 프론트 통신용
+//    final String KAKAO_REDIRECT_URI = "http://localhost:3000/auth/kakao";    // 프론트 통신용
+    final String KAKAO_REDIRECT_URI = "https://yundevingv.github.io/BookStore24/auth/kakao";    // 리액트 통신용
 
     final String KAKAO_TOKEN_REQUEST_URI = "https://kauth.kakao.com/oauth/token";
 

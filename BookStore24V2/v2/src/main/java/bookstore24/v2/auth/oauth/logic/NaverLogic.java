@@ -39,7 +39,8 @@ public class NaverLogic {
     @Value(("${spring.security.oauth2.client.registration.naver.client-secret}"))
     private String clientSecret;
 
-    final String NAVER_REDIRECT_URI = "http://localhost:3000/auth/naver";   // 프론트 통신용
+//    final String NAVER_REDIRECT_URI = "http://localhost:3000/auth/naver";   // 프론트 통신용
+    final String NAVER_REDIRECT_URI = "https://yundevingv.github.io/BookStore24/auth/naver";   // 리액트 통신용
 
     final String NAVER_TOKEN_REQUEST_URI = "https://nid.naver.com/oauth2.0/token";
 

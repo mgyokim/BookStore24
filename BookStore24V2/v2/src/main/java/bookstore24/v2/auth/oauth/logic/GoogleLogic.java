@@ -36,7 +36,8 @@ public class GoogleLogic {
     @Value(("${spring.security.oauth2.client.registration.google.client-secret}"))
     private String clientSecret;
 
-    final String GOOGLE_REDIRECT_URI = "http://localhost:3000/auth/google";     // 프론트 통신용
+//    final String GOOGLE_REDIRECT_URI = "http://localhost:3000/auth/google";     // 프론트 통신용
+    final String GOOGLE_REDIRECT_URI = "https://yundevingv.github.io/BookStore24/auth/google";     // 리액트 통신용
 
     final String GOOGLE_TOKEN_REQUEST_URI = "https://oauth2.googleapis.com/token";
 
