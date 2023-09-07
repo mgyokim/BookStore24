@@ -441,7 +441,7 @@ public class MemberController {
 
     @GetMapping("/member/pofile/sell/on/list")
     public Page<MemberProfileSellOnListResponseDto> memberProfileSellOnList(Authentication authentication, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
-        log.info("[START] - MemberController.memberProfileSellOnList / 회원 프로필의 판매 중 도서 목록 요청 시작");
+        log.info("[START] - MemberController.memberProfileSellOnList / 회원 프로필의 판매중인 도서 판매글 목록 요청 시작");
 
         // JWT 를 이용하여 요청한 회원 확인
         String JwtLoginId = authentication.getName();
@@ -450,7 +450,7 @@ public class MemberController {
         SellStatus status = SellStatus.on;
 
         Pageable pageable = PageRequest.of(page, size);
-        log.info("[END] - MemberController.memberProfileSellOnList / 회원 프로필의 판매 중 도서 목록 요청 종료");
+        log.info("[END] - MemberController.memberProfileSellOnList / 회원 프로필의 판매중인 도서 판매글 목록 요청 종료");
         return memberService.findSellsByMemberAndStatus(member, status, pageable)
                 .map(sell -> {
                     MemberProfileSellOnListResponseDto memberProfileSellOnListResponseDto = new MemberProfileSellOnListResponseDto();
@@ -467,6 +467,37 @@ public class MemberController {
                     memberProfileSellOnListResponseDto.setCreatedDate(sell.getCreatedDate());
                     memberProfileSellOnListResponseDto.setView(sell.getView());
                     return memberProfileSellOnListResponseDto;
+                });
+    }
+
+    @GetMapping("/member/pofile/sell/off/list")
+    public Page<MemberProfileSellOffListResponseDto> memberProfileSellOffList(Authentication authentication, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
+        log.info("[START] - MemberController.memberProfileSellOffList / 회원 프로필의 판매완료 도서 판매글 목록 요청 시작");
+
+        // JWT 를 이용하여 요청한 회원 확인
+        String JwtLoginId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(JwtLoginId);
+        Long memberId = member.getId();
+        SellStatus status = SellStatus.off;
+
+        Pageable pageable = PageRequest.of(page, size);
+        log.info("[END] - MemberController.memberProfileSellOffList / 회원 프로필의 판매완료 도서 판매글 목록 요청 종료");
+        return memberService.findSellsByMemberAndStatus(member, status, pageable)
+                .map(sell -> {
+                    MemberProfileSellOffListResponseDto memberProfileSellOffListResponseDto = new MemberProfileSellOffListResponseDto();
+                    memberProfileSellOffListResponseDto.setId(sell.getId());
+                    memberProfileSellOffListResponseDto.setTitle(sell.getTitle());
+                    memberProfileSellOffListResponseDto.setStatus(sell.getStatus());
+                    memberProfileSellOffListResponseDto.setCoverImg(sell.getBook().getCoverImg());
+                    memberProfileSellOffListResponseDto.setBookTitle(sell.getBook().getTitle());
+                    memberProfileSellOffListResponseDto.setAuthor(sell.getBook().getAuthor());
+                    memberProfileSellOffListResponseDto.setPublisher(sell.getBook().getPublisher());
+                    memberProfileSellOffListResponseDto.setPrice(sell.getPrice());
+                    memberProfileSellOffListResponseDto.setNickname(sell.getMember().getNickname());
+                    memberProfileSellOffListResponseDto.setLoginId(sell.getMember().getLoginId());
+                    memberProfileSellOffListResponseDto.setCreatedDate(sell.getCreatedDate());
+                    memberProfileSellOffListResponseDto.setView(sell.getView());
+                    return memberProfileSellOffListResponseDto;
                 });
     }
 }
