@@ -1,16 +1,15 @@
 package bookstore24.v2.member.service;
 
 import bookstore24.v2.book.service.BookService;
-import bookstore24.v2.domain.Member;
-import bookstore24.v2.domain.Review;
-import bookstore24.v2.domain.ReviewComment;
-import bookstore24.v2.domain.Sell;
+import bookstore24.v2.domain.*;
 import bookstore24.v2.member.repository.MemberRepository;
 import bookstore24.v2.review.service.ReviewService;
 import bookstore24.v2.reviewcomment.service.ReviewCommentService;
 import bookstore24.v2.sell.service.SellService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -161,5 +160,10 @@ public class MemberService {
                 }
             }
         }
+    }
+
+    public Page<Sell> findSellsByMemberAndStatus(Member member, SellStatus status, Pageable pageable) {
+        Page<Sell> sellsByMemberAndStatus = sellService.findSellsByMemberAndStatus(member, status, pageable);
+        return sellsByMemberAndStatus;
     }
 }

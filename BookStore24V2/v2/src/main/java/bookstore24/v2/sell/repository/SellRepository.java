@@ -1,6 +1,8 @@
 package bookstore24.v2.sell.repository;
 
+import bookstore24.v2.domain.Member;
 import bookstore24.v2.domain.Sell;
+import bookstore24.v2.domain.SellStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -44,4 +46,8 @@ public interface SellRepository extends JpaRepository<Sell, Long> {
      *     AND sell0_.deleted = false;
      */
     List<Sell> findAllByMember_Id(Long memberId);
+
+
+    // SELECT s FROM Sell s WHERE s.member = :member AND s.status = :status
+    Page<Sell> findSellsByMemberAndStatus(Member member, SellStatus status, Pageable pageable);
 }

@@ -3,6 +3,7 @@ package bookstore24.v2.sell.service;
 import bookstore24.v2.domain.Book;
 import bookstore24.v2.domain.Member;
 import bookstore24.v2.domain.Sell;
+import bookstore24.v2.domain.SellStatus;
 import bookstore24.v2.sell.repository.SellRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -61,9 +62,14 @@ public class SellService {
         return sellRepository.findAllByBook_Id(bookId);
     }
 
-    // memberId 로 Sell 들 찾기
+    // memberId 로 Sell 찾기
     public List<Sell> findAllByMemberId(Long memberId) {
         return sellRepository.findAllByMember_Id(memberId);
+    }
+
+    // member 와 SellStatus 로 Sell 찾기
+    public Page<Sell> findSellsByMemberAndStatus(Member member, SellStatus status, Pageable pageable) {
+        return sellRepository.findSellsByMemberAndStatus(member, status, pageable);
     }
 
 }

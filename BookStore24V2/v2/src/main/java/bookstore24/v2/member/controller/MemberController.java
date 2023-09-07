@@ -11,10 +11,14 @@ import bookstore24.v2.auth.oauth.logic.KakaoLogic;
 import bookstore24.v2.auth.oauth.logic.NaverLogic;
 import bookstore24.v2.domain.Member;
 import bookstore24.v2.domain.Residence;
+import bookstore24.v2.domain.SellStatus;
 import bookstore24.v2.member.dto.*;
 import bookstore24.v2.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -433,5 +437,36 @@ public class MemberController {
         log.info("[loginId : " + JwtLoginId + "] 탈퇴처리 완료");
         log.info("[END] - MemberController.memberWithdraw / 회원 탈퇴 요청 종료");
         return ResponseEntity.status(HttpStatus.OK).body(memberWithdrawResponseDto);
+    }
+
+    @GetMapping("/member/pofile/sell/on/list")
+    public Page<MemberProfileSellOnListResponseDto> memberProfileSellOnList(Authentication authentication, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
+        log.info("[START] - MemberController.memberProfileSellOnList / 회원 프로필의 판매 중 도서 목록 요청 시작");
+
+        // JWT 를 이용하여 요청한 회원 확인
+        String JwtLoginId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(JwtLoginId);
+        Long memberId = member.getId();
+        SellStatus status = SellStatus.on;
+
+        Pageable pageable = PageRequest.of(page, size);
+        log.info("[END] - MemberController.memberProfileSellOnList / 회원 프로필의 판매 중 도서 목록 요청 종료");
+        return memberService.findSellsByMemberAndStatus(member, status, pageable)
+                .map(sell -> {
+                    MemberProfileSellOnListResponseDto memberProfileSellOnListResponseDto = new MemberProfileSellOnListResponseDto();
+                    memberProfileSellOnListResponseDto.setId(sell.getId());
+                    memberProfileSellOnListResponseDto.setTitle(sell.getTitle());
+                    memberProfileSellOnListResponseDto.setStatus(sell.getStatus());
+                    memberProfileSellOnListResponseDto.setCoverImg(sell.getBook().getCoverImg());
+                    memberProfileSellOnListResponseDto.setBookTitle(sell.getBook().getTitle());
+                    memberProfileSellOnListResponseDto.setAuthor(sell.getBook().getAuthor());
+                    memberProfileSellOnListResponseDto.setPublisher(sell.getBook().getPublisher());
+                    memberProfileSellOnListResponseDto.setPrice(sell.getPrice());
+                    memberProfileSellOnListResponseDto.setNickname(sell.getMember().getNickname());
+                    memberProfileSellOnListResponseDto.setLoginId(sell.getMember().getLoginId());
+                    memberProfileSellOnListResponseDto.setCreatedDate(sell.getCreatedDate());
+                    memberProfileSellOnListResponseDto.setView(sell.getView());
+                    return memberProfileSellOnListResponseDto;
+                });
     }
 }
