@@ -500,4 +500,37 @@ public class MemberController {
                     return memberProfileSellOffListResponseDto;
                 });
     }
+
+    @GetMapping("member/profile/review/list")
+    public Page<MemberProfileReviewListResponseDto> memberProfileReviewList(Authentication authentication, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
+        log.info("[START] - MemberController.memberProfileReviewList / 회원 프로필의 작성한 도서 후기 목록 요청 시작");
+
+        // JWT 를 이용하여 요청한 회원 확인
+        String JwtLoginId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(JwtLoginId);
+        Long memberId = member.getId();
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        log.info("[END] - MemberController.memberProfileReviewList / 회원 프로필의 작성한 도서 후기 목록 요청 종료");
+        return memberService.findReviewsByMember(member, pageable)
+                .map(review -> {
+                    MemberProfileReviewListResponseDto memberProfileReviewListResponseDto = new MemberProfileReviewListResponseDto();
+                    memberProfileReviewListResponseDto.setId(review.getId());
+                    memberProfileReviewListResponseDto.setTitle(review.getTitle());
+                    memberProfileReviewListResponseDto.setScore(review.getScore());
+                    memberProfileReviewListResponseDto.setCoverImg(review.getBook().getCoverImg());
+                    memberProfileReviewListResponseDto.setBookTitle(review.getBook().getTitle());
+                    memberProfileReviewListResponseDto.setAuthor(review.getBook().getAuthor());
+                    memberProfileReviewListResponseDto.setPublisher(review.getBook().getPublisher());
+                    memberProfileReviewListResponseDto.setNickname(review.getMember().getNickname());
+                    memberProfileReviewListResponseDto.setLoginId(review.getMember().getLoginId());
+                    memberProfileReviewListResponseDto.setCreatedDate(review.getCreatedDate());
+                    memberProfileReviewListResponseDto.setView(review.getView());
+                    return memberProfileReviewListResponseDto;
+                });
+
+
+
+    }
 }

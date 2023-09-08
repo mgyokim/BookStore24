@@ -73,4 +73,8 @@ public class ReviewService {
         return reviewRepository.findAllByMember_Id(memberId);
     }
 
+    public Page<Review> findReviewsByMember(Member member, Pageable pageable) {
+        return reviewRepository.findReviewsByMember(member, pageable);
+    }
+
 }

@@ -166,4 +166,10 @@ public class MemberService {
         Page<Sell> sellsByMemberAndStatus = sellService.findSellsByMemberAndStatus(member, status, pageable);
         return sellsByMemberAndStatus;
     }
+
+    public Page<Review> findReviewsByMember(Member member, Pageable pageable) {
+        Page<Review> reviewsByMember = reviewService.findReviewsByMember(member, pageable);
+        return reviewsByMember;
+    }
+
 }

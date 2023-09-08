@@ -1,5 +1,6 @@
 package bookstore24.v2.review.repository;
 
+import bookstore24.v2.domain.Member;
 import bookstore24.v2.domain.Review;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,5 +24,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     // SELECT r FROM Review r WHERE r.member.id = :memberId
     List<Review> findAllByMember_Id(Long memberId);
+
+    // SELECT r FROM Review r WHERE r.member = :member
+    Page<Review> findReviewsByMember(Member member, Pageable pageable);
 
 }
