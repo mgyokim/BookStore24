@@ -529,8 +529,33 @@ public class MemberController {
                     memberProfileReviewListResponseDto.setView(review.getView());
                     return memberProfileReviewListResponseDto;
                 });
+    }
 
+    @GetMapping("/member/profile/my")
+    public ResponseEntity<?> memberProfileMy(Authentication authentication) {
+        log.info("[START] - MemberController.memberProfileMy / 회원 프로필 마이페이지 요청");
 
+        // JWT 를 이용하여 요청한 회원 확인
+        String JwtLoginId = authentication.getName();
+        Member member = memberService.findMemberByLoginId(JwtLoginId);
 
+        Long memberId = member.getId();
+        String email = member.getEmail();
+        String provider = member.getProvider();
+        String nickname = member.getNickname();
+        String residence = String.valueOf(member.getResidence());
+        String profileImg = member.getProfileImg();
+
+        MemberProfileMyResponseDto memberProfileMyResponseDto = new MemberProfileMyResponseDto();
+        memberProfileMyResponseDto.setId(memberId);
+        memberProfileMyResponseDto.setEmail(email);
+        memberProfileMyResponseDto.setProvider(provider);
+        memberProfileMyResponseDto.setNickname(nickname);
+        memberProfileMyResponseDto.setResidence(residence);
+        memberProfileMyResponseDto.setProfileImg(profileImg);
+
+        log.info("[END] - MemberController.memberProfileMy / 회원 프로필 마이페이지 종료");
+
+        return ResponseEntity.status(HttpStatus.OK).body(memberProfileMyResponseDto);
     }
 }
