@@ -439,7 +439,7 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(memberWithdrawResponseDto);
     }
 
-    @GetMapping("/member/pofile/sell/on/list")
+    @GetMapping("/member/profile/sell/on/list")
     public Page<MemberProfileSellOnListResponseDto> memberProfileSellOnList(Authentication authentication, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
         log.info("[START] - MemberController.memberProfileSellOnList / 회원 프로필의 판매중인 도서 판매글 목록 요청 시작");
 
@@ -470,7 +470,7 @@ public class MemberController {
                 });
     }
 
-    @GetMapping("/member/pofile/sell/off/list")
+    @GetMapping("/member/profile/sell/off/list")
     public Page<MemberProfileSellOffListResponseDto> memberProfileSellOffList(Authentication authentication, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
         log.info("[START] - MemberController.memberProfileSellOffList / 회원 프로필의 판매완료 도서 판매글 목록 요청 시작");
 
