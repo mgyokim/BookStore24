@@ -26,9 +26,10 @@ public class IpFilter extends GenericFilterBean {
         allowedIpAddresses.add("172.30.1.254");     // B
         allowedIpAddresses.add("61.79.215.100");    // K
         allowedIpAddresses.add("39.123.221.236");   // L
-        allowedIpAddresses.add("52.79.234.227");   // aws
-        allowedIpAddresses.add("13.125.144.99");   // aws Elastic IP addresses
-        allowedIpAddresses.add("185.199.111.153");   // React
+        allowedIpAddresses.add("52.79.234.227");    // aws
+        allowedIpAddresses.add("13.125.144.99");    // aws Elastic IP addresses
+        allowedIpAddresses.add("185.199.111.153");  // React
+        allowedIpAddresses.add("182.214.27.29");    // TwosomePlace
     }
 
     @Override
