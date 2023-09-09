@@ -96,4 +96,9 @@ public class ReviewService {
         return new PageImpl<>(result.subList(fromIndex, toIndex), pageable, result.size());
     }
 
+    // Book.title 로 Review 찾기 (페이징)
+    public Page<Review> searchReviewsByBookTitle(String keyword, Pageable pageable) {
+        return reviewRepository.findByBook_TitleContaining(keyword, pageable);
+    }
+
 }

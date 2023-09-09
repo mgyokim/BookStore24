@@ -418,4 +418,29 @@ public class ReviewController {
                     return reviewListSearchByTitleResponseDto;
                 });
     }
+
+    @GetMapping("/review/post/list/search/by/booktitle")
+    public Page<ReviewListSearchByBookTitleResponseDto> reviewListSearchByBookTitle(@RequestParam(value = "keyword") String title, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
+        log.info("[START] - ReviewController.reviewListSearchByTitle / 도서 리뷰 목록을 제목으로 검색 요청 시작");
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        log.info("[END] - ReviewController.reviewListSearchByTitle / 도서 리뷰 목록을 제목으로 검색 요청 종료");
+        return reviewService.searchReviewsByBookTitle(title, pageable)
+                .map(review -> {
+                    ReviewListSearchByBookTitleResponseDto reviewListSearchByBookTitleResponseDto = new ReviewListSearchByBookTitleResponseDto();
+                    reviewListSearchByBookTitleResponseDto.setId(review.getId());
+                    reviewListSearchByBookTitleResponseDto.setTitle(review.getTitle());
+                    reviewListSearchByBookTitleResponseDto.setScore(review.getScore());
+                    reviewListSearchByBookTitleResponseDto.setCoverImg(review.getBook().getCoverImg());
+                    reviewListSearchByBookTitleResponseDto.setBookTitle(review.getBook().getTitle());
+                    reviewListSearchByBookTitleResponseDto.setAuthor(review.getBook().getAuthor());
+                    reviewListSearchByBookTitleResponseDto.setPublisher(review.getBook().getPublisher());
+                    reviewListSearchByBookTitleResponseDto.setNickname(review.getMember().getNickname());
+                    reviewListSearchByBookTitleResponseDto.setLoginId(review.getMember().getLoginId());
+                    reviewListSearchByBookTitleResponseDto.setCreatedDate(review.getCreatedDate());
+                    reviewListSearchByBookTitleResponseDto.setView(review.getView());
+                    return reviewListSearchByBookTitleResponseDto;
+                });
+    }
 }

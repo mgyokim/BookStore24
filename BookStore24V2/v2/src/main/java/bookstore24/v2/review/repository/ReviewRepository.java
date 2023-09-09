@@ -5,6 +5,8 @@ import bookstore24.v2.domain.Review;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -30,5 +32,11 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     // SELECT r FROM Review r WHERE r.title LIKE %:keyword%
     Page<Review> findByTitleContaining(String keyword, Pageable pageable);
+
+    // SELECT r FROM Review r WHERE r.book.title LIKE %:keyword%
+    Page<Review> findByBook_TitleContaining(String keyword, Pageable pageable);
+
+//    @Query("SELECT r FROM Review r WHERE LOWER(r.book.title) LIKE %:keyword%")
+//    Page<Review> findByBookTitleContainingWithSpaces(@Param("keyword") String keyword, Pageable pageable);
 
 }
