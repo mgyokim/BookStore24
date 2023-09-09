@@ -28,4 +28,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     // SELECT r FROM Review r WHERE r.member = :member
     Page<Review> findReviewsByMember(Member member, Pageable pageable);
 
+    // SELECT r FROM Review r WHERE r.title LIKE %:keyword%
+    Page<Review> findByTitleContaining(String keyword, Pageable pageable);
+
 }

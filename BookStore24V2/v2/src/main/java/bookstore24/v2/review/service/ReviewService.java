@@ -6,10 +6,12 @@ import bookstore24.v2.domain.Review;
 import bookstore24.v2.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,13 +70,30 @@ public class ReviewService {
         return reviewRepository.findAllByBook_Id(bookId);
     }
 
-    // memberId 로 Review 들 찾기
+    // memberId 로 Review 찾기
     public List<Review> findAllReviewsByMemberId(Long memberId) {
         return reviewRepository.findAllByMember_Id(memberId);
     }
 
+    // member 로 Review 찾기 (페이징)
     public Page<Review> findReviewsByMember(Member member, Pageable pageable) {
         return reviewRepository.findReviewsByMember(member, pageable);
+    }
+
+    // Title 로 Review 찾기 (페이징)
+    public Page<Review> searchReviewsByTitleKeywords(String keywords, Pageable pageable) {
+        // 검색어를 공백으로 분리하여 각각의 단어로 검색
+        String[] keywordArray = keywords.split("\\s+");
+        List<Review> result = new ArrayList<>();
+        for (String keyword : keywordArray) {
+            Page<Review> reviews = reviewRepository.findByTitleContaining(keyword, pageable);
+            result.addAll(reviews.getContent());
+        }
+
+        // 결과를 페이지네이션 적용
+        int fromIndex = Math.min(pageable.getPageNumber() * pageable.getPageSize(), result.size());
+        int toIndex = Math.min((pageable.getPageNumber() + 1) * pageable.getPageSize(), result.size());
+        return new PageImpl<>(result.subList(fromIndex, toIndex), pageable, result.size());
     }
 
 }

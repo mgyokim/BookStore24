@@ -393,4 +393,29 @@ public class ReviewController {
             }
         }
     }
+
+    @GetMapping("/review/post/list/search/by/title")
+    public Page<ReviewListSearchByTitleResponseDto> reviewListSearchByTitle(@RequestParam(value = "keyword") String title, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
+        log.info("[START] - ReviewController.reviewListSearchByTitle / 도서 리뷰 목록을 제목으로 검색 요청 시작");
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        log.info("[END] - ReviewController.reviewListSearchByTitle / 도서 리뷰 목록을 제목으로 검색 요청 종료");
+        return reviewService.searchReviewsByTitleKeywords(title, pageable)
+                .map(review -> {
+                    ReviewListSearchByTitleResponseDto reviewListSearchByTitleResponseDto = new ReviewListSearchByTitleResponseDto();
+                    reviewListSearchByTitleResponseDto.setId(review.getId());
+                    reviewListSearchByTitleResponseDto.setTitle(review.getTitle());
+                    reviewListSearchByTitleResponseDto.setScore(review.getScore());
+                    reviewListSearchByTitleResponseDto.setCoverImg(review.getBook().getCoverImg());
+                    reviewListSearchByTitleResponseDto.setBookTitle(review.getBook().getTitle());
+                    reviewListSearchByTitleResponseDto.setAuthor(review.getBook().getAuthor());
+                    reviewListSearchByTitleResponseDto.setPublisher(review.getBook().getPublisher());
+                    reviewListSearchByTitleResponseDto.setNickname(review.getMember().getNickname());
+                    reviewListSearchByTitleResponseDto.setLoginId(review.getMember().getLoginId());
+                    reviewListSearchByTitleResponseDto.setCreatedDate(review.getCreatedDate());
+                    reviewListSearchByTitleResponseDto.setView(review.getView());
+                    return reviewListSearchByTitleResponseDto;
+                });
+    }
 }
