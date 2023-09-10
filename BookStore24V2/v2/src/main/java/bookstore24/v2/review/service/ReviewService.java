@@ -11,9 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -80,36 +78,38 @@ public class ReviewService {
         return reviewRepository.findReviewsByMember(member, pageable);
     }
 
-    // Title 로 Review 찾기 (페이징)
+    // Title 로 Review 를 검색하고 페이지네이션 적용
     public Page<Review> searchReviewsByTitleKeywords(String keywords, Pageable pageable) {
         // 검색어를 공백으로 분리하여 각각의 단어로 검색
         String[] keywordArray = keywords.split("\\s+");
-        List<Review> result = new ArrayList<>();
+        Set<Review> result = new HashSet<>(); // 중복 제거용 Set
         for (String keyword : keywordArray) {
             Page<Review> reviews = reviewRepository.findByTitleContaining(keyword, pageable);
             result.addAll(reviews.getContent());
         }
 
         // 결과를 페이지네이션 적용
-        int fromIndex = Math.min(pageable.getPageNumber() * pageable.getPageSize(), result.size());
-        int toIndex = Math.min((pageable.getPageNumber() + 1) * pageable.getPageSize(), result.size());
-        return new PageImpl<>(result.subList(fromIndex, toIndex), pageable, result.size());
+        List<Review> resultList = new ArrayList<>(result);
+        int fromIndex = Math.min(pageable.getPageNumber() * pageable.getPageSize(), resultList.size());
+        int toIndex = Math.min((pageable.getPageNumber() + 1) * pageable.getPageSize(), resultList.size());
+        return new PageImpl<>(resultList.subList(fromIndex, toIndex), pageable, resultList.size());
     }
 
-    // Book.title 로 Review 찾기 (페이징)
+    // Book.title 로 Review 를 검색하고 페이지네이션 적용
     public Page<Review> searchReviewsByBookTitle(String keyword, Pageable pageable) {
         // 검색어를 공백으로 분리하여 각각의 단어로 검색
         String[] keywordArray = keyword.split("\\s+");
-        List<Review> result = new ArrayList<>();
+        Set<Review> result = new HashSet<>(); // 중복 제거용 Set
         for (String kw : keywordArray) {
             Page<Review> reviews = reviewRepository.findByBook_TitleContaining(kw, pageable);
             result.addAll(reviews.getContent());
         }
 
         // 결과를 페이지네이션 적용
-        int fromIndex = Math.min(pageable.getPageNumber() * pageable.getPageSize(), result.size());
-        int toIndex = Math.min((pageable.getPageNumber() + 1) * pageable.getPageSize(), result.size());
-        return new PageImpl<>(result.subList(fromIndex, toIndex), pageable, result.size());
+        List<Review> resultList = new ArrayList<>(result);
+        int fromIndex = Math.min(pageable.getPageNumber() * pageable.getPageSize(), resultList.size());
+        int toIndex = Math.min((pageable.getPageNumber() + 1) * pageable.getPageSize(), resultList.size());
+        return new PageImpl<>(resultList.subList(fromIndex, toIndex), pageable, resultList.size());
     }
 
 }
