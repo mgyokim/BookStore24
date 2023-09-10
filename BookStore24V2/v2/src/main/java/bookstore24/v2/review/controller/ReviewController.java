@@ -443,4 +443,29 @@ public class ReviewController {
                     return reviewListSearchByBookTitleResponseDto;
                 });
     }
+
+    @GetMapping("/review/post/list/search/by/author")
+    public Page<ReviewListSearchByAuthorResponseDto> reviewListSearchByAuthor(@RequestParam(value = "keyword") String title, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
+        log.info("[START] - ReviewController.reviewListSearchByAuthor / 도서 리뷰 목록을 저자로 검색 요청 시작");
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        log.info("[END] - ReviewController.reviewListSearchByAuthor / 도서 리뷰 목록을 저자로 검색 요청 종료");
+        return reviewService.searchReviewsByAuthorKeywords(title, pageable)
+                .map(review -> {
+                    ReviewListSearchByAuthorResponseDto reviewListSearchByAuthorResponseDto = new ReviewListSearchByAuthorResponseDto();
+                    reviewListSearchByAuthorResponseDto.setId(review.getId());
+                    reviewListSearchByAuthorResponseDto.setTitle(review.getTitle());
+                    reviewListSearchByAuthorResponseDto.setScore(review.getScore());
+                    reviewListSearchByAuthorResponseDto.setCoverImg(review.getBook().getCoverImg());
+                    reviewListSearchByAuthorResponseDto.setBookTitle(review.getBook().getTitle());
+                    reviewListSearchByAuthorResponseDto.setAuthor(review.getBook().getAuthor());
+                    reviewListSearchByAuthorResponseDto.setPublisher(review.getBook().getPublisher());
+                    reviewListSearchByAuthorResponseDto.setNickname(review.getMember().getNickname());
+                    reviewListSearchByAuthorResponseDto.setLoginId(review.getMember().getLoginId());
+                    reviewListSearchByAuthorResponseDto.setCreatedDate(review.getCreatedDate());
+                    reviewListSearchByAuthorResponseDto.setView(review.getView());
+                    return reviewListSearchByAuthorResponseDto;
+                });
+    }
 }

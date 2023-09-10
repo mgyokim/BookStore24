@@ -67,6 +67,7 @@ public class SecurityConfig {
                 .antMatchers("/").permitAll() // 기본 홈은 인증 없이 접근 가능하도록 설정
                 .antMatchers("/review/post/list/search/by/title").permitAll() // 도서 리뷰 목록을 제목으로 검색은 인증 없이 접근 가능하도록 설정
                 .antMatchers("/review/post/list/search/by/booktitle").permitAll() // 도서 리뷰 목록을 도서 제목으로 검색은 인증 없이 접근 가능하도록 설정
+                .antMatchers("/review/post/list/search/by/author").permitAll() // 도서 리뷰 목록을 도서 저자로 검색은 인증 없이 접근 가능하도록 설정
 
                 .antMatchers("/member/list/sub").permitAll() // 개발용 설정임(Member 목록 반환)
                 .antMatchers("/book/list/sub").permitAll() // 개발용 설정임(Book 목록 반환)
