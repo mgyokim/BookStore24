@@ -98,7 +98,18 @@ public class ReviewService {
 
     // Book.title 로 Review 찾기 (페이징)
     public Page<Review> searchReviewsByBookTitle(String keyword, Pageable pageable) {
-        return reviewRepository.findByBook_TitleContaining(keyword, pageable);
+        // 검색어를 공백으로 분리하여 각각의 단어로 검색
+        String[] keywordArray = keyword.split("\\s+");
+        List<Review> result = new ArrayList<>();
+        for (String kw : keywordArray) {
+            Page<Review> reviews = reviewRepository.findByBook_TitleContaining(kw, pageable);
+            result.addAll(reviews.getContent());
+        }
+
+        // 결과를 페이지네이션 적용
+        int fromIndex = Math.min(pageable.getPageNumber() * pageable.getPageSize(), result.size());
+        int toIndex = Math.min((pageable.getPageNumber() + 1) * pageable.getPageSize(), result.size());
+        return new PageImpl<>(result.subList(fromIndex, toIndex), pageable, result.size());
     }
 
 }
