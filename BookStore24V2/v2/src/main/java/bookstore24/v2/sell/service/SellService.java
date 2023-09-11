@@ -122,4 +122,21 @@ public class SellService {
         int toIndex = Math.min((pageable.getPageNumber() + 1) * pageable.getPageSize(), resultList.size());
         return new PageImpl<>(resultList.subList(fromIndex, toIndex), pageable, resultList.size());
     }
+
+    // Member.nickname 로 Sell 를 검색하고 페이지네이션 적용
+    public Page<Sell> searchSellsByMemberNicknameKeywords(String keywords, Pageable pageable) {
+        // 검색어를 공백으로 분리하여 각각의 단어로 검색
+        String[] keywordArray = keywords.split("\\s+");
+        Set<Sell> result = new HashSet<>(); // 중복 제거용 Set
+        for (String keyword : keywordArray) {
+            Page<Sell> sells = sellRepository.findByMember_NicknameContaining(keyword, pageable);
+            result.addAll(sells.getContent());
+        }
+
+        // 결과를 페이지네이션 적용
+        List<Sell> resultList = new ArrayList<>(result);
+        int fromIndex = Math.min(pageable.getPageNumber() * pageable.getPageSize(), resultList.size());
+        int toIndex = Math.min((pageable.getPageNumber() + 1) * pageable.getPageSize(), resultList.size());
+        return new PageImpl<>(resultList.subList(fromIndex, toIndex), pageable, resultList.size());
+    }
 }
