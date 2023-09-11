@@ -411,6 +411,32 @@ public class SellController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("loginId 와 title 에 해당되는 sell 이 존재하지 않음");
         }
     }
+
+    @GetMapping("/sell/post/list/search/by/title")
+    public Page<SellPostListSearchByTitleResponseDto> sellPostListSearchByTitle(@RequestParam(value = "keyword") String title, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
+        log.info("[START] - SellController.sellPostListSearchByTitle / 도서 판매 목록을 판매 제목으로 검색 요청 시작");
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        log.info("[END] - SellController.sellPostListSearchByTitle / 도서 판매 목록을 판매 제목으로 검색 요청 시작");
+        return sellService.searchSellsByTitleKeywords(title, pageable)
+                .map(sell -> {
+                    SellPostListSearchByTitleResponseDto sellPostListSearchByTitleResponseDto = new SellPostListSearchByTitleResponseDto();
+                    sellPostListSearchByTitleResponseDto.setId(sell.getId());
+                    sellPostListSearchByTitleResponseDto.setTitle(sell.getTitle());
+                    sellPostListSearchByTitleResponseDto.setStatus(sell.getStatus());
+                    sellPostListSearchByTitleResponseDto.setCoverImg(sell.getBook().getCoverImg());
+                    sellPostListSearchByTitleResponseDto.setBookTitle(sell.getBook().getTitle());
+                    sellPostListSearchByTitleResponseDto.setAuthor(sell.getBook().getAuthor());
+                    sellPostListSearchByTitleResponseDto.setPublisher(sell.getBook().getPublisher());
+                    sellPostListSearchByTitleResponseDto.setPrice(sell.getPrice());
+                    sellPostListSearchByTitleResponseDto.setNickname(sell.getMember().getNickname());
+                    sellPostListSearchByTitleResponseDto.setLoginId(sell.getMember().getLoginId());
+                    sellPostListSearchByTitleResponseDto.setCreatedDate(sell.getCreatedDate());
+                    sellPostListSearchByTitleResponseDto.setView(sell.getView());
+                    return sellPostListSearchByTitleResponseDto;
+                });
+    }
 }
 
 

@@ -7,12 +7,12 @@ import bookstore24.v2.domain.SellStatus;
 import bookstore24.v2.sell.repository.SellRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -50,9 +50,9 @@ public class SellService {
     @Transactional
     // Sell 삭제
     public void deleteSellById(Long sellId) {
-        Optional<Sell> optionalReview = sellRepository.findById(sellId);
-        if (optionalReview.isPresent()) {
-            Sell sell = optionalReview.get();
+        Optional<Sell> optionalSell = sellRepository.findById(sellId);
+        if (optionalSell.isPresent()) {
+            Sell sell = optionalSell.get();
             sell.logicalDelete();     // sell 엔티티 deleted 필드를 true 로 변경하여 논리적 삭제 진행
         }
     }
@@ -70,6 +70,23 @@ public class SellService {
     // member 와 SellStatus 로 Sell 찾기
     public Page<Sell> findSellsByMemberAndStatus(Member member, SellStatus status, Pageable pageable) {
         return sellRepository.findSellsByMemberAndStatus(member, status, pageable);
+    }
+
+    // Title 로 Sell 를 검색하고 페이지네이션 적용
+    public Page<Sell> searchSellsByTitleKeywords(String keywords, Pageable pageable) {
+        // 검색어를 공백으로 분리하여 각각의 단어로 검색
+        String[] keywordArray = keywords.split("\\s+");
+        Set<Sell> result = new HashSet<>(); // 중복 제거용 Set
+        for (String keyword : keywordArray) {
+            Page<Sell> sells = sellRepository.findByTitleContaining(keyword, pageable);
+            result.addAll(sells.getContent());
+        }
+
+        // 결과를 페이지네이션 적용
+        List<Sell> resultList = new ArrayList<>(result);
+        int fromIndex = Math.min(pageable.getPageNumber() * pageable.getPageSize(), resultList.size());
+        int toIndex = Math.min((pageable.getPageNumber() + 1) * pageable.getPageSize(), resultList.size());
+        return new PageImpl<>(resultList.subList(fromIndex, toIndex), pageable, resultList.size());
     }
 
 }
