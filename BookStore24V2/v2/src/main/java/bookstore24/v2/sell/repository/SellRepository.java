@@ -56,9 +56,9 @@ public interface SellRepository extends JpaRepository<Sell, Long> {
     // SELECT r FROM Sell r WHERE r.book.title LIKE %:keyword%
     Page<Sell> findByBook_TitleContaining(String keyword, Pageable pageable);
 
-    // SELECT r.* FROM Sell r JOIN Book b ON r.book_id = b.book_id WHERE b.author LIKE %:author%
+    // SELECT r FROM Sell r WHERE r.book.author LIKE %:author%
     Page<Sell> findByBook_AuthorContaining(String author, Pageable pageable);
 
-    // SELECT r.* FROM Sell r INNER JOIN Member m ON r.member_id = m.id WHERE m.nickname LIKE '%keyword%'
+    // SELECT r FROM Sell r WHERE r.member.nickname LIKE %:keyword%
     Page<Sell> findByMember_NicknameContaining(String keyword, Pageable pageable);
 }
