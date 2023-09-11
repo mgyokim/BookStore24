@@ -426,7 +426,7 @@ public class ReviewController {
         Pageable pageable = PageRequest.of(page, size);
 
         log.info("[END] - ReviewController.reviewPostListSearchByBookTitle / 도서 리뷰 목록을 제목으로 검색 요청 종료");
-        return reviewService.searchReviewsByBookTitle(title, pageable)
+        return reviewService.searchReviewsByBookTitleKeywords(title, pageable)
                 .map(review -> {
                     ReviewListSearchByBookTitleResponseDto reviewListSearchByBookTitleResponseDto = new ReviewListSearchByBookTitleResponseDto();
                     reviewListSearchByBookTitleResponseDto.setId(review.getId());

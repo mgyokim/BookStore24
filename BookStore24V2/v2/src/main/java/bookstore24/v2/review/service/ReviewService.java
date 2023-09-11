@@ -96,7 +96,7 @@ public class ReviewService {
     }
 
     // Book.title 로 Review 를 검색하고 페이지네이션 적용
-    public Page<Review> searchReviewsByBookTitle(String keyword, Pageable pageable) {
+    public Page<Review> searchReviewsByBookTitleKeywords(String keyword, Pageable pageable) {
         // 검색어를 공백으로 분리하여 각각의 단어로 검색
         String[] keywordArray = keyword.split("\\s+");
         Set<Review> result = new HashSet<>(); // 중복 제거용 Set
