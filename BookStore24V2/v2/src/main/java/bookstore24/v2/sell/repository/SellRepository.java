@@ -52,4 +52,7 @@ public interface SellRepository extends JpaRepository<Sell, Long> {
 
     // SELECT r FROM Sell r WHERE r.title LIKE %:keyword%
     Page<Sell> findByTitleContaining(String keyword, Pageable pageable);
+
+    // SELECT r FROM Sell r WHERE r.book.title LIKE %:keyword%
+    Page<Sell> findByBook_TitleContaining(String keyword, Pageable pageable);
 }

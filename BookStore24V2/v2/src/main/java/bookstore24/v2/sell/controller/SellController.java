@@ -437,6 +437,32 @@ public class SellController {
                     return sellPostListSearchByTitleResponseDto;
                 });
     }
+
+    @GetMapping("/sell/post/list/search/by/booktitle")
+    public Page<SellPostListSearchByBookTitleResponseDto> sellPostListSearchByBookTitle(@RequestParam(value = "keyword") String title, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
+        log.info("[START] - SellController.sellPostListSearchByBookTitle / 도서 판매 목록을 도서제목으로 검색 요청 시작");
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        log.info("[END] - SellController.sellPostListSearchByBookTitle / 도서 판매 목록을 도서제목으로 검색 요청 시작");
+        return sellService.searchSellsByBookTitleKeywords(title, pageable)
+                .map(sell -> {
+                    SellPostListSearchByBookTitleResponseDto sellPostListSearchByBookTitleResponseDto = new SellPostListSearchByBookTitleResponseDto();
+                    sellPostListSearchByBookTitleResponseDto.setId(sell.getId());
+                    sellPostListSearchByBookTitleResponseDto.setTitle(sell.getTitle());
+                    sellPostListSearchByBookTitleResponseDto.setStatus(sell.getStatus());
+                    sellPostListSearchByBookTitleResponseDto.setCoverImg(sell.getBook().getCoverImg());
+                    sellPostListSearchByBookTitleResponseDto.setBookTitle(sell.getBook().getTitle());
+                    sellPostListSearchByBookTitleResponseDto.setAuthor(sell.getBook().getAuthor());
+                    sellPostListSearchByBookTitleResponseDto.setPublisher(sell.getBook().getPublisher());
+                    sellPostListSearchByBookTitleResponseDto.setPrice(sell.getPrice());
+                    sellPostListSearchByBookTitleResponseDto.setNickname(sell.getMember().getNickname());
+                    sellPostListSearchByBookTitleResponseDto.setLoginId(sell.getMember().getLoginId());
+                    sellPostListSearchByBookTitleResponseDto.setCreatedDate(sell.getCreatedDate());
+                    sellPostListSearchByBookTitleResponseDto.setView(sell.getView());
+                    return sellPostListSearchByBookTitleResponseDto;
+                });
+    }
 }
 
 
