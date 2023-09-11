@@ -39,4 +39,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     // SELECT r.* FROM Review r JOIN Book b ON r.book_id = b.book_id WHERE b.author LIKE %:author%
     Page<Review> findByBook_AuthorContaining(String author, Pageable pageable);
 
+    // SELECT r.* FROM Review r INNER JOIN Member m ON r.member_id = m.id WHERE m.nickname LIKE '%keyword%'
+    Page<Review> findByMember_NicknameContaining(String keyword, Pageable pageable);
 }

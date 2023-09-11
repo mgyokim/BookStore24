@@ -468,4 +468,29 @@ public class ReviewController {
                     return reviewListSearchByAuthorResponseDto;
                 });
     }
+
+    @GetMapping("/review/post/list/search/by/nickname")
+    public Page<ReviewListSearchByNicknameResponseDto> reviewListSearchByNickname(@RequestParam(value = "keyword") String title, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
+        log.info("[START] - ReviewController.reviewListSearchByNickname / 도서 리뷰 목록을 작성자닉네임으로 검색 요청 시작");
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        log.info("[END] - ReviewController.reviewListSearchByNickname / 도서 리뷰 목록을 작성자닉네임으로 검색 요청 종료");
+        return reviewService.searchReviewsByMemberNicknameKeywords(title, pageable)
+                .map(review -> {
+                    ReviewListSearchByNicknameResponseDto reviewListSearchByNicknameResponseDto = new ReviewListSearchByNicknameResponseDto();
+                    reviewListSearchByNicknameResponseDto.setId(review.getId());
+                    reviewListSearchByNicknameResponseDto.setTitle(review.getTitle());
+                    reviewListSearchByNicknameResponseDto.setScore(review.getScore());
+                    reviewListSearchByNicknameResponseDto.setCoverImg(review.getBook().getCoverImg());
+                    reviewListSearchByNicknameResponseDto.setBookTitle(review.getBook().getTitle());
+                    reviewListSearchByNicknameResponseDto.setAuthor(review.getBook().getAuthor());
+                    reviewListSearchByNicknameResponseDto.setPublisher(review.getBook().getPublisher());
+                    reviewListSearchByNicknameResponseDto.setNickname(review.getMember().getNickname());
+                    reviewListSearchByNicknameResponseDto.setLoginId(review.getMember().getLoginId());
+                    reviewListSearchByNicknameResponseDto.setCreatedDate(review.getCreatedDate());
+                    reviewListSearchByNicknameResponseDto.setView(review.getView());
+                    return reviewListSearchByNicknameResponseDto;
+                });
+    }
 }

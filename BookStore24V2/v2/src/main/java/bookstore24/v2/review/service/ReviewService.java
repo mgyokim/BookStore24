@@ -129,4 +129,21 @@ public class ReviewService {
         return new PageImpl<>(resultList.subList(fromIndex, toIndex), pageable, resultList.size());
     }
 
+    // Member.nickname 로 Review 를 검색하고 페이지네이션 적용
+    public Page<Review> searchReviewsByMemberNicknameKeywords(String keywords, Pageable pageable) {
+        // 검색어를 공백으로 분리하여 각각의 단어로 검색
+        String[] keywordArray = keywords.split("\\s+");
+        Set<Review> result = new HashSet<>(); // 중복 제거용 Set
+        for (String keyword : keywordArray) {
+            Page<Review> reviews = reviewRepository.findByMember_NicknameContaining(keyword, pageable);
+            result.addAll(reviews.getContent());
+        }
+
+        // 결과를 페이지네이션 적용
+        List<Review> resultList = new ArrayList<>(result);
+        int fromIndex = Math.min(pageable.getPageNumber() * pageable.getPageSize(), resultList.size());
+        int toIndex = Math.min((pageable.getPageNumber() + 1) * pageable.getPageSize(), resultList.size());
+        return new PageImpl<>(resultList.subList(fromIndex, toIndex), pageable, resultList.size());
+    }
+
 }
