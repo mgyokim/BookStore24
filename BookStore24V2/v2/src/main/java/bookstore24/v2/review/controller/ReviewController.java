@@ -395,12 +395,12 @@ public class ReviewController {
     }
 
     @GetMapping("/review/post/list/search/by/title")
-    public Page<ReviewListSearchByTitleResponseDto> reviewListSearchByTitle(@RequestParam(value = "keyword") String title, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
-        log.info("[START] - ReviewController.reviewListSearchByTitle / 도서 리뷰 목록을 제목으로 검색 요청 시작");
+    public Page<ReviewListSearchByTitleResponseDto> reviewPostListSearchByTitle(@RequestParam(value = "keyword") String title, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
+        log.info("[START] - ReviewController.reviewPostListSearchByTitle / 도서 리뷰 목록을 제목으로 검색 요청 시작");
 
         Pageable pageable = PageRequest.of(page, size);
 
-        log.info("[END] - ReviewController.reviewListSearchByTitle / 도서 리뷰 목록을 제목으로 검색 요청 종료");
+        log.info("[END] - ReviewController.reviewPostListSearchByTitle / 도서 리뷰 목록을 제목으로 검색 요청 종료");
         return reviewService.searchReviewsByTitleKeywords(title, pageable)
                 .map(review -> {
                     ReviewListSearchByTitleResponseDto reviewListSearchByTitleResponseDto = new ReviewListSearchByTitleResponseDto();
@@ -420,12 +420,12 @@ public class ReviewController {
     }
 
     @GetMapping("/review/post/list/search/by/booktitle")
-    public Page<ReviewListSearchByBookTitleResponseDto> reviewListSearchByBookTitle(@RequestParam(value = "keyword") String title, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
-        log.info("[START] - ReviewController.reviewListSearchByTitle / 도서 리뷰 목록을 제목으로 검색 요청 시작");
+    public Page<ReviewListSearchByBookTitleResponseDto> reviewPostListSearchByBookTitle(@RequestParam(value = "keyword") String title, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
+        log.info("[START] - ReviewController.reviewPostListSearchByBookTitle / 도서 리뷰 목록을 제목으로 검색 요청 시작");
 
         Pageable pageable = PageRequest.of(page, size);
 
-        log.info("[END] - ReviewController.reviewListSearchByTitle / 도서 리뷰 목록을 제목으로 검색 요청 종료");
+        log.info("[END] - ReviewController.reviewPostListSearchByBookTitle / 도서 리뷰 목록을 제목으로 검색 요청 종료");
         return reviewService.searchReviewsByBookTitle(title, pageable)
                 .map(review -> {
                     ReviewListSearchByBookTitleResponseDto reviewListSearchByBookTitleResponseDto = new ReviewListSearchByBookTitleResponseDto();
@@ -445,12 +445,12 @@ public class ReviewController {
     }
 
     @GetMapping("/review/post/list/search/by/author")
-    public Page<ReviewListSearchByAuthorResponseDto> reviewListSearchByAuthor(@RequestParam(value = "keyword") String title, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
-        log.info("[START] - ReviewController.reviewListSearchByAuthor / 도서 리뷰 목록을 저자로 검색 요청 시작");
+    public Page<ReviewListSearchByAuthorResponseDto> reviewPostListSearchByAuthor(@RequestParam(value = "keyword") String title, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
+        log.info("[START] - ReviewController.reviewPostListSearchByAuthor / 도서 리뷰 목록을 저자로 검색 요청 시작");
 
         Pageable pageable = PageRequest.of(page, size);
 
-        log.info("[END] - ReviewController.reviewListSearchByAuthor / 도서 리뷰 목록을 저자로 검색 요청 종료");
+        log.info("[END] - ReviewController.reviewPostListSearchByAuthor / 도서 리뷰 목록을 저자로 검색 요청 종료");
         return reviewService.searchReviewsByAuthorKeywords(title, pageable)
                 .map(review -> {
                     ReviewListSearchByAuthorResponseDto reviewListSearchByAuthorResponseDto = new ReviewListSearchByAuthorResponseDto();
@@ -470,12 +470,12 @@ public class ReviewController {
     }
 
     @GetMapping("/review/post/list/search/by/nickname")
-    public Page<ReviewListSearchByNicknameResponseDto> reviewListSearchByNickname(@RequestParam(value = "keyword") String title, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
-        log.info("[START] - ReviewController.reviewListSearchByNickname / 도서 리뷰 목록을 작성자닉네임으로 검색 요청 시작");
+    public Page<ReviewListSearchByNicknameResponseDto> reviewPostListSearchByNickname(@RequestParam(value = "keyword") String title, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
+        log.info("[START] - ReviewController.reviewPostListSearchByNickname / 도서 리뷰 목록을 작성자닉네임으로 검색 요청 시작");
 
         Pageable pageable = PageRequest.of(page, size);
 
-        log.info("[END] - ReviewController.reviewListSearchByNickname / 도서 리뷰 목록을 작성자닉네임으로 검색 요청 종료");
+        log.info("[END] - ReviewController.reviewPostListSearchByNickname / 도서 리뷰 목록을 작성자닉네임으로 검색 요청 종료");
         return reviewService.searchReviewsByMemberNicknameKeywords(title, pageable)
                 .map(review -> {
                     ReviewListSearchByNicknameResponseDto reviewListSearchByNicknameResponseDto = new ReviewListSearchByNicknameResponseDto();
