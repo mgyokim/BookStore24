@@ -61,4 +61,7 @@ public interface SellRepository extends JpaRepository<Sell, Long> {
 
     // SELECT r FROM Sell r WHERE r.member.nickname LIKE %:keyword%
     Page<Sell> findByMember_NicknameContaining(String keyword, Pageable pageable);
+
+    // SELECT s FROM Sell s WHERE s.status = :status
+    Page<Sell> findByStatus(SellStatus status, Pageable pageable);
 }

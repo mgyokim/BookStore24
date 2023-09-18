@@ -139,4 +139,16 @@ public class SellService {
         int toIndex = Math.min((pageable.getPageNumber() + 1) * pageable.getPageSize(), resultList.size());
         return new PageImpl<>(resultList.subList(fromIndex, toIndex), pageable, resultList.size());
     }
+
+    // SellStatus 가 On 인 Sells 찾기
+    public Page<Sell> getAllSellsWithStatusOn(Pageable pageable) {
+        // Call the custom repository method to retrieve "on" status sells with pagination
+        return sellRepository.findByStatus(SellStatus.on, pageable);
+    }
+
+    // SellStatus 가 Off 인 Sells 찾기
+    public Page<Sell> getAllSellsWithStatusOff(Pageable pageable) {
+        // Call the custom repository method to retrieve "off" status sells with pagination
+        return sellRepository.findByStatus(SellStatus.off, pageable);
+    }
 }

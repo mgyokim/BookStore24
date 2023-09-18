@@ -54,17 +54,21 @@ public class SecurityConfig {
                 .addFilter(new JwtAuthenticationFilter(authenticationManager(http)))   // AuthenticationManager 파라미터를 줘야함.
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(http), memberRepository))    // // AuthenticationManager 파라미터를 줘야함.
                 .authorizeRequests()
+                .antMatchers("/").permitAll() // 기본 홈은 인증 없이 접근 가능하도록 설정
                 .antMatchers("/login").permitAll() // 로그인은 인증 없이 접근 가능하도록 설정 (/login 은 시큐리티 사용시 default 가 .permitAll() 이지만 명시적으로 작성했음)
                 .antMatchers("/local/signup").permitAll() // 로컬 회원가입은 인증 없이 접근 가능하도록 설정
                 .antMatchers("/auth/kakao/callback").permitAll() // 카카오 로그인은 인증 없이 접근 가능하도록 설정
                 .antMatchers("/auth/naver/callback").permitAll() //  네이버 로그인은 인증 없이 접근 가능하도록 설정
                 .antMatchers("/auth/google/callback").permitAll() // 구글 로그인은 인증 없이 접근 가능하도록 설정
+
                 .antMatchers("/review/post/list").permitAll() // 리뷰 글 목록은 인증 없이 접근 가능하도록 설정
                 .antMatchers("/sell/post/list").permitAll() // 판매 글 목록은 인증 없이 접근 가능하도록 설정
+                .antMatchers("/sell/post/on/list").permitAll() // 판매 글 판매중 목록은 인증 없이 접근 가능하도록 설정
+                .antMatchers("/sell/post/off/list").permitAll() // 판매 글 판매완료 목록은 인증 없이 접근 가능하도록 설정
+
                 .antMatchers("/book/ranking/score").permitAll() // 도서 평점 랭킹은 인증 없이 접근 가능하도록 설정
                 .antMatchers("/book/ranking/view/review").permitAll() // 도서 리뷰 조회수 랭킹은 인증 없이 접근 가능하도록 설정
                 .antMatchers("/book/ranking/view/sell").permitAll() // 도서 판매 조회수 랭킹은 인증 없이 접근 가능하도록 설정
-                .antMatchers("/").permitAll() // 기본 홈은 인증 없이 접근 가능하도록 설정
 
                 .antMatchers("/review/post/list/search/by/title").permitAll() // 도서 리뷰 목록을 제목으로 검색은 인증 없이 접근 가능하도록 설정
                 .antMatchers("/review/post/list/search/by/booktitle").permitAll() // 도서 리뷰 목록을 도서 제목으로 검색은 인증 없이 접근 가능하도록 설정

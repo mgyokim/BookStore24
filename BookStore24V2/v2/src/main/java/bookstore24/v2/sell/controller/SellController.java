@@ -517,6 +517,56 @@ public class SellController {
                     return sellPostListSearchByNicknameResponseDto;
                 });
     }
+
+    @GetMapping("/sell/post/on/list")
+    public Page<SellPostOnListResponseDto> sellPostOnList(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
+        log.info("[START] - SellController.sellPostOnList / 도서 판매글 판매중 목록 요청 시작");
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
+        log.info("[END] - SellController.sellPostOnList / 도서 판매글 판매중 목록 요청 종료");
+        return sellService.getAllSellsWithStatusOn(pageable)
+                .map(sell -> {
+                    SellPostOnListResponseDto sellPostOnListResponseDto = new SellPostOnListResponseDto();
+                    sellPostOnListResponseDto.setId(sell.getId());
+                    sellPostOnListResponseDto.setTitle(sell.getTitle());
+                    sellPostOnListResponseDto.setStatus(sell.getStatus());
+                    sellPostOnListResponseDto.setCoverImg(sell.getBook().getCoverImg());
+                    sellPostOnListResponseDto.setBookTitle(sell.getBook().getTitle());
+                    sellPostOnListResponseDto.setAuthor(sell.getBook().getAuthor());
+                    sellPostOnListResponseDto.setPublisher(sell.getBook().getPublisher());
+                    sellPostOnListResponseDto.setPrice(sell.getPrice());
+                    sellPostOnListResponseDto.setNickname(sell.getMember().getNickname());
+                    sellPostOnListResponseDto.setLoginId(sell.getMember().getLoginId());
+                    sellPostOnListResponseDto.setCreatedDate(sell.getCreatedDate());
+                    sellPostOnListResponseDto.setView(sell.getView());
+                    return sellPostOnListResponseDto;
+                });
+    }
+
+    @GetMapping("/sell/post/off/list")
+    public Page<SellPostOffListResponseDto> sellPostOffList(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
+        log.info("[START] - SellController.sellPostOffList / 도서 판매글 판매완료 목록 요청 시작");
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
+        log.info("[END] - SellController.sellPostOffList / 도서 판매글 판매완료 목록 요청 종료");
+        return sellService.getAllSellsWithStatusOff(pageable)
+                .map(sell -> {
+                    SellPostOffListResponseDto sellPostOffListResponseDto = new SellPostOffListResponseDto();
+                    sellPostOffListResponseDto.setId(sell.getId());
+                    sellPostOffListResponseDto.setTitle(sell.getTitle());
+                    sellPostOffListResponseDto.setStatus(sell.getStatus());
+                    sellPostOffListResponseDto.setCoverImg(sell.getBook().getCoverImg());
+                    sellPostOffListResponseDto.setBookTitle(sell.getBook().getTitle());
+                    sellPostOffListResponseDto.setAuthor(sell.getBook().getAuthor());
+                    sellPostOffListResponseDto.setPublisher(sell.getBook().getPublisher());
+                    sellPostOffListResponseDto.setPrice(sell.getPrice());
+                    sellPostOffListResponseDto.setNickname(sell.getMember().getNickname());
+                    sellPostOffListResponseDto.setLoginId(sell.getMember().getLoginId());
+                    sellPostOffListResponseDto.setCreatedDate(sell.getCreatedDate());
+                    sellPostOffListResponseDto.setView(sell.getView());
+                    return sellPostOffListResponseDto;
+                });
+    }
 }
 
 
