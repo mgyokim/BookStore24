@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -300,7 +301,7 @@ public class ReviewController {
     public Page<ReviewPostListResponseDto> reviewPostList(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
         log.info("[START] - ReviewController.reviewPostList / 도서 리뷰 글 목록 요청 시작");
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
         log.info("[END] - ReviewController.reviewPostList / 도서 리뷰 글 목록 요청 종료");
         return reviewService.getReviewList(pageable)
                 .map(review -> {
@@ -398,7 +399,7 @@ public class ReviewController {
     public Page<ReviewListSearchByTitleResponseDto> reviewPostListSearchByTitle(@RequestParam(value = "keyword") String title, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
         log.info("[START] - ReviewController.reviewPostListSearchByTitle / 도서 리뷰 목록을 제목으로 검색 요청 시작");
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
 
         log.info("[END] - ReviewController.reviewPostListSearchByTitle / 도서 리뷰 목록을 제목으로 검색 요청 종료");
         return reviewService.searchReviewsByTitleKeywords(title, pageable)
@@ -423,7 +424,7 @@ public class ReviewController {
     public Page<ReviewListSearchByBookTitleResponseDto> reviewPostListSearchByBookTitle(@RequestParam(value = "keyword") String title, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
         log.info("[START] - ReviewController.reviewPostListSearchByBookTitle / 도서 리뷰 목록을 제목으로 검색 요청 시작");
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
 
         log.info("[END] - ReviewController.reviewPostListSearchByBookTitle / 도서 리뷰 목록을 제목으로 검색 요청 종료");
         return reviewService.searchReviewsByBookTitleKeywords(title, pageable)
@@ -448,7 +449,7 @@ public class ReviewController {
     public Page<ReviewListSearchByAuthorResponseDto> reviewPostListSearchByAuthor(@RequestParam(value = "keyword") String title, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
         log.info("[START] - ReviewController.reviewPostListSearchByAuthor / 도서 리뷰 목록을 저자로 검색 요청 시작");
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
 
         log.info("[END] - ReviewController.reviewPostListSearchByAuthor / 도서 리뷰 목록을 저자로 검색 요청 종료");
         return reviewService.searchReviewsByAuthorKeywords(title, pageable)
@@ -473,7 +474,7 @@ public class ReviewController {
     public Page<ReviewListSearchByNicknameResponseDto> reviewPostListSearchByNickname(@RequestParam(value = "keyword") String title, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
         log.info("[START] - ReviewController.reviewPostListSearchByNickname / 도서 리뷰 목록을 작성자닉네임으로 검색 요청 시작");
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
 
         log.info("[END] - ReviewController.reviewPostListSearchByNickname / 도서 리뷰 목록을 작성자닉네임으로 검색 요청 종료");
         return reviewService.searchReviewsByMemberNicknameKeywords(title, pageable)

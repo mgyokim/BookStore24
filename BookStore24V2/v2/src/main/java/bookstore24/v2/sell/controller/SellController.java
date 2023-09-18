@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -325,7 +326,7 @@ public class SellController {
     public Page<SellPostListResponseDto> sellPostList(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
         log.info("[START] - SellController.sellPostList / 도서 판매글 목록 요청 시작");
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
         log.info("[END] - SellController.sellPostList / 도서 판매글 목록 요청 종료");
         return sellService.getSellList(pageable)
                 .map(sell -> {
@@ -416,7 +417,7 @@ public class SellController {
     public Page<SellPostListSearchByTitleResponseDto> sellPostListSearchByTitle(@RequestParam(value = "keyword") String title, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
         log.info("[START] - SellController.sellPostListSearchByTitle / 도서 판매 목록을 판매 제목으로 검색 요청 시작");
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
 
         log.info("[END] - SellController.sellPostListSearchByTitle / 도서 판매 목록을 판매 제목으로 검색 요청 시작");
         return sellService.searchSellsByTitleKeywords(title, pageable)
@@ -442,7 +443,7 @@ public class SellController {
     public Page<SellPostListSearchByBookTitleResponseDto> sellPostListSearchByBookTitle(@RequestParam(value = "keyword") String title, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
         log.info("[START] - SellController.sellPostListSearchByBookTitle / 도서 판매 목록을 도서제목으로 검색 요청 시작");
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
 
         log.info("[END] - SellController.sellPostListSearchByBookTitle / 도서 판매 목록을 도서제목으로 검색 요청 시작");
         return sellService.searchSellsByBookTitleKeywords(title, pageable)
@@ -468,7 +469,8 @@ public class SellController {
     public Page<SellPostListSearchByAuthorResponseDto> sellPostListSearchByAuthor(@RequestParam(value = "keyword") String title, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
         log.info("[START] - SellController.sellPostListSearchByAuthor / 도서 판매 목록을 도서저자로 검색 요청 시작");
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
+
 
         log.info("[END] - SellController.sellPostListSearchByAuthor / 도서 판매 목록을 도서저자로 검색 요청 시작");
         return sellService.searchSellsByAuthorKeywords(title, pageable)
@@ -494,7 +496,7 @@ public class SellController {
     public Page<SellPostListSearchByNicknameResponseDto> sellPostListSearchByNickname(@RequestParam(value = "keyword") String title, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
         log.info("[START] - SellController.sellPostListSearchByNickname / 도서 판매 목록을 작성자닉네임으로 검색 요청 시작");
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
 
         log.info("[END] - SellController.sellPostListSearchByNickname / 도서 판매 목록을 작성자닉네임으로 검색 요청 시작");
         return sellService.searchSellsByMemberNicknameKeywords(title, pageable)
