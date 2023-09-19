@@ -127,18 +127,24 @@ public class SellService {
     public Page<Sell> searchSellsByMemberNicknameKeywords(String keywords, Pageable pageable) {
         // 검색어를 공백으로 분리하여 각각의 단어로 검색
         String[] keywordArray = keywords.split("\\s+");
-        Set<Sell> result = new HashSet<>(); // 중복 제거용 Set
+        Set<Sell> resultSet = new HashSet<>(); // 중복 제거를 위한 Set
+        long totalElements = 0;
+
         for (String keyword : keywordArray) {
+            // 해당 키워드로 데이터 총 개수를 조회
+            long count = sellRepository.countByMember_NicknameContaining(keyword);
+            totalElements += count;
             Page<Sell> sells = sellRepository.findByMember_NicknameContaining(keyword, pageable);
-            result.addAll(sells.getContent());
+            resultSet.addAll(sells.getContent());
         }
 
-        // 결과를 페이지네이션 적용
-        List<Sell> resultList = new ArrayList<>(result);
-        int fromIndex = Math.min(pageable.getPageNumber() * pageable.getPageSize(), resultList.size());
-        int toIndex = Math.min((pageable.getPageNumber() + 1) * pageable.getPageSize(), resultList.size());
-        return new PageImpl<>(resultList.subList(fromIndex, toIndex), pageable, resultList.size());
+        // Set을 List로 변환하고 정렬을 적용
+        List<Sell> result = new ArrayList<>(resultSet);
+        result.sort((sell1, sell2) -> sell2.getCreatedDate().compareTo(sell1.getCreatedDate()));
+
+        return new PageImpl<>(result, pageable, totalElements);
     }
+
 
     // SellStatus 가 On 인 Sells 찾기
     public Page<Sell> getAllSellsWithStatusOn(Pageable pageable) {
