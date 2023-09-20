@@ -402,7 +402,7 @@ public class ReviewController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
 
         log.info("[END] - ReviewController.reviewPostListSearchByTitle / 도서 리뷰 목록을 제목으로 검색 요청 종료");
-        return reviewService.searchReviewsByTitleKeywords(title, pageable)
+        return reviewService.searchReviewsByTitleKeyword(title, pageable)
                 .map(review -> {
                     ReviewListSearchByTitleResponseDto reviewListSearchByTitleResponseDto = new ReviewListSearchByTitleResponseDto();
                     reviewListSearchByTitleResponseDto.setId(review.getId());
@@ -427,7 +427,7 @@ public class ReviewController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
 
         log.info("[END] - ReviewController.reviewPostListSearchByBookTitle / 도서 리뷰 목록을 제목으로 검색 요청 종료");
-        return reviewService.searchReviewsByBookTitleKeywords(title, pageable)
+        return reviewService.searchReviewsByBookTitleKeyword(title, pageable)
                 .map(review -> {
                     ReviewListSearchByBookTitleResponseDto reviewListSearchByBookTitleResponseDto = new ReviewListSearchByBookTitleResponseDto();
                     reviewListSearchByBookTitleResponseDto.setId(review.getId());
@@ -452,7 +452,7 @@ public class ReviewController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
 
         log.info("[END] - ReviewController.reviewPostListSearchByAuthor / 도서 리뷰 목록을 저자로 검색 요청 종료");
-        return reviewService.searchReviewsByAuthorKeywords(title, pageable)
+        return reviewService.searchReviewsByAuthorKeyword(title, pageable)
                 .map(review -> {
                     ReviewListSearchByAuthorResponseDto reviewListSearchByAuthorResponseDto = new ReviewListSearchByAuthorResponseDto();
                     reviewListSearchByAuthorResponseDto.setId(review.getId());
@@ -477,7 +477,7 @@ public class ReviewController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
 
         log.info("[END] - ReviewController.reviewPostListSearchByNickname / 도서 리뷰 목록을 작성자닉네임으로 검색 요청 종료");
-        return reviewService.searchReviewsByMemberNicknameKeywords(title, pageable)
+        return reviewService.searchReviewsByMemberNicknameKeyword(title, pageable)
                 .map(review -> {
                     ReviewListSearchByNicknameResponseDto reviewListSearchByNicknameResponseDto = new ReviewListSearchByNicknameResponseDto();
                     reviewListSearchByNicknameResponseDto.setId(review.getId());

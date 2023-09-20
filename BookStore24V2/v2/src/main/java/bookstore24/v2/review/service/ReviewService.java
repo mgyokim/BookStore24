@@ -79,71 +79,63 @@ public class ReviewService {
     }
 
     // Title 로 Review 를 검색하고 페이지네이션 적용
-    public Page<Review> searchReviewsByTitleKeywords(String keywords, Pageable pageable) {
-        // 검색어를 공백으로 분리하여 각각의 단어로 검색
-        String[] keywordArray = keywords.split("\\s+");
-        Set<Review> result = new HashSet<>(); // 중복 제거용 Set
-        for (String keyword : keywordArray) {
-            Page<Review> reviews = reviewRepository.findByTitleContaining(keyword, pageable);
-            result.addAll(reviews.getContent());
-        }
+    public Page<Review> searchReviewsByTitleKeyword(String keyword, Pageable pageable) {
+        // 해당 키워드로 데이터 총 개수를 조회
+        long totalElements = reviewRepository.countByTitleContaining(keyword);
 
-        // 결과를 페이지네이션 적용
-        List<Review> resultList = new ArrayList<>(result);
-        int fromIndex = Math.min(pageable.getPageNumber() * pageable.getPageSize(), resultList.size());
-        int toIndex = Math.min((pageable.getPageNumber() + 1) * pageable.getPageSize(), resultList.size());
-        return new PageImpl<>(resultList.subList(fromIndex, toIndex), pageable, resultList.size());
+        // 해당 키워드로 데이터를 조회하고 페이지네이션 적용
+        Page<Review> sells = reviewRepository.findByTitleContaining(keyword, pageable);
+
+        // Set 을 List 로 변환하고 정렬을 적용
+        List<Review> result = new ArrayList<>(sells.getContent());
+        result.sort((sell1, sell2) -> sell2.getCreatedDate().compareTo(sell1.getCreatedDate()));
+
+        return new PageImpl<>(result, pageable, totalElements);
     }
 
     // Book.title 로 Review 를 검색하고 페이지네이션 적용
-    public Page<Review> searchReviewsByBookTitleKeywords(String keyword, Pageable pageable) {
-        // 검색어를 공백으로 분리하여 각각의 단어로 검색
-        String[] keywordArray = keyword.split("\\s+");
-        Set<Review> result = new HashSet<>(); // 중복 제거용 Set
-        for (String kw : keywordArray) {
-            Page<Review> reviews = reviewRepository.findByBook_TitleContaining(kw, pageable);
-            result.addAll(reviews.getContent());
-        }
+    public Page<Review> searchReviewsByBookTitleKeyword(String keyword, Pageable pageable) {
+        // 해당 키워드로 데이터 총 개수를 조회
+        long totalElements = reviewRepository.countByBook_TitleContaining(keyword);
 
-        // 결과를 페이지네이션 적용
-        List<Review> resultList = new ArrayList<>(result);
-        int fromIndex = Math.min(pageable.getPageNumber() * pageable.getPageSize(), resultList.size());
-        int toIndex = Math.min((pageable.getPageNumber() + 1) * pageable.getPageSize(), resultList.size());
-        return new PageImpl<>(resultList.subList(fromIndex, toIndex), pageable, resultList.size());
+        // 해당 키워드로 데이터를 조회하고 페이지네이션 적용
+        Page<Review> sells = reviewRepository.findByBook_TitleContaining(keyword, pageable);
+
+        // Set 을 List 로 변환하고 정렬을 적용
+        List<Review> result = new ArrayList<>(sells.getContent());
+        result.sort((sell1, sell2) -> sell2.getCreatedDate().compareTo(sell1.getCreatedDate()));
+
+        return new PageImpl<>(result, pageable, totalElements);
     }
 
     // Book.author 로 Review 를 검색하고 페이지네이션 적용
-    public Page<Review> searchReviewsByAuthorKeywords(String keywords, Pageable pageable) {
-        // 검색어를 공백으로 분리하여 각각의 단어로 검색
-        String[] keywordArray = keywords.split("\\s+");
-        Set<Review> result = new HashSet<>(); // 중복 제거용 Set
-        for (String keyword : keywordArray) {
-            Page<Review> reviews = reviewRepository.findByBook_AuthorContaining(keyword, pageable);
-            result.addAll(reviews.getContent());
-        }
+    public Page<Review> searchReviewsByAuthorKeyword(String keyword, Pageable pageable) {
+        // 해당 키워드로 데이터 총 개수를 조회
+        long totalElements = reviewRepository.countByBook_AuthorContaining(keyword);
 
-        // 결과를 페이지네이션 적용
-        List<Review> resultList = new ArrayList<>(result);
-        int fromIndex = Math.min(pageable.getPageNumber() * pageable.getPageSize(), resultList.size());
-        int toIndex = Math.min((pageable.getPageNumber() + 1) * pageable.getPageSize(), resultList.size());
-        return new PageImpl<>(resultList.subList(fromIndex, toIndex), pageable, resultList.size());
+        // 해당 키워드로 데이터를 조회하고 페이지네이션 적용
+        Page<Review> sells = reviewRepository.findByBook_AuthorContaining(keyword, pageable);
+
+        // Set 을 List 로 변환하고 정렬을 적용
+        List<Review> result = new ArrayList<>(sells.getContent());
+        result.sort((sell1, sell2) -> sell2.getCreatedDate().compareTo(sell1.getCreatedDate()));
+
+        return new PageImpl<>(result, pageable, totalElements);
     }
 
     // Member.nickname 로 Review 를 검색하고 페이지네이션 적용
-    public Page<Review> searchReviewsByMemberNicknameKeywords(String keywords, Pageable pageable) {
-        // 검색어를 공백으로 분리하여 각각의 단어로 검색
-        String[] keywordArray = keywords.split("\\s+");
-        Set<Review> result = new HashSet<>(); // 중복 제거용 Set
-        for (String keyword : keywordArray) {
-            Page<Review> reviews = reviewRepository.findByMember_NicknameContaining(keyword, pageable);
-            result.addAll(reviews.getContent());
-        }
+    public Page<Review> searchReviewsByMemberNicknameKeyword(String keyword, Pageable pageable) {
+        // 해당 키워드로 데이터 총 개수를 조회
+        long totalElements = reviewRepository.countByMember_NicknameContaining(keyword);
 
-        // 결과를 페이지네이션 적용
-        List<Review> resultList = new ArrayList<>(result);
-        int fromIndex = Math.min(pageable.getPageNumber() * pageable.getPageSize(), resultList.size());
-        int toIndex = Math.min((pageable.getPageNumber() + 1) * pageable.getPageSize(), resultList.size());
-        return new PageImpl<>(resultList.subList(fromIndex, toIndex), pageable, resultList.size());
+        // 해당 키워드로 데이터를 조회하고 페이지네이션 적용
+        Page<Review> sells = reviewRepository.findByMember_NicknameContaining(keyword, pageable);
+
+        // Set 을 List 로 변환하고 정렬을 적용
+        List<Review> result = new ArrayList<>(sells.getContent());
+        result.sort((sell1, sell2) -> sell2.getCreatedDate().compareTo(sell1.getCreatedDate()));
+
+        return new PageImpl<>(result, pageable, totalElements);
     }
 
 }

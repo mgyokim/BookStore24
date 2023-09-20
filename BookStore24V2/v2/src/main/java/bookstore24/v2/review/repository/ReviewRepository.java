@@ -41,4 +41,16 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     // SELECT r FROM Review r WHERE r.member.nickname LIKE %:keyword%
     Page<Review> findByMember_NicknameContaining(String keyword, Pageable pageable);
+
+    // SELECT COUNT(*) FROM Review r WHERE r.title LIKE %:keyword%
+    long countByTitleContaining(String keyword);
+
+    // SELECT COUNT(*) FROM Review r WHERE r.book.title LIKE %:keyword%
+    long countByBook_TitleContaining(String keyword);
+
+    // SELECT COUNT(*) FROM Review r WHERE r.book.author LIKE %:keyword%
+    long countByBook_AuthorContaining(String keyword);
+
+    // SELECT COUNT(*) FROM Review r WHERE r.member.nickname LIKE %:keyword%
+    long countByMember_NicknameContaining(String keyword);
 }
