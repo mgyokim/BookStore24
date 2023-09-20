@@ -12,7 +12,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -73,73 +75,61 @@ public class SellService {
     }
 
     // Title 로 Sell 를 검색하고 페이지네이션 적용
-    public Page<Sell> searchSellsByTitleKeywords(String keywords, Pageable pageable) {
-        // 검색어를 공백으로 분리하여 각각의 단어로 검색
-        String[] keywordArray = keywords.split("\\s+");
-        Set<Sell> result = new HashSet<>(); // 중복 제거용 Set
-        for (String keyword : keywordArray) {
-            Page<Sell> sells = sellRepository.findByTitleContaining(keyword, pageable);
-            result.addAll(sells.getContent());
-        }
+    public Page<Sell> searchSellsByTitleKeyword(String keyword, Pageable pageable) {
+        // 해당 키워드로 데이터 총 개수를 조회
+        long totalElements = sellRepository.countByTitleContaining(keyword);
 
-        // 결과를 페이지네이션 적용
-        List<Sell> resultList = new ArrayList<>(result);
-        int fromIndex = Math.min(pageable.getPageNumber() * pageable.getPageSize(), resultList.size());
-        int toIndex = Math.min((pageable.getPageNumber() + 1) * pageable.getPageSize(), resultList.size());
-        return new PageImpl<>(resultList.subList(fromIndex, toIndex), pageable, resultList.size());
+        // 해당 키워드로 데이터를 조회하고 페이지네이션 적용
+        Page<Sell> sells = sellRepository.findByTitleContaining(keyword, pageable);
+
+        // Set 을 List 로 변환하고 정렬을 적용
+        List<Sell> result = new ArrayList<>(sells.getContent());
+        result.sort((sell1, sell2) -> sell2.getCreatedDate().compareTo(sell1.getCreatedDate()));
+
+        return new PageImpl<>(result, pageable, totalElements);
     }
 
     // Book.title 로 Sell 를 검색하고 페이지네이션 적용
-    public Page<Sell> searchSellsByBookTitleKeywords(String keywords, Pageable pageable) {
-        // 검색어를 공백으로 분리하여 각각의 단어로 검색
-        String[] keywordArray = keywords.split("\\s+");
-        Set<Sell> result = new HashSet<>(); // 중복 제거용 Set
-        for (String keyword : keywordArray) {
-            Page<Sell> sells = sellRepository.findByBook_TitleContaining(keyword, pageable);
-            result.addAll(sells.getContent());
-        }
+    public Page<Sell> searchSellsByBookTitleKeyword(String keyword, Pageable pageable) {
+        // 해당 키워드로 데이터 총 개수를 조회
+        long totalElements = sellRepository.countByBook_TitleContaining(keyword);
 
-        // 결과를 페이지네이션 적용
-        List<Sell> resultList = new ArrayList<>(result);
-        int fromIndex = Math.min(pageable.getPageNumber() * pageable.getPageSize(), resultList.size());
-        int toIndex = Math.min((pageable.getPageNumber() + 1) * pageable.getPageSize(), resultList.size());
-        return new PageImpl<>(resultList.subList(fromIndex, toIndex), pageable, resultList.size());
+        // 해당 키워드로 데이터를 조회하고 페이지네이션 적용
+        Page<Sell> sells = sellRepository.findByBook_TitleContaining(keyword, pageable);
+
+        // Set 을 List 로 변환하고 정렬을 적용
+        List<Sell> result = new ArrayList<>(sells.getContent());
+        result.sort((sell1, sell2) -> sell2.getCreatedDate().compareTo(sell1.getCreatedDate()));
+
+        return new PageImpl<>(result, pageable, totalElements);
     }
 
     // Book.author 로 Sell 를 검색하고 페이지네이션 적용
-    public Page<Sell> searchSellsByAuthorKeywords(String keywords, Pageable pageable) {
-        // 검색어를 공백으로 분리하여 각각의 단어로 검색
-        String[] keywordArray = keywords.split("\\s+");
-        Set<Sell> result = new HashSet<>(); // 중복 제거용 Set
-        for (String keyword : keywordArray) {
-            Page<Sell> sells = sellRepository.findByBook_AuthorContaining(keyword, pageable);
-            result.addAll(sells.getContent());
-        }
+    public Page<Sell> searchSellsByAuthorKeyword(String keyword, Pageable pageable) {
+        // 해당 키워드로 데이터 총 개수를 조회
+        long totalElements = sellRepository.countByBook_AuthorContaining(keyword);
 
-        // 결과를 페이지네이션 적용
-        List<Sell> resultList = new ArrayList<>(result);
-        int fromIndex = Math.min(pageable.getPageNumber() * pageable.getPageSize(), resultList.size());
-        int toIndex = Math.min((pageable.getPageNumber() + 1) * pageable.getPageSize(), resultList.size());
-        return new PageImpl<>(resultList.subList(fromIndex, toIndex), pageable, resultList.size());
+        // 해당 키워드로 데이터를 조회하고 페이지네이션 적용
+        Page<Sell> sells = sellRepository.findByBook_AuthorContaining(keyword, pageable);
+
+        // Set 을 List 로 변환하고 정렬을 적용
+        List<Sell> result = new ArrayList<>(sells.getContent());
+        result.sort((sell1, sell2) -> sell2.getCreatedDate().compareTo(sell1.getCreatedDate()));
+
+        return new PageImpl<>(result, pageable, totalElements);
     }
 
+
     // Member.nickname 로 Sell 를 검색하고 페이지네이션 적용
-    public Page<Sell> searchSellsByMemberNicknameKeywords(String keywords, Pageable pageable) {
-        // 검색어를 공백으로 분리하여 각각의 단어로 검색
-        String[] keywordArray = keywords.split("\\s+");
-        Set<Sell> resultSet = new HashSet<>(); // 중복 제거를 위한 Set
-        long totalElements = 0;
+    public Page<Sell> searchSellsByMemberNicknameKeyword(String keyword, Pageable pageable) {
+        // 해당 키워드로 데이터 총 개수를 조회
+        long totalElements = sellRepository.countByMember_NicknameContaining(keyword);
 
-        for (String keyword : keywordArray) {
-            // 해당 키워드로 데이터 총 개수를 조회
-            long count = sellRepository.countByMember_NicknameContaining(keyword);
-            totalElements += count;
-            Page<Sell> sells = sellRepository.findByMember_NicknameContaining(keyword, pageable);
-            resultSet.addAll(sells.getContent());
-        }
+        // 해당 키워드로 데이터를 조회하고 페이지네이션 적용
+        Page<Sell> sells = sellRepository.findByMember_NicknameContaining(keyword, pageable);
 
-        // Set을 List로 변환하고 정렬을 적용
-        List<Sell> result = new ArrayList<>(resultSet);
+        // Set 을 List 로 변환하고 정렬을 적용
+        List<Sell> result = new ArrayList<>(sells.getContent());
         result.sort((sell1, sell2) -> sell2.getCreatedDate().compareTo(sell1.getCreatedDate()));
 
         return new PageImpl<>(result, pageable, totalElements);

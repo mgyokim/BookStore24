@@ -420,7 +420,7 @@ public class SellController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
 
         log.info("[END] - SellController.sellPostListSearchByTitle / 도서 판매 목록을 판매 제목으로 검색 요청 시작");
-        return sellService.searchSellsByTitleKeywords(title, pageable)
+        return sellService.searchSellsByTitleKeyword(title, pageable)
                 .map(sell -> {
                     SellPostListSearchByTitleResponseDto sellPostListSearchByTitleResponseDto = new SellPostListSearchByTitleResponseDto();
                     sellPostListSearchByTitleResponseDto.setId(sell.getId());
@@ -446,7 +446,7 @@ public class SellController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
 
         log.info("[END] - SellController.sellPostListSearchByBookTitle / 도서 판매 목록을 도서제목으로 검색 요청 시작");
-        return sellService.searchSellsByBookTitleKeywords(title, pageable)
+        return sellService.searchSellsByBookTitleKeyword(title, pageable)
                 .map(sell -> {
                     SellPostListSearchByBookTitleResponseDto sellPostListSearchByBookTitleResponseDto = new SellPostListSearchByBookTitleResponseDto();
                     sellPostListSearchByBookTitleResponseDto.setId(sell.getId());
@@ -473,7 +473,7 @@ public class SellController {
 
 
         log.info("[END] - SellController.sellPostListSearchByAuthor / 도서 판매 목록을 도서저자로 검색 요청 시작");
-        return sellService.searchSellsByAuthorKeywords(title, pageable)
+        return sellService.searchSellsByAuthorKeyword(title, pageable)
                 .map(sell -> {
                     SellPostListSearchByAuthorResponseDto sellPostListSearchByAuthorResponseDto = new SellPostListSearchByAuthorResponseDto();
                     sellPostListSearchByAuthorResponseDto.setId(sell.getId());
@@ -499,7 +499,7 @@ public class SellController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
 
         log.info("[END] - SellController.sellPostListSearchByNickname / 도서 판매 목록을 작성자닉네임으로 검색 요청 시작");
-        return sellService.searchSellsByMemberNicknameKeywords(title, pageable)
+        return sellService.searchSellsByMemberNicknameKeyword(title, pageable)
                 .map(sell -> {
                     SellPostListSearchByNicknameResponseDto sellPostListSearchByNicknameResponseDto = new SellPostListSearchByNicknameResponseDto();
                     sellPostListSearchByNicknameResponseDto.setId(sell.getId());
