@@ -16,7 +16,6 @@ import java.util.Optional;
 public class BookService {
 
     private final BookRepository bookRepository;
-    private final ReviewRepository reviewRepository;
 
     @Transactional
     // book 저장
