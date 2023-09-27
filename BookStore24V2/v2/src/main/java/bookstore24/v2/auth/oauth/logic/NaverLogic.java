@@ -28,8 +28,6 @@ public class NaverLogic {
 
     private final MemberService memberService;
 
-    private final AuthenticationManager authenticationManager;
-
     @Value("${cos.key}")
     private String cosKey;
 
