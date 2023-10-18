@@ -234,7 +234,7 @@ public class GoogleLogic {
         RestTemplate restTemplate = new RestTemplate();
 
         // /login 컨트롤러로 POST 요청 보내기
-        String url = "http://bookstore24.shop/login"; // 외부 통신 엔드포인트 URL
+        String url = "https://bookstore24.shop/login"; // 외부 통신 엔드포인트 URL
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
 
         // 응답 결과 처리
