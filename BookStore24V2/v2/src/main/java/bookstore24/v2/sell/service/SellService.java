@@ -71,7 +71,7 @@ public class SellService {
 
     // member 와 SellStatus 로 Sell 찾기
     public Page<Sell> findSellsByMemberAndStatus(Member member, SellStatus status, Pageable pageable) {
-        return sellRepository.findSellsByMemberAndStatus(member, status, pageable);
+        return sellRepository.findSellsByMemberAndStatusOrderByCreatedDateDesc(member, status, pageable);
     }
 
     // Title 로 Sell 를 검색하고 페이지네이션 적용

@@ -47,8 +47,8 @@ public interface SellRepository extends JpaRepository<Sell, Long> {
      */
     List<Sell> findAllByMember_Id(Long memberId);
 
-    // SELECT s FROM Sell s WHERE s.member = :member AND s.status = :status
-    Page<Sell> findSellsByMemberAndStatus(Member member, SellStatus status, Pageable pageable);
+    // SELECT * FROM sell WHERE member_id = :memberId AND status = :status ORDER BY created_date DESC
+    Page<Sell> findSellsByMemberAndStatusOrderByCreatedDateDesc(Member member, SellStatus status, Pageable pageable);
 
     // SELECT r FROM Sell r WHERE r.title LIKE %:keyword%
     Page<Sell> findByTitleContaining(String keyword, Pageable pageable);
