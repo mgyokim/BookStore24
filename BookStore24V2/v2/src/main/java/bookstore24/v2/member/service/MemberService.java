@@ -168,7 +168,7 @@ public class MemberService {
     }
 
     public Page<Review> findReviewsByMember(Member member, Pageable pageable) {
-        Page<Review> reviewsByMember = reviewService.findReviewsByMember(member, pageable);
+        Page<Review> reviewsByMember = reviewService.findReviewsByMemberOrderByCreatedDateDesc(member, pageable);
         return reviewsByMember;
     }
 

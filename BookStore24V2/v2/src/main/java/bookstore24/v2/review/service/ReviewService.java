@@ -74,9 +74,17 @@ public class ReviewService {
     }
 
     // member 로 Review 찾기 (페이징)
-    public Page<Review> findReviewsByMember(Member member, Pageable pageable) {
-        return reviewRepository.findReviewsByMember(member, pageable);
+    public Page<Review> findReviewsByMemberOrderByCreatedDateDesc(Member member, Pageable pageable) {
+        // 해당 회원으로 데이터를 조회하고 페이지네이션 적용
+        Page<Review> reviews = reviewRepository.findReviewsByMember(member, pageable);
+
+        // Set 을 List 로 변환하고 정렬을 적용
+        List<Review> result = new ArrayList<>(reviews.getContent());
+        result.sort((review1, review2) -> review2.getCreatedDate().compareTo(review1.getCreatedDate()));
+
+        return new PageImpl<>(result, pageable, reviews.getTotalElements());
     }
+
 
     // Title 로 Review 를 검색하고 페이지네이션 적용
     public Page<Review> searchReviewsByTitleKeyword(String keyword, Pageable pageable) {
