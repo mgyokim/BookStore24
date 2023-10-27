@@ -222,7 +222,7 @@ public class MemberController {
     }
 
     @GetMapping("/member/nicknameresidence/check")
-    public ResponseEntity<String> checkNicknameAndResidence(Authentication authentication) {
+    public ResponseEntity<?> checkNicknameAndResidence(Authentication authentication) {
         log.info("[START] - MemberController.checkNicknameAndResidence / 닉네임 및 거주지 정보 조회 요청 시작");
 
         // JWT 를 이용하여 요청한 회원 확인
@@ -233,22 +233,26 @@ public class MemberController {
         String nickname = member.getNickname();
         Residence residence = member.getResidence();
 
+        CheckNicknameAndResidenceResponseDto checkNicknameAndResidenceResponseDto = new CheckNicknameAndResidenceResponseDto();
+        checkNicknameAndResidenceResponseDto.setNickname(nickname);
+        checkNicknameAndResidenceResponseDto.setResidence(residence);
+
         if ((nickname != null) & (residence != null)) {
             log.info("닉네임, 거주지 둘다 NOT NULL");
             log.info("[END] - MemberController.checkNicknameAndResidence / 닉네임 및 거주지 정보 조회 요청 완료");
-            return ResponseEntity.status(HttpStatus.OK).body("[NICKNAME : " + nickname + ", RESIDENCE : " + residence + "]");
+            return ResponseEntity.status(HttpStatus.OK).body(checkNicknameAndResidenceResponseDto);
         } else if ((nickname == null) & (residence == null)) {
             log.info("닉네임, 거주지 둘다 NULL");
             log.info("[END] - MemberController.checkNicknameAndResidence / 닉네임 및 거주지 정보 조회 요청 완료");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("[NICKNAME : NULL, RESIDENCE : NULL]");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(checkNicknameAndResidenceResponseDto);
         } else if ((nickname != null) & (residence == null)) {
             log.info("거주지만 NULL");
             log.info("[END] - MemberController.checkNicknameAndResidence / 닉네임 및 거주지 정보 조회 요청 완료");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("[NICKNAME : " + nickname + ", RESIDENCE : NULL]");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(checkNicknameAndResidenceResponseDto);
         } else {
             log.info("닉네임만 NULL");
             log.info("[END] - MemberController.checkNicknameAndResidence / 닉네임 및 거주지 정보 조회 요청 완료");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("[NICKNAME : NULL, RESIDENCE : " + residence + "]");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(checkNicknameAndResidenceResponseDto);
         }
     }
 
