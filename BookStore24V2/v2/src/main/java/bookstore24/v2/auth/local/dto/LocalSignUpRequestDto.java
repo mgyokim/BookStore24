@@ -10,7 +10,9 @@ public class LocalSignUpRequestDto {
     @NotEmpty
     private String loginId;
     @NotEmpty
-    private String loginPassword;
+    private String loginPassword1;
+    @NotEmpty
+    private String loginPassword2;
     @NotEmpty
     private String email;
 }

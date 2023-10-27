@@ -143,6 +143,14 @@ public class MemberController {
             return ResponseEntity.badRequest().body("Invalid signup request");
         }
 
+        // 입력한 비밀번호 1 과 비밀번호 2 가 일치할 경우에만 회원가입 진행
+        String loginPassword1 = localSignUpRequestDto.getLoginPassword1();
+        String loginPassword2 = localSignUpRequestDto.getLoginPassword2();
+        if (!(loginPassword1.equals(loginPassword2))) {
+            log.info("로컬 회원가입 비밀번호 일치검사 실패로 인한 회원가입 실패");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("비밀번호 일치검사 실패");
+        }
+
         // 회원 정보 생성
         Member member = localLogic.requestJsonToMember(localSignUpRequestDto);
 

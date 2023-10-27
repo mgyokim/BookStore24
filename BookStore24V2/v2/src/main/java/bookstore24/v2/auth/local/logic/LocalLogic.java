@@ -18,16 +18,16 @@ public class LocalLogic {
      * 회원 정보 생성
      */
     public Member requestJsonToMember(LocalSignUpRequestDto localSignUpRequestDto) {
-        log.info("[START] - LocalLogic.requestJsonToMember / 클라이언트 요청 데이터 [loginId : " + localSignUpRequestDto.getLoginId() + ", loginPassword : " + localSignUpRequestDto.getLoginPassword() + ", email : " + localSignUpRequestDto.getEmail() + "] 이용하여 Member 객체 생성 시작---------------------------------------------------------------------------------");
+        log.info("[START] - LocalLogic.requestJsonToMember / 클라이언트 요청 데이터 [loginId : " + localSignUpRequestDto.getLoginId() + ", loginPassword : " + localSignUpRequestDto.getLoginPassword1() + ", email : " + localSignUpRequestDto.getEmail() + "] 이용하여 Member 객체 생성 시작---------------------------------------------------------------------------------");
 
         Member member = new Member();
         member.setLoginId(localSignUpRequestDto.getLoginId());
-        member.setLoginPassword(localSignUpRequestDto.getLoginPassword());
+        member.setLoginPassword(localSignUpRequestDto.getLoginPassword1());
         member.setEmail(localSignUpRequestDto.getEmail());
         member.setProvider("bookstore24");
         member.setRole("ROLE_USER");
 
-        log.info("[END] - LocalLogic.requestJsonToMember / 클라이언트 요청 데이터 [loginId : " + localSignUpRequestDto.getLoginId() + ", loginPassword : " + localSignUpRequestDto.getLoginPassword() + ", email : " + localSignUpRequestDto.getEmail() + "] 이용하여 Member 객체 생성 완료-----------------------------------------------------------------------------------");
+        log.info("[END] - LocalLogic.requestJsonToMember / 클라이언트 요청 데이터 [loginId : " + localSignUpRequestDto.getLoginId() + ", loginPassword : " + localSignUpRequestDto.getLoginPassword1() + ", email : " + localSignUpRequestDto.getEmail() + "] 이용하여 Member 객체 생성 완료-----------------------------------------------------------------------------------");
         return member;
     }
 
