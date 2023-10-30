@@ -31,7 +31,7 @@ public abstract class BaseEntity {
         this.deleted = false;
     }
 
-    public boolean isDeleted() {    // 회원 탈퇴 및 복구 상태 확인
+    public boolean isDeleted() {    // 삭제 및 복구 상태 확인
         return deleted;
     }
 
