@@ -62,21 +62,8 @@ public class Member extends BaseEntity {
         this.role = role;
     }
 
-
-    public void registrationRole(String role) {
-        this.role = role;
-    }
-
     public void registrationLoginPassword(String loginPassword) {
         this.loginPassword = loginPassword;
-    }
-
-    public void registrationLoginId(String loginId) {
-        this.loginId = loginId;
-    }
-
-    public void registrationEmail(String email) {
-        this.email = email;
     }
 
 }
