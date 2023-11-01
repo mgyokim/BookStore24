@@ -24,7 +24,7 @@ public class Member extends BaseEntity {
     @Column(name = "member_id")
     private Long id;
 
-    private String provider;    // 회원가입 유형[google, kakao, naver, local]
+    private String provider;    // 회원가입 유형[google, kakao, naver, bookstore24]
 
     private String providerId;  // OAuth 공급자 아이디
 
