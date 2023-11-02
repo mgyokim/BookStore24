@@ -42,6 +42,7 @@ public class Book extends BaseEntity {
     }
 
     // 도서 리뷰 등록할 때, 해당 도서가 데이터베이스에 존재하지 않을 때, ReviewPostSaveRequestDto 로 부터 데이터를 받아서 Book 생성
+    // 도서 판매 등록할 때, 해당 도서가 데이터베이스에 존재하지 않을 때, SellPostSaveResponseDto 로 부터 데이터를 받아서 Book 생성
     public Book(Long isbn, String title, String author, String publisher, String coverImg) {
         this.isbn = isbn;
         this.title = title;
