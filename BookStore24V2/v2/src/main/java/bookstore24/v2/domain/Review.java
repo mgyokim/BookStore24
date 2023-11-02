@@ -68,7 +68,7 @@ public class Review extends BaseEntity {
     }
 
     // 조회수를 1 증가시키기
-    public void setView(Long view) {
+    public void plusOneView(Long view) {
         // 값에 1을 더해서 설정
         this.view = view + 1;
     }

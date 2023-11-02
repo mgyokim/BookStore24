@@ -132,7 +132,7 @@ public class ReviewController {
                 review.initView();  // 해당 리뷰 글의 view 를 0 으로 초기화
             }
             Long inquiryView = review.getView();    // 리뷰 글 상세를 조회하기 전의 view
-            review.setView(inquiryView);            // 리뷰 글 상세를 조회 -> (리뷰 글 상세를 조회하기 전의 view)  + 1
+            review.plusOneView(inquiryView);            // 리뷰 글 상세를 조회 -> (리뷰 글 상세를 조회하기 전의 view)  + 1
             log.info("[리뷰 작성자의 로그인 아이디 : " + reviewPostWriterLoginId + ", 리뷰 글의 제목 : " + reviewPostTitle + "] 리뷰 글 조회수 : " + review.getView() + " 로 업데이트 완료");
 
             // 해당 리뷰글의 상세 데이터를 반환
