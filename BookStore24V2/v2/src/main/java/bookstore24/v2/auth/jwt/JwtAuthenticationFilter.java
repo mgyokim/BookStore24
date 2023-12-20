@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 
-// 인
+// 인증
 // 스프링 시큐리티에 UsernamePasswordAuthenticationFilter 가 있음.
 // /login 요청해서 username, password 을 post 로 전송하면
 // UsernamePasswordAuthenticationFilter 가 동작을 함.
